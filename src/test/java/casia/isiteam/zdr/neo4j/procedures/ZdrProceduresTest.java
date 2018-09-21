@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
  * @PACKAGE_NAME: casia.isiteam.zdr.neo4j.procedures
- * @Description: TODO(Describe the role of this JAVA class)
+ * @Description: TODO(自定义函数测试)
  * @date 2018/8/8 17:23
  */
 public class ZdrProceduresTest {
