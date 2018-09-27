@@ -151,6 +151,7 @@ public class ZdrProcedures {
         double min = shiftDouble(mapPara.get("minScore"));
         double current = shiftDouble(mapPara.get("currentScore"));
 
+        // min-max标准化(Min-MaxNormalization)也称为离差标准化，是对原始数据的线性变换，使结果值映射到 [0 - 1] 之间
         double initialThreshold = 0.015;
         if (min <= current && current <= max && min != 0) {
             double percentage = (current - min) / (max - min);
