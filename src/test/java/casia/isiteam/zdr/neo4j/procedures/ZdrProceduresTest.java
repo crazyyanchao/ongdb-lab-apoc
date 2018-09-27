@@ -151,7 +151,7 @@ public class ZdrProceduresTest {
 
             map.put("minScore", 15);
             map.put("maxScore", 79);
-            map.put("currentScore", 15);
+            map.put("currentScore", 77);
 
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);

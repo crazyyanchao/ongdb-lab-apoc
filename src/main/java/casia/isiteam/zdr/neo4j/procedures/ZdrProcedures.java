@@ -152,11 +152,8 @@ public class ZdrProcedures {
         double current = shiftDouble(mapPara.get("currentScore"));
 
         double initialThreshold = 0.015;
-        double percentageMax = 1.0;
         if (min <= current && current <= max && min != 0) {
-            double multiple = max / min;
-            double currentMultiple = max / current; // 符合区间内的SCORE
-            double percentage = percentageMax - (currentMultiple / multiple); // min/current
+            double percentage = (current - min) / (max - min);
             double percentageFormat = Double.parseDouble(String.format("%.6f", percentage));
             if (percentageFormat == 0) {
                 return initialThreshold;
