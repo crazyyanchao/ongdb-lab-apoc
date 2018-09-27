@@ -14,3 +14,8 @@ RETURN zdr.apoc.hello("world") as greeting
 4、创建测试节点
 CALL zdr.apoc.createCustomer('Test') YIELD node RETURN node
 
+5、离差标准化函数
+zdr.apoc.scorePercentage
+
+6、移动小数点
+zdr.apoc.moveDecimalPoint
