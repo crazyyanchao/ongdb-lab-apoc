@@ -24,9 +24,6 @@ package casia.isiteam.zdr.neo4j.procedures;
  */
 
 import casia.isiteam.zdr.neo4j.util.DateHandle;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.logging.Log;
-import org.neo4j.procedure.Context;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -72,6 +69,24 @@ public class ZdrProcedures {
         String[] array = ids.split(",");
         int eventIdsSize = array.length;
         return eventIdsSize;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(截取时间的年份)
+     */
+    @UserFunction(name = "zdr.apoc.initAnnualTime")
+    public long convertInitAnnualTime(@Name("startTime") String startTime) {
+        if (startTime != null) {
+            String[] array = startTime.split("-");
+            if (array.length == 3) {
+                return Long.valueOf(array[0]);
+            } else {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     /**
@@ -206,4 +221,18 @@ public class ZdrProcedures {
         return scoreInt.intValue();
     }
 
+    /**
+     * @param
+     * @return
+     * @Description: TODO(Present字符转换获取当前系统时间)
+     */
+    @UserFunction(name = "zdr.apoc.presentStringToDate")
+    @Description("Present-Convert date to relevant format")
+    public String presentStringToDate(@Name("present") String present) {
+        if ("Present".equals(present)) {
+            DateHandle dateHandle = new DateHandle();
+            return dateHandle.millisecondToDate(System.currentTimeMillis());
+        }
+        return present;
+    }
 }

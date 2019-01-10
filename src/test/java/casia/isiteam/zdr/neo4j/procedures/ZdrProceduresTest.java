@@ -87,6 +87,32 @@ public class ZdrProceduresTest {
     }
 
     @Test
+    public void getInitAnnualTime() throws Exception {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            String startTime = "2006-05-01 00:00:00";
+            Map<String, Object> params = new HashMap<>();
+            params.put("startTime", startTime);
+            Result result = db.execute("RETURN zdr.apoc.initAnnualTime({startTime}) as value", params);
+            long initStartTime = (long) result.next().get("value");
+            System.out.println(initStartTime);
+        }
+    }
+
+    @Test
+    public void presentStringToDate() throws  Exception{
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            String present = "Present";
+            Map<String, Object> params = new HashMap<>();
+            params.put("present", present);
+            Result result = db.execute("RETURN zdr.apoc.presentStringToDate({present}) as value", params);
+            String initStartTime = (String) result.next().get("value");
+            System.out.println(initStartTime);
+        }
+    }
+
+    @Test
     public void getStringSize() throws Exception {
         String string = "213123,123123,123123,123123,12312";
 
