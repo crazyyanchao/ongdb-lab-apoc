@@ -55,11 +55,13 @@ public class DateHandle {
      */
     public long dateToMillisecond(String date) {
         long millisecond = 0;
-        try {
-            millisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date).getTime();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if (date != null && !"".equals(date)) {
+            try {
+                millisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date).getTime();
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return millisecond;
     }
@@ -169,14 +171,18 @@ public class DateHandle {
      * @Description: TODO(Object转为日期格式 ， 成功返回true ， 失败返回false)
      */
     public boolean objectToDate(Object object) {
-        long millisecond = 0;
-        try {
-            millisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(String.valueOf(object)).getTime();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
+        if (object != null) {
+            long millisecond = 0;
+            try {
+                millisecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(String.valueOf(object)).getTime();
+                return true;
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                return false;
+            }
+        } else {
             return false;
         }
-        return true;
     }
 
     /**

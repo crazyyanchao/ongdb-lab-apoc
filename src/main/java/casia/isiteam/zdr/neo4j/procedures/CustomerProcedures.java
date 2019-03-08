@@ -1,19 +1,24 @@
 package casia.isiteam.zdr.neo4j.procedures;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.kernel.api.exceptions.InvalidArgumentsException;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.Context;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Mode;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.Procedure;
+
+import static org.neo4j.helpers.collection.MapUtil.map;
 
 public class CustomerProcedures {
 
@@ -50,6 +55,7 @@ public class CustomerProcedures {
 
             node.setProperty("name", name);
 
+
             output.add(new NodeResult(node));
 
             log.debug("Creating Customer with Node ID " + node.getId());
@@ -72,4 +78,23 @@ public class CustomerProcedures {
             this.node = node;
         }
     }
+
+    @Procedure(name = "training.recommendOnly", mode = Mode.READ)
+    @Description("Find recommender by an linkin account")
+    public Stream<Movie> recommendOnly(@Name("name") String name) throws InvalidArgumentsException, IOException {
+        String query = "MATCH (n:LinkedinID {name: {name}}) RETURN n";
+        return db.execute(query, map("name", name))
+                .stream()
+                .map(Movie::new);
+    }
+
+    public class Movie {
+        public Map<String, Object> stringObjectMap;
+
+        public Movie(Map<String, Object> stringObjectMap) {
+            stringObjectMap.forEach((k, v) -> System.out.println("key:value = " + k + ":" + v));
+            this.stringObjectMap = stringObjectMap;
+        }
+    }
 }
+

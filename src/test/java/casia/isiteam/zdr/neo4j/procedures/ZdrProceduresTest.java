@@ -100,7 +100,7 @@ public class ZdrProceduresTest {
     }
 
     @Test
-    public void presentStringToDate() throws  Exception{
+    public void presentStringToDate() throws Exception {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         try (Transaction tx = db.beginTx()) {
             String present = "Present";
@@ -220,6 +220,23 @@ public class ZdrProceduresTest {
     }
 
     @Test
+    public void timeCrossOrNot() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        Map<String, Object> map = new HashMap<>();
+        map.put("r1Start", "2012-01-01 00:00:00");
+        map.put("r1Stop", "2015-01-01 00:00:00");
+        map.put("r2Start", "2012-02-01 00:00:00");
+        map.put("r2Stop", "");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("paras", map);
+
+        Result result = db.execute("RETURN zdr.apoc.timeCrossOrNot({paras}) AS value", params);
+        boolean bool = (boolean) result.next().get("value");
+        System.out.println(bool);
+    }
+
+    @Test
     public void dataType() {
         long data = 1231231l;
 //        double data = 234324.3432;
@@ -237,5 +254,6 @@ public class ZdrProceduresTest {
             System.out.println("float");
         }
     }
+
 }
 

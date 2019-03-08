@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.9</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -68,7 +68,7 @@
     <dependency>
       <groupId>org.neo4j.test</groupId>
       <artifactId>neo4j-harness</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.9</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -129,7 +129,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <neo4j.version>3.4.1</neo4j.version>
+    <neo4j.version>3.4.9</neo4j.version>
   </properties>
 </project>
 

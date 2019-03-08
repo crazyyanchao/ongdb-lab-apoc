@@ -235,4 +235,42 @@ public class ZdrProcedures {
         }
         return present;
     }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(判断两个时间区间是否有交叉)
+     */
+    @UserFunction(name = "zdr.apoc.timeCrossOrNot")
+    @Description("Time zone cross or not")
+    public boolean timeCrossOrNot(@Name("mapPara") Map<String, Object> mapPara) {
+
+        DateHandle dateHandle = new DateHandle();
+        String r1Start = (String) mapPara.get("r1Start");
+        String r1Stop = (String) mapPara.get("r1Stop");
+        String r2Start = (String) mapPara.get("r2Start");
+        String r2Stop = (String) mapPara.get("r2Stop");
+
+        if ((dateHandle.objectToDate(r1Start) || dateHandle.objectToDate(r1Stop)) && (dateHandle.objectToDate(r2Start)
+                || dateHandle.objectToDate(r2Stop))) {
+
+            long r1StartMill = dateHandle.dateToMillisecond(r1Start);
+            long r1StopMill = dateHandle.dateToMillisecond(r1Stop);
+            long r2StartMill = dateHandle.dateToMillisecond(r2Start);
+            long r2StopMill = dateHandle.dateToMillisecond(r2Stop);
+
+            // 不可能交叉的情况：
+            // 1、区间一的结束时间小于区间二的开始时间
+            // 2、区间一的开始时间大于区间二的结束时间
+
+            if ((r1StartMill > r2StopMill && r1StartMill != 0 && r2StopMill != 0)
+                    || (r1StopMill < r2StartMill && r1StopMill != 0 && r2StartMill != 0)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
