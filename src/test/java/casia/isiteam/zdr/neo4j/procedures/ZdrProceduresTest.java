@@ -225,13 +225,35 @@ public class ZdrProceduresTest {
         Map<String, Object> map = new HashMap<>();
         map.put("r1Start", "2012-01-01 00:00:00");
         map.put("r1Stop", "2015-01-01 00:00:00");
-        map.put("r2Start", "2012-02-01 00:00:00");
-        map.put("r2Stop", "");
+        map.put("r2Start", "2013-02-01 00:00:00");
+        map.put("r2Stop", "2016-01-01 00:00:00");
 
         Map<String, Object> params = new HashMap<>();
         params.put("paras", map);
 
         Result result = db.execute("RETURN zdr.apoc.timeCrossOrNot({paras}) AS value", params);
+        boolean bool = (boolean) result.next().get("value");
+        System.out.println(bool);
+    }
+
+    @Test
+    public void isContainsString(){
+        GraphDatabaseService db=neo4j.getGraphDatabaseService();
+        Map<String, Object> map = new HashMap<>();
+        map.put("original0", "0Chinese,English");
+        map.put("original1", "1Chinese,English");
+        map.put("original2", "2Chinese,English");
+        map.put("original3", "3Chinese,English");
+        map.put("original4", "4Chinese,English");
+        map.put("original5", "5Chinese,English");
+        map.put("original6", "6Chinese,English");
+        map.put("original7", "7Chinese,English");
+        map.put("original8", "8Chinese,English");
+        map.put("original9", "9Chinese,English");
+        map.put("input", "Chinese");
+        Map<String, Object> params = new HashMap<>();
+        params.put("paras", map);
+        Result result = db.execute("RETURN zdr.apoc.isContainsString({paras}) AS value", params);
         boolean bool = (boolean) result.next().get("value");
         System.out.println(bool);
     }

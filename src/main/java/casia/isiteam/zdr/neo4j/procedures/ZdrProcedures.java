@@ -264,7 +264,9 @@ public class ZdrProcedures {
             // 2、区间一的开始时间大于区间二的结束时间
 
             if ((r1StartMill > r2StopMill && r1StartMill != 0 && r2StopMill != 0)
-                    || (r1StopMill < r2StartMill && r1StopMill != 0 && r2StartMill != 0)) {
+                    || (r1StopMill < r2StartMill && r1StopMill != 0 && r2StartMill != 0)
+                    || (r1StartMill > r2StartMill && r2StopMill == 0)
+                    || (r1StartMill < r2StartMill && r1StopMill == 0)) {
                 return false;
             } else {
                 return true;
@@ -273,4 +275,47 @@ public class ZdrProcedures {
         return false;
     }
 
+    /**
+     * @param
+     * @return
+     * @Description: TODO(是否包含某字符串 ||-任意包含一个 &&-全部包含)
+     */
+    @UserFunction(name = "zdr.apoc.isContainsString")
+    @Description("Is contains string? &&-All contains ||-Or contains (Chinese||English Chinese&&English)")
+    public boolean isContainsString(@Name("mapPara") Map<String, Object> mapPara) {
+
+        // 将输入拼接成一个STRING
+        String original = removeNull(mapPara.get("original0")) + removeNull(mapPara.get("original1")) + removeNull(mapPara.get("original2")) +
+                removeNull(mapPara.get("original3")) + removeNull(mapPara.get("original4")) + removeNull(mapPara.get("original5")) + removeNull(mapPara.get("original6")) +
+                removeNull(mapPara.get("original7")) + removeNull(mapPara.get("original8")) + removeNull(mapPara.get("original9"));
+        String input = (String) mapPara.get("input");
+
+        if (original != null && !"".equals(original)) {
+            String[] split;
+            if (input.contains("||")) {
+                split = input.split("\\|\\|");
+                return Arrays.stream(split).parallel().anyMatch(v -> original.contains(v));
+            } else if (input.contains("&&")) {
+                split = input.split("&&");
+                return Arrays.stream(split).parallel().allMatch(v -> original.contains(v));
+            } else if (original.contains(input)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(清理NULL值设置为空字符串)
+     */
+    private String removeNull(Object object) {
+        if (object == null) {
+            return "";
+        }
+        return String.valueOf(object);
+    }
+
 }
+
