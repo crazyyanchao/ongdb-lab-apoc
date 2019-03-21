@@ -78,7 +78,10 @@ public class CustomerProceduresTest {
 
         try (Transaction tx = db.beginTx()) {
             // CALL training.recommendOnly("Dee Dee Titley_0_linkedin") YIELD stringObjectMap RETURN stringObjectMap
-            Result res = db.execute("CALL training.recommendOnly(\"Dee Dee Titley_0_linkedin\") YIELD stringObjectMap RETURN stringObjectMap");
+//            Result res = db.execute("CALL training.recommendOnly(\"Dee Dee Titley_0_linkedin\") YIELD stringObjectMap RETURN stringObjectMap");
+
+            Result res = db.execute("CALL zdr.index.search('linkin', 'name:china*', 10) YIELD node RETURN node");
+
 //
 //            System.out.println(res.resultAsString());
 //            System.out.println(res.next());
@@ -89,7 +92,7 @@ public class CustomerProceduresTest {
 //            System.out.println(node.getLabels());
 //            System.out.println(node.getRelationships());
 
-
         }
     }
+
 }

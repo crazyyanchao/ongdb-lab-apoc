@@ -24,6 +24,7 @@ package casia.isiteam.zdr.neo4j.procedures;
  */
 
 import casia.isiteam.zdr.neo4j.util.DateHandle;
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -278,7 +279,7 @@ public class ZdrProcedures {
     /**
      * @param
      * @return
-     * @Description: TODO(是否包含某字符串 ||-任意包含一个 &&-全部包含)
+     * @Description: TODO(是否包含某字符串 | | - 任意包含一个 & & - 全部包含)
      */
     @UserFunction(name = "zdr.apoc.isContainsString")
     @Description("Is contains string? &&-All contains ||-Or contains (Chinese||English Chinese&&English)")
@@ -315,6 +316,46 @@ public class ZdrProcedures {
             return "";
         }
         return String.valueOf(object);
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(统计字符串中包含某个字符的数量)
+     */
+    @UserFunction(name = "zdr.apoc.stringCharCount")
+    @Description("Count char in string")
+    public long stringCharCount(@Name("mapPara") Map<String, Object> mapPara) {
+        return StringUtils.countMatches((String) mapPara.get("original"), (String) mapPara.get("char"));
+    }
+
+    /**
+     * @param nLabels:节点集合
+     * @param mLabels:节点集合
+     * @param strictLabels:标签 分隔符号（||）
+     * @return 两个集合同时包含某一个标签 返回TRUE
+     * @Description: TODO(两个集合同时包含某一个标签)
+     */
+    @UserFunction(name = "zdr.apoc.relatCalculateRestrict")
+    @Description("Graph relationships calculate restrict")
+    public boolean relatCalculateRestrict(@Name("nLabels") List<String> nLabels, @Name("mLabels") List<String> mLabels, @Name("restrictLabels") String strictLabels) {
+
+        // ||包含其中一个
+        if (strictLabels.contains("||")) {
+            String[] strict = strictLabels.split("\\|\\|");
+            for (int i = 0; i < strict.length; i++) {
+                String label = strict[i];
+                if (nLabels.contains(label) && mLabels.contains(label)) {
+                    return true;
+                }
+            }
+        } else {
+            if (nLabels.contains(strictLabels) && mLabels.contains(strictLabels)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

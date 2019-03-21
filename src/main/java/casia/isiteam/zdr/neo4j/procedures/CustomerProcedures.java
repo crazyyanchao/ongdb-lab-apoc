@@ -10,6 +10,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.index.lucene.QueryContext;
 import org.neo4j.kernel.api.exceptions.InvalidArgumentsException;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.Context;
@@ -96,5 +97,28 @@ public class CustomerProcedures {
             this.stringObjectMap = stringObjectMap;
         }
     }
+
+    @Procedure(value = "zdr.index.search", mode = Mode.WRITE)
+    @Description("CALL zdr.index.search(String indexName, String query, long limit) YIELD node,执行LUCENE全文检索，返回前{limit个结果}")
+    public Stream<ChineseHit> search(@Name("indexName") String indexName, @Name("query") String query, @Name("limit") long limit) {
+        if (!db.index().existsForNodes(indexName)) {
+            log.debug("如果索引不存在则跳过本次查询：`%s`", indexName);
+            return Stream.empty();
+        }
+        return db.index()
+                .forNodes(indexName)
+                .query(new QueryContext(query).sortByScore().top((int) limit))
+                .stream()
+                .map(ChineseHit::new);
+    }
+
+    public static class ChineseHit {
+        public Node node;
+
+        public ChineseHit(Node node) {
+            this.node = node;
+        }
+    }
+
 }
 

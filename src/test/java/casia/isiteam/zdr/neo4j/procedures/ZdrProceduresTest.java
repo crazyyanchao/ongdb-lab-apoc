@@ -237,8 +237,8 @@ public class ZdrProceduresTest {
     }
 
     @Test
-    public void isContainsString(){
-        GraphDatabaseService db=neo4j.getGraphDatabaseService();
+    public void isContainsString() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
         Map<String, Object> map = new HashMap<>();
         map.put("original0", "0Chinese,English");
         map.put("original1", "1Chinese,English");
@@ -254,6 +254,43 @@ public class ZdrProceduresTest {
         Map<String, Object> params = new HashMap<>();
         params.put("paras", map);
         Result result = db.execute("RETURN zdr.apoc.isContainsString({paras}) AS value", params);
+        boolean bool = (boolean) result.next().get("value");
+        System.out.println(bool);
+    }
+
+    @Test
+    public void stringCharCount() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        Map<String, Object> map = new HashMap<>();
+        map.put("original", "0Chinese,English,Chinese,China,Hadoop,Spark");
+        map.put("char", "English");
+        Map<String, Object> params = new HashMap<>();
+        params.put("paras", map);
+        Result result = db.execute("RETURN zdr.apoc.stringCharCount({paras}) AS value", params);
+        long num = (long) result.next().get("value");
+        System.out.println(num);
+    }
+
+    @Test
+    public void relatCalculateRestrict() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        List<String> nLabels = new ArrayList<>();
+        nLabels.add("Facebook发帖");
+
+        List<String> mLabels = new ArrayList<>();
+        mLabels.add("Facebook发帖");
+
+        String strict = "FacebookID||Facebook发帖";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("nLabels",nLabels);
+        map.put("mLabels",mLabels);
+        map.put("strictLabels",strict);
+
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("paras",map);
+
+        Result result = db.execute("RETURN zdr.apoc.relatCalculateRestrict({nLabels},{mLabels},{strictLabels}) AS value", map);
         boolean bool = (boolean) result.next().get("value");
         System.out.println(bool);
     }
