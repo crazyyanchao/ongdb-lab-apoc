@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import casia.isiteam.zdr.neo4j.result.NodeResult;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -65,19 +66,6 @@ public class CustomerProcedures {
         }
 
         return output.stream();
-    }
-
-    /**
-     * @param
-     * @Description: TODO(结果对象)
-     * @return
-     */
-    public static class NodeResult {
-        public Node node;
-
-        public NodeResult(Node node) {
-            this.node = node;
-        }
     }
 
     @Procedure(name = "training.recommendOnly", mode = Mode.READ)

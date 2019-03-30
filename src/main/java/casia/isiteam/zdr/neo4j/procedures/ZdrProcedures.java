@@ -25,6 +25,7 @@ package casia.isiteam.zdr.neo4j.procedures;
 
 import casia.isiteam.zdr.neo4j.util.DateHandle;
 import org.apache.commons.lang3.StringUtils;
+import org.neo4j.graphdb.Node;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
@@ -32,6 +33,8 @@ import org.neo4j.procedure.UserFunction;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
@@ -356,6 +359,71 @@ public class ZdrProcedures {
         }
 
         return false;
+    }
+
+    /**
+     * 判断字符串中是否包含中文
+     *
+     * @param node:节点的所有属性中是否包含中文
+     * @return 是否为中文
+     * @warn 不能校验是否为中文标点符号
+     */
+    @UserFunction(name = "zdr.apoc.isContainChinese")
+    @Description("Node is contains chinese or not")
+    public long isContainChinese(@Name("node") Node node) {
+
+        Iterable<String> iterableKeys = node.getPropertyKeys();
+        StringBuilder nodeValueBuilder = new StringBuilder();
+        for (Iterator iterator = iterableKeys.iterator(); iterator.hasNext(); ) {
+            Object next = iterator.next();
+            Object nodeValue = node.getProperty((String) next);
+            nodeValueBuilder.append(nodeValue);
+        }
+        char[] nodeValueChar = nodeValueBuilder.toString().toCharArray();
+
+        int chineseCharCount = 0;
+        for (int i = 0; i < nodeValueChar.length; i++) {
+            char c = nodeValueChar[i];
+            if (isChineseChar(c)) {
+                chineseCharCount++;
+            }
+        }
+        return chineseCharCount;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(节点是否包含权限)
+     */
+    @UserFunction(name = "zdr.apoc.isContainAuthority")
+    @Description("Node is contains authority or not")
+    public boolean isContainAuthority(@Name("node") Node node) {
+        Iterable<String> iterableKeys = node.getPropertyKeys();
+
+        String prefix = "sysuser_id_";
+        for (Iterator iterator = iterableKeys.iterator(); iterator.hasNext(); ) {
+            String key = (String) iterator.next();
+            if (key.contains(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 校验一个字符是否是汉字
+     *
+     * @param c 被校验的字符
+     * @return true代表是汉字
+     */
+    public static boolean isChineseChar(char c) {
+        try {
+            return String.valueOf(c).getBytes("UTF-8").length > 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

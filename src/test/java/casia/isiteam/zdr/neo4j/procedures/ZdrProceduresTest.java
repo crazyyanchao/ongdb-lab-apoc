@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import org.junit.Rule;
 import org.junit.Test;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.harness.junit.Neo4jRule;
 
 import java.util.ArrayList;
@@ -283,9 +281,9 @@ public class ZdrProceduresTest {
         String strict = "FacebookID||Facebook发帖";
 
         Map<String, Object> map = new HashMap<>();
-        map.put("nLabels",nLabels);
-        map.put("mLabels",mLabels);
-        map.put("strictLabels",strict);
+        map.put("nLabels", nLabels);
+        map.put("mLabels", mLabels);
+        map.put("strictLabels", strict);
 
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("paras",map);
@@ -311,6 +309,50 @@ public class ZdrProceduresTest {
             System.out.println("int");
         } else if (dataObject instanceof Float) {
             System.out.println("float");
+        }
+    }
+
+
+    @Test
+    public void test10() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.createNode();
+            node.setProperty("name", "Test");
+            node.setProperty("key1", "Test");
+            node.setProperty("born", "的撒");
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("node", node);
+
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("paras",map);
+
+            Result result = db.execute("RETURN zdr.apoc.isContainChinese({node}) AS value", map);
+            long bool = (long) result.next().get("value");
+            System.out.println(bool);
+        }
+    }
+
+    @Test
+    public void test11() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.createNode();
+            String prefix = "sysuser_id_";
+            node.setProperty("name", "Test");
+            node.setProperty("key1", "Test");
+            node.setProperty("born", "的撒");
+//            node.setProperty(prefix+"sadsad32432c", "sadsad32432c");
+            Map<String, Object> map = new HashMap<>();
+            map.put("node", node);
+
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("paras",map);
+
+            Result result = db.execute("RETURN zdr.apoc.isContainAuthority({node}) AS value", map);
+            boolean bool = (boolean) result.next().get("value");
+            System.out.println(bool);
         }
     }
 
