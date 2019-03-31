@@ -356,5 +356,46 @@ public class ZdrProceduresTest {
         }
     }
 
+    @Test
+    public void test12() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            Node nodesOne = db.createNode();
+            nodesOne.setProperty("name", 60667);
+
+            Node nodesTwo = db.createNode();
+            nodesTwo.setProperty("name", 60652);
+
+            Node nodesThree = db.createNode();
+            nodesThree.setProperty("name", 60669);
+
+            Node nodesFour = db.createNode();
+            nodesFour.setProperty("name", 80988);
+
+            // sourceList
+
+            List<Node> sourceList = new ArrayList<>();
+            sourceList.add(nodesOne);
+            sourceList.add(nodesOne);
+            sourceList.add(nodesTwo);
+            sourceList.add(nodesTwo);
+
+            List<Node> targetList = new ArrayList<>();
+            targetList.add(nodesThree);
+            targetList.add(nodesFour);
+            targetList.add(nodesOne);
+            targetList.add(nodesThree);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("nodeCollections", new Object[]{sourceList, targetList});
+
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("nodeCollections",map);
+
+            Result result = db.execute("RETURN zdr.apoc.mergeNodes({nodeCollections}) AS value", map);
+            List<Node> bool = (List<Node>) result.next().get("value");
+            System.out.println(bool.size());
+        }
+    }
 }
 

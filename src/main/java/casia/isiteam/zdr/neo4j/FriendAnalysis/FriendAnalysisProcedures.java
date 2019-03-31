@@ -25,6 +25,7 @@ package casia.isiteam.zdr.neo4j.FriendAnalysis;
 
 import casia.isiteam.zdr.neo4j.result.NodeFriendCountList;
 import casia.isiteam.zdr.neo4j.result.NodeResult;
+import casia.isiteam.zdr.neo4j.util.NodeHandle;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -35,10 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -101,7 +98,8 @@ public class FriendAnalysisProcedures {
         HashMap<Long, Integer> countMap = countFriedsRela(nodes);
 
         // 节点集合排重
-        nodes = distinctNodes(nodes);
+        NodeHandle nodeHandle = new NodeHandle();
+        nodes = nodeHandle.distinctNodes(nodes);
 
         // 给节点更新属性并返回
         return returnFriendResultNodes(nodes, countMap);
@@ -163,30 +161,6 @@ public class FriendAnalysisProcedures {
             tx.success();
         }
         return output.stream();
-    }
-
-    /**
-     * @param
-     * @return
-     * @Description: TODO(节点集合排重)
-     */
-    private List<Node> distinctNodes(List<Node> nodes) {
-        return nodes.stream()
-                .filter(distinctById(v -> {
-                    Node node = v;
-                    return node.getId();
-                }))
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    /**
-     * @param
-     * @return
-     * @Description: TODO(对节点集通过ID去重)
-     */
-    private static <T> Predicate<T> distinctById(Function<? super T, ?> idExtractor) {
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(idExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     /**

@@ -23,7 +23,9 @@ package casia.isiteam.zdr.neo4j.procedures;
  * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
  */
 
+import casia.isiteam.zdr.neo4j.result.NodeResult;
 import casia.isiteam.zdr.neo4j.util.DateHandle;
+import casia.isiteam.zdr.neo4j.util.NodeHandle;
 import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.Node;
 import org.neo4j.procedure.Description;
@@ -35,6 +37,9 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
@@ -409,6 +414,36 @@ public class ZdrProcedures {
             }
         }
         return false;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(去重合并多个节点列表)
+     */
+    @UserFunction(name = "zdr.apoc.mergeNodes")
+    @Description("Merge node list")
+    public List<Node> mergeNodes(@Name("nodePackArray") List<List<Node>> nodePackArray) {
+
+        List<Node> nodes = new ArrayList<>();
+
+        for (int i = 0; i < nodePackArray.size(); i++) {
+            List<Node> nodeList = nodePackArray.get(i);
+            nodes.addAll(nodeList);
+        }
+        NodeHandle nodeHandle = new NodeHandle();
+
+        return nodeHandle.distinctNodes(nodes);
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(节点转换)
+     */
+    private List<NodeResult> transformNodes(List<Node> nodes) {
+        return nodes.stream().map(node -> new NodeResult(node))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
