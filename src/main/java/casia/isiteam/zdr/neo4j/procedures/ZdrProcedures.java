@@ -24,6 +24,7 @@ package casia.isiteam.zdr.neo4j.procedures;
  */
 
 import casia.isiteam.zdr.neo4j.result.NodeResult;
+import casia.isiteam.zdr.neo4j.util.ChineseVerify;
 import casia.isiteam.zdr.neo4j.util.DateHandle;
 import casia.isiteam.zdr.neo4j.util.NodeHandle;
 import org.apache.commons.lang3.StringUtils;
@@ -382,14 +383,18 @@ public class ZdrProcedures {
         for (Iterator iterator = iterableKeys.iterator(); iterator.hasNext(); ) {
             Object next = iterator.next();
             Object nodeValue = node.getProperty((String) next);
-            nodeValueBuilder.append(nodeValue);
+            if (nodeValue instanceof String) {
+                nodeValueBuilder.append(nodeValue);
+            }
         }
+        // 所有节点属性value
         char[] nodeValueChar = nodeValueBuilder.toString().toCharArray();
 
         int chineseCharCount = 0;
+        ChineseVerify chineseVerify = new ChineseVerify();
         for (int i = 0; i < nodeValueChar.length; i++) {
             char c = nodeValueChar[i];
-            if (isChineseChar(c)) {
+            if (chineseVerify.isContainChinese(String.valueOf(c))) {
                 chineseCharCount++;
             }
         }
@@ -439,26 +444,60 @@ public class ZdrProcedures {
     /**
      * @param
      * @return
+     * @Description: TODO(地理位置名称多字段检索 -)
+     */
+    @UserFunction(name = "zdr.apoc.locMultiFieldsFullTextSearchCondition")
+    @Description("Location multi fields search- 找共同居住地的人 - EXAMPLE:location:`\"+location+\"`* OR location:`\"+location+\"`*")
+    public String locMultiFieldsFullTextSearchCondition(@Name("node") Node node, @Name("locMultiFields") List<String> locMultiFields) {
+
+        StringBuilder builder = new StringBuilder();
+        Map<String, Object> mapProperties = node.getAllProperties();
+        locMultiFields.forEach(field -> {
+            if (!"".equals(field) && field != null) {
+                if (mapProperties.containsKey(field)) {
+                    Object value = node.getProperty(field);
+                    if (value instanceof String) {
+                        if (value != null && !"".equals(value)) {
+                            builder.append(field + ":`" + value + "`* OR ");
+                        }
+                    }
+                }
+            }
+        });
+        if (builder != null && !"".equals(builder.toString())) {
+            return builder.substring(0, builder.length() - 3);
+        }
+        return "`null`";
+    }
+
+    //    zdr.apoc.nodeIsContainsKey
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(节点是否包含某个KEY - 多个中的任意一个)
+     */
+    @UserFunction(name = "zdr.apoc.nodeIsContainsKey")
+    @Description("Node is contain key or not")
+    public boolean nodeIsContainsKey(@Name("node") Node node, @Name("locMultiFields") List<String> locMultiFields) {
+        Map<String, Object> mapProperties = node.getAllProperties();
+        for (int i = 0; i < locMultiFields.size(); i++) {
+            String field = locMultiFields.get(i);
+            if (mapProperties.containsKey(field)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param
+     * @return
      * @Description: TODO(节点转换)
      */
     private List<NodeResult> transformNodes(List<Node> nodes) {
         return nodes.stream().map(node -> new NodeResult(node))
                 .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    /**
-     * 校验一个字符是否是汉字
-     *
-     * @param c 被校验的字符
-     * @return true代表是汉字
-     */
-    public static boolean isChineseChar(char c) {
-        try {
-            return String.valueOf(c).getBytes("UTF-8").length > 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
 }

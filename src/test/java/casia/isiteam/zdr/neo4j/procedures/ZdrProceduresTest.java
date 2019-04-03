@@ -319,8 +319,9 @@ public class ZdrProceduresTest {
         try (Transaction tx = db.beginTx()) {
             Node node = db.createNode();
             node.setProperty("name", "Test");
-            node.setProperty("key1", "Test");
-            node.setProperty("born", "的撒");
+            node.setProperty("key1", "Test，");
+            node.setProperty("born", "的");
+            node.setProperty("age", 12323);
 
             Map<String, Object> map = new HashMap<>();
             map.put("node", node);
@@ -397,5 +398,51 @@ public class ZdrProceduresTest {
             System.out.println(bool.size());
         }
     }
+
+    @Test
+    public void test13() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            Node nodesOne = db.createNode();
+            nodesOne.setProperty("name", 60667);
+            nodesOne.setProperty("Hometown", "BeiJing");
+            nodesOne.setProperty("location", "Oak Ridge, Tennessee");
+            nodesOne.setProperty("addresses", "Oak Ridge, Tennessee");
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("node", nodesOne);
+            List<String> list = new ArrayList<>();
+            list.add("Hometown1");
+            list.add("location1");
+            list.add("");
+            list.add("locality1");
+            list.add("addresses");
+            list.add("userCardLocation1");
+            map.put("locMultiFields", list);//new String[]{"CurrentCity","Location"}
+
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("nodeCollections",map);
+
+//            Result result = db.execute("RETURN zdr.apoc.locMultiFieldsFullTextSearchCondition({node},{locMultiFields}) AS value", map);
+//            String str = (String) result.next().get("value");
+//            System.out.println(str);
+
+            Result result = db.execute("RETURN zdr.apoc.nodeIsContainsKey({node},{locMultiFields}) AS value", map);
+            boolean str = (boolean) result.next().get("value");
+            System.out.println(str);
+        }
+    }
+
+    @Test
+    public void test14() {
+        ZdrProcedures zdrProcedures = new ZdrProcedures();
+        String str = "test,中文s，！";
+        char[] array = str.toCharArray();
+        for (int i = 0; i < array.length; i++) {
+            char c = array[i];
+            System.out.println("rawChar:" + c + " bool:");
+        }
+    }
+
 }
 
