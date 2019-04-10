@@ -10,6 +10,7 @@
 
     <properties>
         <neo4j.version>3.4.9</neo4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -55,6 +56,23 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.47</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.ecf</groupId>
+            <artifactId>org.apache.log4j</artifactId>
+            <version>1.2.15.v201012070815</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>casia.isiteam</groupId>-->
+            <!--<artifactId>ikanalyzer</artifactId>-->
+            <!--<version>5.0</version>-->
+        <!--</dependency>-->
+
     </dependencies>
 
     <build>
@@ -82,6 +100,20 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+
                     </execution>
                 </executions>
             </plugin>

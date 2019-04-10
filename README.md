@@ -1,4 +1,26 @@
-Neo4j自定义函数与过程实现高效的数据访问
+# Neo4j自定义函数与过程实现高效的数据访问
+
+> 此插件对应版本：NEO4J-3.4.X
+
+> PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到NEO4J安装目录下的PLUGIN目录，将dic文件夹移动到NEO4J安装根目录。
+
+## 自定义中文全文检索
+
+中文分词：需要新增的词表在user_defined.dic新增或者在cfg.xml文件中配置即可
+
+```
+# 版本信息：
+ 
+LUCENE-5.5.0 
+     
+IKAnalyzer-5.0
+```
+
+## 自定义过程和函数
+
+>过程：用 Call com.xxxx.xx （参数）来调用执行。
+
+>函数：可以用在cypher中任何可以使用方法的地方如where子句，return子句中。如match (n) wehre com.xxx.xx(n) return n。
 
 1、计算IDS中ID的个数
 RETURN zdr.apoc.getEventIdsSize("123123,123123,2131,12321,23424,123123,2331") as value
@@ -19,3 +41,6 @@ zdr.apoc.scorePercentage
 
 6、移动小数点
 zdr.apoc.moveDecimalPoint
+
+7、更多过程与函数请参考源码和测试...
+

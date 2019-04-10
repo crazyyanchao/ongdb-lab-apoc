@@ -1,7 +1,5 @@
 package casia.isiteam.zdr.neo4j.procedures;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -50,6 +48,29 @@ public class ZdrProceduresTest {
     public Neo4jRule neo4j = new Neo4jRule().withFunction(ZdrProcedures.class);
 
     @Test
+    public void shouldGreetWorld() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+
+        try ( Transaction tx = db.beginTx() ) {
+            String name = "World";
+
+            Map<String, Object> params = new HashMap<>(  );
+            params.put("name", name);
+
+            Result result = db.execute( "RETURN zdr.apoc.hello({name}) as greeting", params);
+
+            String greeting = (String) result.next().get("greeting");
+
+            assertEquals( "Hello, "+ name, greeting );
+        }
+    }
+
+    @Test
+    public void test01(){
+        System.out.println(String.format("Hello, %s", "neo4j"));
+    }
+
+    @Test
     public void sortDESC() throws Exception {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         try (Transaction tx = db.beginTx()) {
@@ -74,7 +95,8 @@ public class ZdrProceduresTest {
             String eventIds = "123213,234324,4354353,1231231,2132131";
             Map<String, Object> params = new HashMap<>();
             params.put("eventIds", eventIds);
-            Result result = db.execute("RETURN zdr.apoc.getEventIdsSize({eventIds}) as value", params);
+            Result result = db.execute("RETURN zdr.apoc.getEventIdsSizeTest({eventIds}) as value", params);
+//            Result result = db.execute("RETURN zdr.apoc.getEventIdsSize({eventIds}) as value", params);
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
 
@@ -441,6 +463,35 @@ public class ZdrProceduresTest {
         for (int i = 0; i < array.length; i++) {
             char c = array[i];
             System.out.println("rawChar:" + c + " bool:");
+        }
+    }
+
+    @Test
+    public void test15() {
+//        zdr.apoc.removeIdsFromRawList
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        try (Transaction tx = db.beginTx()) {
+            List<Long> rawIDs = new ArrayList<>();
+//            rawIDs.add(60667l);
+//            rawIDs.add(60667l);
+//            rawIDs.add(60652l);
+//            rawIDs.add(60652l);
+
+            List<Long> ids = new ArrayList<>();
+            ids.add(60667l);
+            ids.add(60652l);
+            Map<String, Object> map = new HashMap<>();
+            map.put("rawIDs", rawIDs);
+            map.put("ids", ids);
+
+            Result result = db.execute("RETURN zdr.apoc.removeIdsFromRawList({rawIDs},{ids}) AS value", map);
+            List<Long> rawIds = (List<Long>) result.next().get("value");
+            if (rawIds != null) {
+                for (int i = 0; i < rawIds.size(); i++) {
+                    long aLong = rawIds.get(i);
+                    System.out.println(aLong);
+                }
+            }
         }
     }
 

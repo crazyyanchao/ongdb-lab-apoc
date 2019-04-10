@@ -36,11 +36,7 @@ import org.neo4j.procedure.UserFunction;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
@@ -49,6 +45,17 @@ import java.util.stream.Stream;
  * @date 2018/8/3 17:54
  */
 public class ZdrProcedures {
+
+    /**
+     * @param world:函数参数
+     * @return
+     * @Description: TODO(@ Description的内容会在Neo4j浏览器中调用dbms.functions () 时显示)
+     */
+    @UserFunction(name = "zdr.apoc.hello") // 自定义函数名
+    @Description("hello(world) - Say hello!")   // 函数说明
+    public String hello(@Name("world") String world) {
+        return String.format("Hello, %s", world);
+    }
 
     /**
      * @param
@@ -500,5 +507,22 @@ public class ZdrProcedures {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * @param
+     * @return
+     * @Description: TODO(节点ID集合移除某些节点)
+     */
+    @UserFunction(name = "zdr.apoc.removeIdsFromRawList")
+    @Description("Remove ids from raw node id list")
+    public List<Long> removeIdsFromRawList(@Name("rawIDs") List<Long> rawIDs, @Name("ids") List<Long> ids) {
+        if (rawIDs != null && ids != null) {
+            rawIDs.removeAll(ids);
+            return rawIDs;
+        }
+        return rawIDs;
+    }
+
 }
+
+
 
