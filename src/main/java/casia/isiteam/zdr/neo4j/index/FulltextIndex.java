@@ -28,7 +28,6 @@ import casia.isiteam.zdr.neo4j.result.ChineseHit;
 import casia.isiteam.zdr.wltea.analyzer.cfg.Configuration;
 import casia.isiteam.zdr.wltea.analyzer.core.IKSegmenter;
 import casia.isiteam.zdr.wltea.analyzer.core.Lexeme;
-import casia.isiteam.zdr.wltea.analyzer.lucene.IKAnalyzer;
 import org.apache.log4j.PropertyConfigurator;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;

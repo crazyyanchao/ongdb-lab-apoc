@@ -58,14 +58,15 @@ zdr.apoc.moveDecimalPoint
 RETURN zdr.index.iKAnalyzer('复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？',true) AS words
 ```
 
-8、创建中文全文索引
+8、创建中文全文索引（不同标签使用相同的索引名即可支持跨标签类型检索）
 ```sql
 CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message
 CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description','year']) YIELD message RETURN message
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'LocProvince', ['description','year']) YIELD message RETURN message
 
 ```
 
-9、中文全文索引查询
+9、中文全文索引查询（可跨标签类型检索）
 ```sql
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node RETURN node
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node,weight RETURN node,weight
