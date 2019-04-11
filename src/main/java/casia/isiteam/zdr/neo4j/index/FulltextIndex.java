@@ -23,6 +23,8 @@ package casia.isiteam.zdr.neo4j.index;
  * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
  */
 
+import casia.isiteam.zdr.neo4j.message.NodeIndexMessage;
+import casia.isiteam.zdr.neo4j.result.ChineseHit;
 import casia.isiteam.zdr.wltea.analyzer.cfg.Configuration;
 import casia.isiteam.zdr.wltea.analyzer.core.IKSegmenter;
 import casia.isiteam.zdr.wltea.analyzer.core.Lexeme;
@@ -68,8 +70,15 @@ public class FulltextIndex {
     @Context
     public Log log;
 
+    /**
+     * @param indexName:索引名称
+     * @param query:查询（可直接使用索引查询更底层功能）
+     * @param limit:限制数据量
+     * @return
+     * @Description: TODO(查询中文全文索引)
+     */
     @Procedure(value = "zdr.index.chineseFulltextIndexSearch", mode = Mode.WRITE)
-    @Description("CALL zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node RETURN node," +
+    @Description("CALL zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight" +
             "执行LUCENE全文检索，返回前{limit个结果}")
     public Stream<ChineseHit> chineseFulltextIndexSearch(@Name("indexName") String indexName,
                                                          @Name("query") String query, @Name("limit") long limit) {
@@ -77,13 +86,31 @@ public class FulltextIndex {
             log.debug("如果索引不存在则跳过本次查询：`%s`", indexName);
             return Stream.empty();
         }
-        return db.index()
-                .forNodes(indexName, FULL_INDEX_CONFIG)
-                .query(new QueryContext(query).sortByScore().top((int) limit))
-                .stream()
-                .map(ChineseHit::new);  // provider
+        QueryContext queryParam = new QueryContext(query).sortByScore().top((int) limit);
+        return toWeightedNodeResult(db.index().forNodes(indexName, FULL_INDEX_CONFIG).query(queryParam));
     }
 
+    /**
+     * @param
+     * @return
+     * @Description: TODO(全文检索节点结果输出)
+     */
+    private Stream<ChineseHit> toWeightedNodeResult(IndexHits<Node> hits) {
+        List<ChineseHit> results = new ArrayList<>();
+        while (hits.hasNext()) {
+            Node node = hits.next();
+            results.add(new ChineseHit(node, hits.currentScore()));
+        }
+        return results.stream();
+    }
+
+    /**
+     * @param indexName:索引名称
+     * @param labelName:标签名称
+     * @param propKeys:属性名称列表
+     * @return
+     * @Description: TODO(创建中文全文索引)
+     */
     @Procedure(value = "zdr.index.addChineseFulltextIndex", mode = Mode.WRITE)
     @Description("CALL zdr.index.addChineseFulltextIndex(String indexName, String labelName, List<String> propKeys) YIELD message RETURN message," +
             "为一个标签下的所有节点的指定属性添加索引")
@@ -126,21 +153,6 @@ public class FulltextIndex {
         return output.stream();
     }
 
-    public static class NodeIndexMessage {
-        public String message;
-
-        public NodeIndexMessage(String message) {
-            this.message = message;
-        }
-    }
-
-    public static class ChineseHit {
-        public Node node;
-
-        public ChineseHit(Node node) {
-            this.node = node;
-        }
-    }
 
     /**
      * @param text:待分词文本

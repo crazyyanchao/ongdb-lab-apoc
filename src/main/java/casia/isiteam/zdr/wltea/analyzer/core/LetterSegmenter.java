@@ -28,7 +28,7 @@ import java.util.Arrays;
 
 /**
  * 
- * 英文字符及阿拉伯数字子分词器
+ * 英文字符及阿拉伯数字子分词器 - 字符分词器
  */
 class LetterSegmenter implements ISegmenter {
 	

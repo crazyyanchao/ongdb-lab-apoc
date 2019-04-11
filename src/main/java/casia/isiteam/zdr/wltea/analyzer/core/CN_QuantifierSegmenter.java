@@ -34,7 +34,7 @@ import java.util.Set;
 
 /**
  * 
- * 中文数量词子分词器
+ * 中文数量词子分词器 - 中文数量词分词器
  */
 class CN_QuantifierSegmenter implements ISegmenter{
 	

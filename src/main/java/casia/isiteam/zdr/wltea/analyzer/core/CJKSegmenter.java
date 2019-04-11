@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *  中文-日韩文子分词器
+ *  中文-日韩文子分词器 - 三个分词器逻辑基本上一致可以重点查看这个类
  */
 class CJKSegmenter implements ISegmenter {
 	

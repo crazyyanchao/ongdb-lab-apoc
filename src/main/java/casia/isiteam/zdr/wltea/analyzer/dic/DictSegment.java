@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 词典树分段，表示词典树的一个分枝
+ * 词典树分段，表示词典树的一个分枝 - 分词器的核心数据结构字典树（Tire Tree）
  */
 class DictSegment implements Comparable<DictSegment>{
 	

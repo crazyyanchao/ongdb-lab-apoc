@@ -90,14 +90,12 @@ public class FulltextIndexTest {
             System.out.println(message);
 
             // 查询节点
-            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node RETURN node");
+            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:复联终章', 100) YIELD node,weight RETURN node,weight");
             while (res2.hasNext()) {
-                Node nodeSearch = (Node) res2.next().get("node");
-                System.out.println("ID:" + nodeSearch.getId());
-                System.out.println("Labels:");
-                nodeSearch.getLabels().forEach(v -> {
-                    System.out.println(v);
-                });
+                Map<String, Object> mapO = res2.next();
+                Node nodeSearch = (Node) mapO.get("node");
+                double hitScore = (double) mapO.get("weight");
+                System.out.println("ID:" + nodeSearch.getId() + " Score:" + hitScore);
                 Map<String, Object> mapObj = nodeSearch.getAllProperties();
                 for (Map.Entry entry : mapObj.entrySet()) {
                     System.out.println(entry.getKey() + ":" + entry.getValue());

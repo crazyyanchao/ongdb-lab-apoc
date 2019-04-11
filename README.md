@@ -61,12 +61,31 @@ RETURN zdr.index.iKAnalyzer('复联终章快上映了好激动，据说知识图
 8、创建中文全文索引
 ```sql
 CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description','year']) YIELD message RETURN message
+
 ```
 
 9、中文全文索引查询
 ```sql
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node RETURN node
+CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node,weight RETURN node,weight
 ```
 
 7、更多过程与函数请参考源码和测试...
+
+## IKAnalyzer分词
+
+分词步骤：词典加载、预处理、分词器分词、歧义处理、结尾处理（处理遗漏中文字符/处理数量词）
+
+分词模式：SMART模式（歧义判断）与非SMART模式（最小力度的分词）
+```
+具体的实例：
+     张三说的确实在理
+
+smart模式的下分词结果为：  
+     张三 | 说的 | 确实 | 在理
+
+而非smart模式下的分词结果为：
+     张三 | 三 | 说的 | 的确 | 的 | 确实 | 实在 | 在理
+```
 

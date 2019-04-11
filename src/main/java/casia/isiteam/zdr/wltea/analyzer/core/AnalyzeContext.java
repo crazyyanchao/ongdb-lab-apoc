@@ -249,7 +249,7 @@ class AnalyzeContext {
     }
 
     /**
-     * 推送分词结果到结果集合
+     * 推送分词结果到结果集合 - 未匹配的单字全部输出
      * 1.从buff头部遍历到this.cursor已处理位置
      * 2.将map中存在的分词结果推入results
      * 3.将map中不存在的CJDK字符以单字方式推入results
@@ -316,7 +316,7 @@ class AnalyzeContext {
     /**
      * 返回lexeme
      * <p>
-     * 同时处理合并
+     * 同时处理合并 - 停用词移除/
      *
      * @return
      */
