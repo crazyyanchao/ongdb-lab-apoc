@@ -2,7 +2,7 @@
 
 > 此插件对应版本：NEO4J-3.4.X
 
-> PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到NEO4J安装目录下的PLUGIN目录，将dic文件夹移动到NEO4J安装根目录。
+> PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到NEO4J安装目录下的PLUGIN目录，将dic文件夹移动到NEO4J安装根目录即可。
 
 ## 自定义中文全文检索
 
@@ -23,24 +23,50 @@ IKAnalyzer-5.0
 >函数：可以用在cypher中任何可以使用方法的地方如where子句，return子句中。如match (n) wehre com.xxx.xx(n) return n。
 
 1、计算IDS中ID的个数
+```sql
 RETURN zdr.apoc.getEventIdsSize("123123,123123,2131,12321,23424,123123,2331") as value
-
 match p=(n:LABEL1)<-[r:REL]-(m:LABEL2) where n.name='新闻_1432' and r.eventTargetIds IS NOT NULL return p ORDER BY zdr.apoc.getEventIdsSize(r.eventTargetIds) DESC limit 10
+```
 
 2、列表数字降序排列
+```sql
 RETURN zdr.apoc.sortDESC([4,3,5,1,6,8,7]) as descList
+```
 
 3、打印HELLO WORLD
+```sql
 RETURN zdr.apoc.hello("world") as greeting
+```
 
 4、创建测试节点
+```sql
 CALL zdr.apoc.createCustomer('Test') YIELD node RETURN node
+```
 
 5、离差标准化函数
+```sql
 zdr.apoc.scorePercentage
+```
 
 6、移动小数点
+```sql
 zdr.apoc.moveDecimalPoint
+```
+
+7、中文分词
+```sql
+RETURN zdr.index.iKAnalyzer('复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？',true) AS words
+```
+
+8、创建中文全文索引
+```sql
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message
+```
+
+9、中文全文索引查询
+```sql
+CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node RETURN node
+```
 
 7、更多过程与函数请参考源码和测试...
 

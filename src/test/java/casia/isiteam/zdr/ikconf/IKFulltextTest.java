@@ -67,7 +67,7 @@ public class IKFulltextTest {
 
     @Test
     public void queryWords() throws IOException {
-        PropertyConfigurator.configureAndWatch("config/log4j.properties");
+        PropertyConfigurator.configureAndWatch("dic/log4j.properties");
         String query = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？";
 
 //        String query = "You are probably compiling (or using dependencies compiled) with java 9, but still using JDK 8.0 " +

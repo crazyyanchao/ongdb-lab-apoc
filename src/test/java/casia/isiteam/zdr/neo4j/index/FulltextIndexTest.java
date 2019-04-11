@@ -57,12 +57,9 @@ public class FulltextIndexTest {
     public Neo4jRule neo4jFunc = new Neo4jRule().withFunction(FulltextIndex.class);
 
     @Test
-    public void chineseFulltextIndexSearch() {
-
-    }
-
-    @Test
     public void addChineseFulltextIndex() {
+        PropertyConfigurator.configureAndWatch("dic/log4j.properties");
+
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
         Map<String, Object> map = new HashMap<>();
@@ -75,8 +72,8 @@ public class FulltextIndexTest {
         map.put("labelName", labelName);
         map.put("propKeys", propKeys);
 
-        // 创建节点
         try (Transaction tx = db.beginTx()) {
+            // 创建节点
             Node node = db.createNode(Label.label("Loc"));
             node.setProperty("name", "A");
             node.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
@@ -85,26 +82,43 @@ public class FulltextIndexTest {
             node1.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
             Node node2 = db.createNode(Label.label("Loc"));
             node2.setProperty("name", "C");
-            node2.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
+            node2.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！");
 
-            tx.success();
-        }
-
-        // 创建索引与查询索引有BUG
-        // 给节点建立中文全文索引
-        try (Transaction tx = db.beginTx()) {
-//            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex({indexName},{labelName},{propKeys})", map);
+            // 给节点建立中文全文索引
             Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message");
             String message = (String) res.next().get("message");
             System.out.println(message);
+
+            // 查询节点
+            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node RETURN node");
+            while (res2.hasNext()) {
+                Node nodeSearch = (Node) res2.next().get("node");
+                System.out.println("ID:" + nodeSearch.getId());
+                System.out.println("Labels:");
+                nodeSearch.getLabels().forEach(v -> {
+                    System.out.println(v);
+                });
+                Map<String, Object> mapObj = nodeSearch.getAllProperties();
+                for (Map.Entry entry : mapObj.entrySet()) {
+                    System.out.println(entry.getKey() + ":" + entry.getValue());
+                }
+            }
+            tx.success();
         }
+    }
+
+    @Test
+    public void chineseFulltextIndexSearch() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
         // 查询节点
         try (Transaction tx = db.beginTx()) {
-            Result res = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '复联', 100)");
-            Node message = (Node) res.next().get("message");
-            System.out.println(message.getId());
-            System.out.println(message.getProperty("name"));
+            Result res = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '复联', 100) YIELD node RETURN node");
+            while (res.hasNext()) {
+                Node message = (Node) res.next().get("message");
+                System.out.println(message.getId());
+                System.out.println(message.getProperty("name"));
+            }
         }
     }
 

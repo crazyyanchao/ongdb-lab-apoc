@@ -26,12 +26,11 @@ package casia.isiteam.zdr.neo4j.index;
 import casia.isiteam.zdr.wltea.analyzer.cfg.Configuration;
 import casia.isiteam.zdr.wltea.analyzer.core.IKSegmenter;
 import casia.isiteam.zdr.wltea.analyzer.core.Lexeme;
+import casia.isiteam.zdr.wltea.analyzer.lucene.IKAnalyzer;
 import org.apache.log4j.PropertyConfigurator;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.ResourceIterator;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
+import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.index.lucene.QueryContext;
@@ -56,7 +55,6 @@ import java.util.stream.Stream;
 public class FulltextIndex {
 
     private static final String tokenFilter = "casia.isiteam.zdr.wltea.analyzer.lucene.IKAnalyzer";
-//    private static final String tokenFilter = "org.wltea.analyzer.lucene.IKAnalyzer";
 
     private static final Map<String, String> FULL_INDEX_CONFIG = MapUtil
             .stringMap(IndexManager.PROVIDER, "lucene", "type", "fulltext", "analyzer", tokenFilter);
@@ -79,12 +77,11 @@ public class FulltextIndex {
             log.debug("如果索引不存在则跳过本次查询：`%s`", indexName);
             return Stream.empty();
         }
-        Stream<ChineseHit> s = db.index()
+        return db.index()
                 .forNodes(indexName, FULL_INDEX_CONFIG)
                 .query(new QueryContext(query).sortByScore().top((int) limit))
                 .stream()
                 .map(ChineseHit::new);  // provider
-        return s;
     }
 
     @Procedure(value = "zdr.index.addChineseFulltextIndex", mode = Mode.WRITE)
@@ -95,7 +92,8 @@ public class FulltextIndex {
         Label label = Label.label(labelName);
 
         List<NodeIndexMessage> output = new ArrayList<>();
-        // 按照标签找到该标签下的所有节点
+
+//        // 按照标签找到该标签下的所有节点
         ResourceIterator<Node> nodes = db.findNodes(label);
         System.out.println("nodes:" + nodes.toString());
 
@@ -148,7 +146,7 @@ public class FulltextIndex {
      * @param text:待分词文本
      * @param useSmart:true 用智能分词，false 细粒度分词
      * @return
-     * @Description: TODO(支持中英文文文本分词)
+     * @Description: TODO(支持中英文本分词)
      */
     @UserFunction(name = "zdr.index.iKAnalyzer")
     @Description("Fulltext index iKAnalyzer - RETURN zdr.index.iKAnalyzer({text},true) AS words")
