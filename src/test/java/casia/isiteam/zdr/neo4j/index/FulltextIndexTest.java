@@ -1,20 +1,25 @@
 package casia.isiteam.zdr.neo4j.index;
 
-import casia.isiteam.zdr.neo4j.procedures.CustomerProcedures;
-import casia.isiteam.zdr.neo4j.result.NodeResult;
+import casia.isiteam.zdr.neo4j.util.TestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import org.apache.log4j.PropertyConfigurator;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.harness.junit.Neo4jRule;
+import org.neo4j.test.TestGraphDatabaseFactory;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.*;
+import static org.neo4j.helpers.collection.MapUtil.map;
 
 /**
  * 　　　　　　　 ┏┓       ┏┓+ +
@@ -48,6 +53,21 @@ import java.util.Map;
  */
 public class FulltextIndexTest {
 
+    private GraphDatabaseService db;
+
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty("hadoop.home.dir", "C:\\Users\\11416\\Desktop\\project\\workspace\\neo4j-apoc-procedures-3.4.0.1\\hadoop");
+        db = new TestGraphDatabaseFactory().newImpermanentDatabase();
+        TestUtil.registerProcedure(db, FulltextIndex.class);
+    }
+
+    @After
+    public void tearDown() {
+        db.shutdown();
+        db = null;
+    }
+
     // 测试过程
     @Rule
     public Neo4jRule neo4j = new Neo4jRule().withProcedure(FulltextIndex.class);
@@ -62,16 +82,6 @@ public class FulltextIndexTest {
 
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
-        Map<String, Object> map = new HashMap<>();
-        String indexName = "index";
-        String labelName = "Test";
-        List<String> propKeys = new ArrayList<>();
-        propKeys.add("key1");
-
-        map.put("indexName", indexName);
-        map.put("labelName", labelName);
-        map.put("propKeys", propKeys);
-
         try (Transaction tx = db.beginTx()) {
             // 创建节点
             Node node = db.createNode(Label.label("Loc"));
@@ -85,12 +95,24 @@ public class FulltextIndexTest {
             node2.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！");
 
             // 给节点建立中文全文索引
-            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message");
-            String message = (String) res.next().get("message");
-            System.out.println(message);
+//            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message");
+            Result res = db.execute("CALL zdr.index.addChineseFulltextAutoIndex('IKAnalyzer', 'Loc', ['description'],{autoUpdate:'true'}) YIELD label,property,nodeCount RETURN label,property,nodeCount");
+//            Result res = db.execute("CALL zdr.index.addAllNodes('IKAnalyzer',{Loc:['description','year']},{autoUpdate:'true'})");
 
+            Map<String, Object> map = res.next();
+            for (Map.Entry entry : map.entrySet()) {
+                System.out.println(entry.getKey() + ":" + entry.getValue());
+            }
+
+            Node node3 = db.createNode(Label.label("Loc"));
+            node3.setProperty("name", "D");
+            node3.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！");
+            tx.success();
+        }
+        try (Transaction tx = db.beginTx()) {
             // 查询节点
             Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:复联终章', 100) YIELD node,weight RETURN node,weight");
+
             while (res2.hasNext()) {
                 Map<String, Object> mapO = res2.next();
                 Node nodeSearch = (Node) mapO.get("node");
@@ -134,5 +156,101 @@ public class FulltextIndexTest {
             List<String> words = (List<String>) res.next().get("words");
             System.out.println(JSONArray.parseArray(JSON.toJSONString(words)));
         }
+    }
+
+    @Test
+    public void autoIndex() {
+        PropertyConfigurator.configureAndWatch("dic/log4j.properties");
+        // given
+        // create 90k nodes - this force 2 batches during indexing
+        execute("UNWIND range(1,90000) as x CREATE (n:Movie{name:'person'+x}) SET n.description='description'+x");
+        execute("UNWIND range(1,90000) as x CREATE (n:Person{name:'person'+x}) SET n.description='description'+x");
+
+        // 操作属性忽略标签
+        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'',{autoUpdate:'true'})");
+
+        // then
+        ResourceIterator<Node> iterator = search("people", "name:person89999");
+        try (Transaction tx = db.beginTx()) {
+            while (iterator.hasNext()) {
+                Node node = iterator.next();
+
+                Iterable<Label> labelIterable = node.getLabels();
+                StringBuilder builder = new StringBuilder();
+                labelIterable.forEach(v -> {
+                    builder.append(v + ":");
+                });
+                System.out.print(builder.toString());
+
+                Map<String, Object> mapObj = node.getAllProperties();
+                for (Map.Entry entry : mapObj.entrySet()) {
+                    System.out.print(entry.getKey() + ":" + entry.getValue() + " ");
+                }
+                System.out.println();
+            }
+            tx.success();
+        }
+    }
+
+    private void execute(String query) {
+        execute(query, Collections.EMPTY_MAP);
+    }
+
+    private void execute(String query, Map<String, Object> params) {
+        db.execute(query, params).close();
+    }
+
+    @SafeVarargs
+    private static <T extends PropertyContainer> void assertSingle(Iterator<T> iter, Matcher<? super T>... matchers) {
+        try {
+            assertTrue("should contain at least one value", iter.hasNext());
+            assertThat(iter.next(), allOf(matchers));
+            assertFalse("should contain at most one value", iter.hasNext());
+        } finally {
+            if (iter instanceof ResourceIterator<?>) {
+                ((ResourceIterator<?>) iter).close();
+            }
+        }
+    }
+
+    private ResourceIterator<Node> search(String index, String value) {
+//        zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight
+        return db.execute("CALL zdr.index.chineseFulltextIndexSearch({index}, {value},{limit}) YIELD node,weight SET node.weight=weight RETURN node ORDER BY node.weight DESC",
+                map("index", index, "value", value, "limit", 100)).columnAs("node");
+    }
+
+    private static Matcher<? super PropertyContainer> hasProperty(String key, Object value) {
+        return new TypeSafeDiagnosingMatcher<PropertyContainer>() {
+            @Override
+            protected boolean matchesSafely(PropertyContainer item, Description mismatchDescription) {
+                Object property;
+                try (Transaction tx = item.getGraphDatabase().beginTx()) {
+                    property = item.getProperty(key, null);
+                    tx.success();
+                }
+                if (property == null) {
+                    mismatchDescription.appendText("property ").appendValue(key).appendText(" not present");
+                    return false;
+                }
+                if (value instanceof Matcher<?>) {
+                    Matcher<?> matcher = (Matcher<?>) value;
+                    if (!matcher.matches(property)) {
+                        matcher.describeMismatch(property, mismatchDescription);
+                        return false;
+                    }
+                    return true;
+                }
+                if (!property.equals(value)) {
+                    mismatchDescription.appendText("property ").appendValue(key).appendText("has value").appendValue(property);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("entity with property ").appendValue(key).appendText("=").appendValue(value);
+            }
+        };
     }
 }
