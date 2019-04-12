@@ -22,9 +22,6 @@ package casia.isiteam.zdr.neo4j.index;
  * 　　　　　　　　　 ┃┫┫　 ┃┫┫
  * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
  */
-
-import apoc.ApocKernelExtensionFactory;
-import apoc.Pools;
 import casia.isiteam.zdr.neo4j.message.NodeIndexMessage;
 import casia.isiteam.zdr.neo4j.result.ChineseHit;
 import casia.isiteam.zdr.wltea.analyzer.cfg.Configuration;
@@ -50,6 +47,8 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import apoc.ApocKernelExtensionFactory;
+import apoc.Pools;
 import static apoc.util.AsyncStream.async;
 
 /**
@@ -237,11 +236,16 @@ public class FulltextIndex {
             int batch = 0;
             for (Node node : db.getAllNodes()) {
                 boolean indexed = false;
+
+                // 给节点的每个标签都添加索引
                 for (Label label : node.getLabels()) {
                     String[] keys = structure;
                     if (keys == null) continue;
                     indexed = true;
+
+                    // 通过标签控制为哪些属性添加索引 （默认为所有节点属性添加索引）
                     Map<String, Object> properties = keys.length == 0 ? node.getAllProperties() : node.getProperties(keys);
+
                     for (Map.Entry<String, Object> entry : properties.entrySet()) {
                         Object value = entry.getValue();
 
@@ -251,7 +255,7 @@ public class FulltextIndex {
                             value = ValueContext.numeric(((Number) value).doubleValue());
                         }
 
-                        // 添加索引
+                        // 节点标签下添加索引
                         index.add(node, label.name() + "." + entry.getKey(), value);
 
                         stats.computeIfAbsent(new LabelProperty(label.name(), entry.getKey()), x -> new Counter()).count++;
