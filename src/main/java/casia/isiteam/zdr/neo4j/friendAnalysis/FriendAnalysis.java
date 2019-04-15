@@ -26,25 +26,20 @@ package casia.isiteam.zdr.neo4j.friendAnalysis;
 import casia.isiteam.zdr.neo4j.result.NodeFriendCountList;
 import casia.isiteam.zdr.neo4j.result.NodeResult;
 import casia.isiteam.zdr.neo4j.util.NodeHandle;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
  * @PACKAGE_NAME: casia.isiteam.zdr.neo4j.friendAnalysis
- * @Description: TODO(好友关系分析过程)
+ * @Description: TODO(好友关系分析过程 / 函数)
  * @date 2019/3/30 17:05
  */
-public class FriendAnalysisProcedures {
+public class FriendAnalysis {
     /**
      * 运行环境/上下文
      */
@@ -202,4 +197,66 @@ public class FriendAnalysisProcedures {
         });
         return countMap;
     }
+
+    /**
+     * @param relationships:当前路径中的关系集合
+     * @param conditionRelas:当前路径中的必须包含的关系（任意一条路径中关系列表中某一个关系不包含在此列表中则返回FALSE）
+     * @param node:目标节点
+     * @param conditionLabels:目标节点必须满足的标签（任意满足一个即可）
+     * @return 当前路径是否满足
+     * @Description: TODO(通过关系和节点标签过滤路径 - 寻找满足条件的点)
+     */
+    @UserFunction(name = "zdr.apoc.targetNodesRelasFilter")
+    @Description("Filter target nodes by labels and relationships")
+    public boolean targetNodesRelasFilter(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas,
+                                          @Name("node") Node node, @Name("conditionLabels") List<String> conditionLabels) {
+        // 关系是否满足体条件
+        boolean relaBool = isPathRelas(relationships, conditionRelas);
+
+        // 节点是否满足条件
+        boolean nodeBoll = isPathNode(node, conditionLabels);
+
+        if (relaBool && nodeBoll) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param node:与源节点相连接的目标节点
+     * @param conditionLabels:目标节点必须满足的标签（任意满足一个即可）
+     * @return
+     * @Description: TODO(过滤节点)
+     */
+    protected boolean isPathNode(Node node, List<String> conditionLabels) {
+        Iterable<Label> labels = node.getLabels();
+        for (Iterator<Label> iterator = labels.iterator(); iterator.hasNext(); ) {
+            Label label = iterator.next();
+            if (conditionLabels.contains(label.name())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param relationships:当前路径中的关系集合
+     * @param conditionRelas:当前路径中的必须包含的关系
+     * @return
+     * @Description: TODO(任意一条路径中关系列表中某一个关系不包含在此列表中则返回FALSE - relationships中每个关系必须包含在conditionRelas)
+     */
+    protected boolean isPathRelas(List<Relationship> relationships, List<String> conditionRelas) {
+        for (int i = 0; i < relationships.size(); i++) {
+            Relationship relationship = relationships.get(i);
+            // 创建时默认NAME属性为关系TYPE展示名称
+            String relaName = relationship.getType().name();
+            if (!conditionRelas.contains(relaName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
+

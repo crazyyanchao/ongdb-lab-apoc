@@ -66,18 +66,13 @@
             <artifactId>org.apache.log4j</artifactId>
             <version>1.2.15.v201012070815</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.neo4j.procedure/apoc -->
         <dependency>
             <groupId>org.neo4j.procedure</groupId>
             <artifactId>apoc</artifactId>
             <version>3.4.0.1</version>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>casia.isiteam</groupId>-->
-            <!--<artifactId>ikanalyzer</artifactId>-->
-            <!--<version>5.0</version>-->
-        <!--</dependency>-->
 
     </dependencies>
 
@@ -107,18 +102,18 @@
                             <goal>shade</goal>
                         </goals>
 
-                        <!--<configuration>-->
-                            <!--<filters>-->
-                                <!--<filter>-->
-                                    <!--<artifact>*:*</artifact>-->
-                                    <!--<excludes>-->
-                                        <!--<exclude>META-INF/*.SF</exclude>-->
-                                        <!--<exclude>META-INF/*.DSA</exclude>-->
-                                        <!--<exclude>META-INF/*.RSA</exclude>-->
-                                    <!--</excludes>-->
-                                <!--</filter>-->
-                            <!--</filters>-->
-                        <!--</configuration>-->
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
 
                     </execution>
                 </executions>
