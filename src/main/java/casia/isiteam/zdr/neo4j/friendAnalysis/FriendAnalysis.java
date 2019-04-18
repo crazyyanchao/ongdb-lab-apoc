@@ -224,11 +224,14 @@ public class FriendAnalysis {
 
     /**
      * @param node:与源节点相连接的目标节点
-     * @param conditionLabels:目标节点必须满足的标签（任意满足一个即可）
+     * @param conditionLabels:目标节点必须满足的标签（任意满足一个即可） - CONDITIONS设置为NULL默认不过滤
      * @return
      * @Description: TODO(过滤节点)
      */
     protected boolean isPathNode(Node node, List<String> conditionLabels) {
+        if (conditionLabels == null) {
+            return true;
+        }
         Iterable<Label> labels = node.getLabels();
         for (Iterator<Label> iterator = labels.iterator(); iterator.hasNext(); ) {
             Label label = iterator.next();
@@ -241,11 +244,14 @@ public class FriendAnalysis {
 
     /**
      * @param relationships:当前路径中的关系集合
-     * @param conditionRelas:当前路径中的必须包含的关系
+     * @param conditionRelas:当前路径中的必须包含的关系 - CONDITIONS设置为NULL默认不过滤
      * @return
      * @Description: TODO(任意一条路径中关系列表中某一个关系不包含在此列表中则返回FALSE - relationships中每个关系必须包含在conditionRelas)
      */
     protected boolean isPathRelas(List<Relationship> relationships, List<String> conditionRelas) {
+        if (conditionRelas == null) {
+            return true;
+        }
         for (int i = 0; i < relationships.size(); i++) {
             Relationship relationship = relationships.get(i);
             // 创建时默认NAME属性为关系TYPE展示名称

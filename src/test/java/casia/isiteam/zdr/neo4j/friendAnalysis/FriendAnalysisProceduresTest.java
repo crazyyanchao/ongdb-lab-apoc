@@ -2,6 +2,7 @@ package casia.isiteam.zdr.neo4j.friendAnalysis;
 
 import casia.isiteam.zdr.neo4j.index.FulltextIndex;
 import casia.isiteam.zdr.neo4j.util.TestUtil;
+import jline.internal.TestAccessible;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -180,8 +181,8 @@ public class FriendAnalysisProceduresTest {
 //            db.execute("MATCH (n),(m) WHERE n.name='A' AND m.name='B' MERGE p=(n)-[r:NEXT]->(m) RETURN p");
 //            db.execute("MATCH (m),(f) WHERE m.name='B' AND f.name='c' MERGE p=(m)-[r:NEXT]->(f) RETURN p");
 
-            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
-
+//            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
+            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter([],null,[],null)=true RETURN m");
             boolean bool = (boolean) res.next().get("bool");
             System.out.println(bool);
             while (res.hasNext()) {
@@ -209,6 +210,12 @@ public class FriendAnalysisProceduresTest {
     }
 
     @Test
+    public void testMethod() {
+        FriendAnalysis friendAnalysis = new FriendAnalysis();
+        friendAnalysis.isPathNode(null, null);
+    }
+
+    @Test
     public void targetNodesRelasFilter2() {
 
         // given
@@ -217,6 +224,9 @@ public class FriendAnalysisProceduresTest {
 //
 //        // 操作属性忽略标签
 //        execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN p");
+
+        //        execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),null,m,null)=true RETURN p");
+
         try (Transaction tx = db.beginTx()) {
             FriendAnalysis analysis = new FriendAnalysis();
             Node node = db.createNode(Label.label("Loc"));

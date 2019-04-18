@@ -47,9 +47,9 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import apoc.ApocKernelExtensionFactory;
-import apoc.Pools;
-import static apoc.util.AsyncStream.async;
+//import apoc.ApocKernelExtensionFactory;
+//import apoc.Pools;
+//import static apoc.util.AsyncStream.async;
 
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
@@ -129,29 +129,29 @@ public class FulltextIndex {
         return output.stream();
     }
 
-    /**
-     * @param indexName:索引名称
-     * @param labelName:标签名称
-     * @param propKeys:属性名称列表
-     * @param options:配置参数
-     * @return
-     * @Description: TODO(创建中文全文索引 - 支持自动更新 ( 不区分标签))
-     */
-    @Procedure(value = "zdr.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
-    @Description("CALL zdr.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
-            "为一个标签下的所有节点的指定属性添加索引")
-    public Stream<IndexStats> addChineseFulltextAutoIndex(@Name("indexName") String indexName,
-                                                          @Name("properties") List<String> propKeys,
-                                                          @Name(value = "labelName", defaultValue = "") String labelName,
-                                                          @Name(value = "options", defaultValue = "") Map<String, String> options) {
-
-        if (propKeys.isEmpty()) {
-            throw new IllegalArgumentException("No structure given.");
-        }
-        return async(executor(), "Creating chinese index '" + indexName + "'", result -> {
-            populate(index(indexName, propKeys, options), propKeys, result);
-        });
-    }
+//    /**
+//     * @param indexName:索引名称
+//     * @param labelName:标签名称
+//     * @param propKeys:属性名称列表
+//     * @param options:配置参数
+//     * @return
+//     * @Description: TODO(创建中文全文索引 - 支持自动更新 ( 不区分标签))
+//     */
+//    @Procedure(value = "zdr.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
+//    @Description("CALL zdr.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
+//            "为一个标签下的所有节点的指定属性添加索引")
+//    public Stream<IndexStats> addChineseFulltextAutoIndex(@Name("indexName") String indexName,
+//                                                          @Name("properties") List<String> propKeys,
+//                                                          @Name(value = "labelName", defaultValue = "") String labelName,
+//                                                          @Name(value = "options", defaultValue = "") Map<String, String> options) {
+//
+//        if (propKeys.isEmpty()) {
+//            throw new IllegalArgumentException("No structure given.");
+//        }
+//        return async(executor(), "Creating chinese index '" + indexName + "'", result -> {
+//            populate(index(indexName, propKeys, options), propKeys, result);
+//        });
+//    }
 
     /**
      * @param text:待分词文本
@@ -322,63 +322,63 @@ public class FulltextIndex {
         long count;
     }
 
-    /**
-     * @param
-     * @return
-     * @Description: TODO(对需要索引的节点先进行预配置)
-     */
-    private Index<Node> index(String index, List<String> structure, final Map<String, String> options) {
-        Map<String, String> config = new HashMap<>(FulltextIndex.FULL_INDEX_CONFIG);
-        try (Transaction tx = db.beginTx()) {
-            if (db.index().existsForNodes(index)) {
-                Index<Node> old = db.index().forNodes(index);
-                Map<String, String> oldConfig = new HashMap<>(db.index().getConfiguration(old));
-                log.info("Dropping existing index '%s', with config: %s", index, oldConfig);
-                old.delete();
-            }
-            tx.success();
-        }
-        try (Transaction tx = db.beginTx()) {
-//            updateConfigFromParameters(config, structure);
+//    /**
+//     * @param
+//     * @return
+//     * @Description: TODO(对需要索引的节点先进行预配置)
+//     */
+//    private Index<Node> index(String index, List<String> structure, final Map<String, String> options) {
+//        Map<String, String> config = new HashMap<>(FulltextIndex.FULL_INDEX_CONFIG);
+//        try (Transaction tx = db.beginTx()) {
+//            if (db.index().existsForNodes(index)) {
+//                Index<Node> old = db.index().forNodes(index);
+//                Map<String, String> oldConfig = new HashMap<>(db.index().getConfiguration(old));
+//                log.info("Dropping existing index '%s', with config: %s", index, oldConfig);
+//                old.delete();
+//            }
+//            tx.success();
+//        }
+//        try (Transaction tx = db.beginTx()) {
+////            updateConfigFromParameters(config, structure);
+//
+//            /* add options to the parameters */
+//            options.forEach((k, v) -> {
+//                        config.put(k, String.valueOf(v)); // explicit conversion to String
+//                    }
+//            );
+//            log.info("Creating or updating index '%s' with config '%s'", index, config);
+//            Index<Node> nodeIndex = db.index().forNodes(index, config);
+//
+//            resetIndexUpdateConfiguration();
+//            tx.success();
+//            return nodeIndex;
+//        }
+//    }
 
-            /* add options to the parameters */
-            options.forEach((k, v) -> {
-                        config.put(k, String.valueOf(v)); // explicit conversion to String
-                    }
-            );
-            log.info("Creating or updating index '%s' with config '%s'", index, config);
-            Index<Node> nodeIndex = db.index().forNodes(index, config);
-
-            resetIndexUpdateConfiguration();
-            tx.success();
-            return nodeIndex;
-        }
-    }
-
-    /**
-     * @param
-     * @return
-     * @Description: TODO(重置更新索引配置)
-     */
-    private void resetIndexUpdateConfiguration() {
-        try {
-            ApocKernelExtensionFactory.ApocLifecycle apocLifecycle = db.getDependencyResolver().resolveDependency(ApocKernelExtensionFactory.ApocLifecycle.class);
-            if (apocLifecycle != null) {
-                apocLifecycle.getIndexUpdateLifeCycle().resetConfiguration();
-            }
-        } catch (Exception e) {
-            log.error("failed to reset index update configuration", e);
-        }
-    }
-
-    /**
-     * @param
-     * @return
-     * @Description: TODO(初始化线程池)
-     */
-    private Executor executor() {
-        return Pools.DEFAULT;
-    }
+//    /**
+//     * @param
+//     * @return
+//     * @Description: TODO(重置更新索引配置)
+//     */
+//    private void resetIndexUpdateConfiguration() {
+//        try {
+//            ApocKernelExtensionFactory.ApocLifecycle apocLifecycle = db.getDependencyResolver().resolveDependency(ApocKernelExtensionFactory.ApocLifecycle.class);
+//            if (apocLifecycle != null) {
+//                apocLifecycle.getIndexUpdateLifeCycle().resetConfiguration();
+//            }
+//        } catch (Exception e) {
+//            log.error("failed to reset index update configuration", e);
+//        }
+//    }
+//
+//    /**
+//     * @param
+//     * @return
+//     * @Description: TODO(初始化线程池)
+//     */
+//    private Executor executor() {
+//        return Pools.DEFAULT;
+//    }
 
 }
 
