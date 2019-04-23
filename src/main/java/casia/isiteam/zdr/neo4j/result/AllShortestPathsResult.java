@@ -1,4 +1,5 @@
-package casia.isiteam.zdr.neo4j.result;/**
+package casia.isiteam.zdr.neo4j.result;
+/**
  * 　　　　　　　 ┏┓       ┏┓+ +
  * 　　　　　　　┏┛┻━━━━━━━┛┻┓ + +
  * 　　　　　　　┃　　　　　　 ┃

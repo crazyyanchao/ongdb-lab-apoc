@@ -95,8 +95,8 @@ public class FulltextIndexTest {
             node2.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！");
 
             // 给节点建立中文全文索引
-//            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message");
-            Result res = db.execute("CALL zdr.index.addChineseFulltextAutoIndex('IKAnalyzer', 'Loc', ['description'],{autoUpdate:'true'}) YIELD label,property,nodeCount RETURN label,property,nodeCount");
+            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', ['description'],'Loc') YIELD message RETURN message");
+//            Result res = db.execute("CALL zdr.index.addChineseFulltextAutoIndex('IKAnalyzer', 'Loc', ['description'],{autoUpdate:'true'}) YIELD label,property,nodeCount RETURN label,property,nodeCount");
 //            Result res = db.execute("CALL zdr.index.addAllNodes('IKAnalyzer',{Loc:['description','year']},{autoUpdate:'true'})");
 
             Map<String, Object> map = res.next();
@@ -143,22 +143,6 @@ public class FulltextIndexTest {
     }
 
     @Test
-    public void iKAnalyzer() {
-        GraphDatabaseService db = neo4jFunc.getGraphDatabaseService();
-
-        Map<String, Object> map = new HashMap<>();
-        String text = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？";
-        map.put("text", text);
-        map.put("useSmart", true);
-
-        try (Transaction tx = db.beginTx()) {
-            Result res = db.execute("RETURN zdr.index.iKAnalyzer({text},{useSmart}) AS words", map);
-            List<String> words = (List<String>) res.next().get("words");
-            System.out.println(JSONArray.parseArray(JSON.toJSONString(words)));
-        }
-    }
-
-    @Test
     public void autoIndex() {
         PropertyConfigurator.configureAndWatch("dic/log4j.properties");
         // given
@@ -167,29 +151,29 @@ public class FulltextIndexTest {
         execute("UNWIND range(1,90000) as x CREATE (n:Person{name:'person'+x}) SET n.description='description'+x");
 
         // 操作属性忽略标签
-        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'',{autoUpdate:'true'})");
+//        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'',{autoUpdate:'true'})");
 
         // then
-        ResourceIterator<Node> iterator = search("people", "name:person89999");
-        try (Transaction tx = db.beginTx()) {
-            while (iterator.hasNext()) {
-                Node node = iterator.next();
-
-                Iterable<Label> labelIterable = node.getLabels();
-                StringBuilder builder = new StringBuilder();
-                labelIterable.forEach(v -> {
-                    builder.append(v + ":");
-                });
-                System.out.print(builder.toString());
-
-                Map<String, Object> mapObj = node.getAllProperties();
-                for (Map.Entry entry : mapObj.entrySet()) {
-                    System.out.print(entry.getKey() + ":" + entry.getValue() + " ");
-                }
-                System.out.println();
-            }
-            tx.success();
-        }
+//        ResourceIterator<Node> iterator = search("people", "name:person89999");
+//        try (Transaction tx = db.beginTx()) {
+//            while (iterator.hasNext()) {
+//                Node node = iterator.next();
+//
+//                Iterable<Label> labelIterable = node.getLabels();
+//                StringBuilder builder = new StringBuilder();
+//                labelIterable.forEach(v -> {
+//                    builder.append(v + ":");
+//                });
+//                System.out.print(builder.toString());
+//
+//                Map<String, Object> mapObj = node.getAllProperties();
+//                for (Map.Entry entry : mapObj.entrySet()) {
+//                    System.out.print(entry.getKey() + ":" + entry.getValue() + " ");
+//                }
+//                System.out.println();
+//            }
+//            tx.success();
+//        }
     }
 
     private void execute(String query) {

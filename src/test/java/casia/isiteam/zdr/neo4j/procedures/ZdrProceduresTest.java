@@ -1,5 +1,7 @@
 package casia.isiteam.zdr.neo4j.procedures;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -95,8 +97,7 @@ public class ZdrProceduresTest {
             String eventIds = "123213,234324,4354353,1231231,2132131";
             Map<String, Object> params = new HashMap<>();
             params.put("eventIds", eventIds);
-            Result result = db.execute("RETURN zdr.apoc.getEventIdsSizeTest({eventIds}) as value", params);
-//            Result result = db.execute("RETURN zdr.apoc.getEventIdsSize({eventIds}) as value", params);
+            Result result = db.execute("RETURN zdr.apoc.getEventIdsSize({eventIds}) as value", params);
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
 

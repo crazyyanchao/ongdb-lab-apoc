@@ -255,14 +255,15 @@ public class FriendAnalysis {
         for (int i = 0; i < relationships.size(); i++) {
             Relationship relationship = relationships.get(i);
             // 创建时默认NAME属性为关系TYPE展示名称
-            String relaName = relationship.getType().name();
-            if (!conditionRelas.contains(relaName)) {
-                return false;
+            if (relationship != null) {
+                String relaName = relationship.getType().name();
+                if (!conditionRelas.contains(relaName)) {
+                    return false;
+                }
             }
         }
         return true;
     }
-
 
 }
 

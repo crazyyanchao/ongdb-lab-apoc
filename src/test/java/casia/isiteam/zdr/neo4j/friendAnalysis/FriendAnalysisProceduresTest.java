@@ -181,10 +181,7 @@ public class FriendAnalysisProceduresTest {
 //            db.execute("MATCH (n),(m) WHERE n.name='A' AND m.name='B' MERGE p=(n)-[r:NEXT]->(m) RETURN p");
 //            db.execute("MATCH (m),(f) WHERE m.name='B' AND f.name='c' MERGE p=(m)-[r:NEXT]->(f) RETURN p");
 
-//            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
-            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter([],null,[],null)=true RETURN m");
-            boolean bool = (boolean) res.next().get("bool");
-            System.out.println(bool);
+            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
             while (res.hasNext()) {
                 Node nodeRe = (Node) res.next().get("m");
                 System.out.println("Node id:" + nodeRe.getId());

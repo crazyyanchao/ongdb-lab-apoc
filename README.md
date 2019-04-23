@@ -1,4 +1,4 @@
-# Neo4j自定义函数与过程实现高效的数据访问
+# Neo4j自定义函数与过程插件
 
 > 此插件对应版本：NEO4J-3.4.X
 
@@ -60,9 +60,9 @@ RETURN zdr.index.iKAnalyzer('复联终章快上映了好激动，据说知识图
 
 8、创建中文全文索引（不同标签使用相同的索引名即可支持跨标签类型检索）
 ```sql
-CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description']) YIELD message RETURN message
-CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'Loc', ['description','year']) YIELD message RETURN message
-CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', 'LocProvince', ['description','year']) YIELD message RETURN message
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', ['description'], 'Loc') YIELD message RETURN message
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer',['description','year'], 'Loc') YIELD message RETURN message
+CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', ['description','year'],'LocProvince') YIELD message RETURN message
 
 ```
 
@@ -89,4 +89,7 @@ smart模式的下分词结果为：
 而非smart模式下的分词结果为：
      张三 | 三 | 说的 | 的确 | 的 | 确实 | 实在 | 在理
 ```
+## 备注
+
+为了避免不必要的BUG，函数和过程最好使用不同的类编写。
 

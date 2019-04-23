@@ -24,10 +24,6 @@ package casia.isiteam.zdr.neo4j.index;
  */
 import casia.isiteam.zdr.neo4j.message.NodeIndexMessage;
 import casia.isiteam.zdr.neo4j.result.ChineseHit;
-import casia.isiteam.zdr.wltea.analyzer.cfg.Configuration;
-import casia.isiteam.zdr.wltea.analyzer.core.IKSegmenter;
-import casia.isiteam.zdr.wltea.analyzer.core.Lexeme;
-import org.apache.log4j.PropertyConfigurator;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
@@ -39,11 +35,7 @@ import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -152,33 +144,6 @@ public class FulltextIndex {
 //            populate(index(indexName, propKeys, options), propKeys, result);
 //        });
 //    }
-
-    /**
-     * @param text:待分词文本
-     * @param useSmart:true 用智能分词，false 细粒度分词
-     * @return
-     * @Description: TODO(支持中英文本分词)
-     */
-    @UserFunction(name = "zdr.index.iKAnalyzer")
-    @Description("Fulltext index iKAnalyzer - RETURN zdr.index.iKAnalyzer({text},true) AS words")
-    public List<String> iKAnalyzer(@Name("text") String text, @Name("useSmart") boolean useSmart) {
-
-        PropertyConfigurator.configureAndWatch("dic" + File.separator + "log4j.properties");
-        Configuration cfg = new Configuration(useSmart);
-
-        StringReader input = new StringReader(text.trim());
-        IKSegmenter ikSegmenter = new IKSegmenter(input, cfg);
-
-        List<String> results = new ArrayList<>();
-        try {
-            for (Lexeme lexeme = ikSegmenter.next(); lexeme != null; lexeme = ikSegmenter.next()) {
-                results.add(lexeme.getLexemeText());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return results;
-    }
 
     /**
      * @param
