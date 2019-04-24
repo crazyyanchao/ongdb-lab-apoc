@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
 import java.nio.file.FileVisitResult;
@@ -92,6 +93,7 @@ public class Dictionary {
     private Properties props;
 
     private Dictionary(Configuration cfg) {
+        PropertyConfigurator.configureAndWatch("dic" + File.separator + "log4j.properties");
         this.configuration = cfg;
         this.props = new Properties();
 

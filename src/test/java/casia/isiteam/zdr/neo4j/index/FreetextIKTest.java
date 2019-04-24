@@ -38,12 +38,10 @@ import static org.junit.Assert.*;
  */
 
 /**
+ * @author YanchaoMa yanchaoma@foxmail.com
  * @PACKAGE_NAME: casia.isiteam.zdr.neo4j.index
  * @Description: TODO(Describe the role of this JAVA class)
- * @author YanchaoMa yanchaoma@foxmail.com
  * @date 2019/4/23 9:51
- *
- *
  */
 public class FreetextIKTest {
 
@@ -63,6 +61,17 @@ public class FreetextIKTest {
         Result res = db.execute("RETURN zdr.index.iKAnalyzer({text},{useSmart}) AS words", map);
         List<String> words = (List<String>) res.next().get("words");
         System.out.println(JSONArray.parseArray(JSON.toJSONString(words)));
-
     }
+
+    @Test
+    public void test() {
+        int index = 0;
+        System.out.println(index++);
+        System.out.println(index);
+
+        int begin=100;
+        System.out.println(++begin);
+        System.out.println(begin);
+    }
+
 }

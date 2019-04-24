@@ -128,6 +128,41 @@ public class FulltextIndexTest {
     }
 
     @Test
+    public void addNodeChineseFulltextIndex() {
+
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+
+        try (Transaction tx = db.beginTx()) {
+            // 创建节点
+            Node node = db.createNode(Label.label("Loc"));
+            node.setProperty("name", "A");
+            node.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
+
+            // 给节点建立中文全文索引
+            db.execute("CALL zdr.index.addChineseFulltextIndex('Loc', ['description'],'Loc') YIELD message RETURN message");
+            db.execute("MATCH (n) WHERE n.name='A' WITH n CALL zdr.index.addNodeChineseFulltextIndex(n, ['description']) RETURN *");
+
+            tx.success();
+        }
+        try (Transaction tx = db.beginTx()) {
+            // 查询节点
+            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*', 100) YIELD node,weight RETURN node,weight");
+
+            while (res2.hasNext()) {
+                Map<String, Object> mapO = res2.next();
+                Node nodeSearch = (Node) mapO.get("node");
+                double hitScore = (double) mapO.get("weight");
+                System.out.println("ID:" + nodeSearch.getId() + " Score:" + hitScore);
+                Map<String, Object> mapObj = nodeSearch.getAllProperties();
+                for (Map.Entry entry : mapObj.entrySet()) {
+                    System.out.println(entry.getKey() + ":" + entry.getValue());
+                }
+            }
+            tx.success();
+        }
+    }
+
+    @Test
     public void chineseFulltextIndexSearch() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
@@ -147,16 +182,42 @@ public class FulltextIndexTest {
         PropertyConfigurator.configureAndWatch("dic/log4j.properties");
         // given
         // create 90k nodes - this force 2 batches during indexing
-        execute("UNWIND range(1,90000) as x CREATE (n:Movie{name:'person'+x}) SET n.description='description'+x");
-        execute("UNWIND range(1,90000) as x CREATE (n:Person{name:'person'+x}) SET n.description='description'+x");
+        execute("UNWIND range(80000,90000) as x CREATE (n:Movie{name:'person'+x}) SET n.description='description'+x");
+        execute("UNWIND range(80000,90000) as x CREATE (n:Person{name:'person'+x}) SET n.description='description'+x");
 
         // 操作属性忽略标签
-//        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'',{autoUpdate:'true'})");
+//        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'Movie',{autoUpdate:'true'})");
 
         // then
-//        ResourceIterator<Node> iterator = search("people", "name:person89999");
+        ResourceIterator<Node> iterator = search("people", "name:person89999");
+        try (Transaction tx = db.beginTx()) {
+            while (iterator.hasNext()) {
+                Node node = iterator.next();
+
+                Iterable<Label> labelIterable = node.getLabels();
+                StringBuilder builder = new StringBuilder();
+                labelIterable.forEach(v -> {
+                    builder.append(v + ":");
+                });
+                System.out.print(builder.toString());
+
+                Map<String, Object> mapObj = node.getAllProperties();
+                for (Map.Entry entry : mapObj.entrySet()) {
+                    System.out.print(entry.getKey() + ":" + entry.getValue() + " ");
+                }
+                System.out.println();
+            }
+            tx.success();
+        }
+
+//        // SECOND TEST
+//        execute("UNWIND range(10000,20000) as x CREATE (n:Movie{name:'person'+x}) SET n.description='description'+x");
+//        // then
+////        ResourceIterator<Node> iterator2 = search("people", "name:person19999");
+//        ResourceIterator<Node> iterator2 = nodeSearch("people", "name:person19999");
+//
 //        try (Transaction tx = db.beginTx()) {
-//            while (iterator.hasNext()) {
+//            while (iterator2.hasNext()) {
 //                Node node = iterator.next();
 //
 //                Iterable<Label> labelIterable = node.getLabels();
@@ -200,6 +261,11 @@ public class FulltextIndexTest {
     private ResourceIterator<Node> search(String index, String value) {
 //        zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight
         return db.execute("CALL zdr.index.chineseFulltextIndexSearch({index}, {value},{limit}) YIELD node,weight SET node.weight=weight RETURN node ORDER BY node.weight DESC",
+                map("index", index, "value", value, "limit", 100)).columnAs("node");
+    }
+
+    private ResourceIterator<Node> nodeSearch(String index, String value) {
+        return db.execute("MATCH (node) WHERE node.name CONTAINS '" + value.split(":")[1] + "' WITH node,id(node) AS weight SET node.weight=weight RETURN node ORDER BY node.weight DESC",
                 map("index", index, "value", value, "limit", 100)).columnAs("node");
     }
 

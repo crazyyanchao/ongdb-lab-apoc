@@ -22,6 +22,7 @@ package casia.isiteam.zdr.neo4j.index;
  * 　　　　　　　　　 ┃┫┫　 ┃┫┫
  * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
  */
+
 import casia.isiteam.zdr.neo4j.message.NodeIndexMessage;
 import casia.isiteam.zdr.neo4j.result.ChineseHit;
 import org.neo4j.graphdb.*;
@@ -103,7 +104,7 @@ public class FulltextIndex {
      * @param labelName:标签名称
      * @param propKeys:属性名称列表
      * @return
-     * @Description: TODO(创建中文全文索引 - 不支持自动更新 ( 不区分标签))
+     * @Description: TODO(创建中文全文索引 - 不支持自动更新 ( 不区分标签 - 多个标签使用相同的索引名称即可同时检索))
      */
     @Procedure(value = "zdr.index.addChineseFulltextIndex", mode = Mode.WRITE)
     @Description("CALL zdr.index.addChineseFulltextIndex(String indexName, String labelName, List<String> propKeys) YIELD message RETURN message," +
@@ -120,6 +121,76 @@ public class FulltextIndex {
         output.add(indexMessage);
         return output.stream();
     }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(节点单独更新到索引)
+     */
+    @Procedure(value = "zdr.index.addNodeChineseFulltextIndex", mode = Mode.WRITE)
+    @Description("apoc.index.addNodeChineseFulltextIndex(node,['prop1',...]) add node to an index for each label it has - CALL apoc.index.addNodeChineseFulltextIndex(joe, ['name','age','city'])")
+    public void addNodeChineseFulltextIndex(@Name("node") Node node, @Name("properties") List<String> propKeys) {
+        for (Label label : node.getLabels()) {
+            addNodeByLabel(label.name(), node, propKeys);
+        }
+    }
+
+    private void addNodeByLabel(String label, Node node, List<String> propKeys) {
+        indexEntityProperties(node, propKeys, getNodeIndex(label, FULL_INDEX_CONFIG));
+    }
+
+    private <T extends PropertyContainer> void indexEntityProperties(T pc, List<String> propKeys, org.neo4j.graphdb.index.Index<T> index) {
+        Map<String, Object> properties = pc.getProperties(propKeys.toArray(new String[propKeys.size()]));
+        indexEntityWithMap(pc, properties, index);
+    }
+
+    private <T extends PropertyContainer> void indexEntityWithMap(T pc, Map<String, Object> document, Index<T> index) {
+        index.remove(pc);
+        document.forEach((key, value) -> {
+            index.remove(pc, key);
+            index.add(pc, key, value);
+            System.out.println("Node:" + pc + "," + key + ":" + value);
+        });
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(索引预配置)
+     */
+    private Index<Node> getNodeIndex(String name, Map<String, String> config) {
+        IndexManager mgr = db.index();
+        return config == null ? mgr.forNodes(name) : mgr.forNodes(name, config);
+    }
+//    /**
+//     * @param indexName:索引名称
+//     * @param labelName:标签名称
+//     * @param propKeys:属性名称列表
+//     * @param options:配置参数
+//     * @return
+//     * @Description: TODO(创建中文全文索引 - 支持自动更新 ( 不区分标签))
+//     */
+//    @Procedure(value = "zdr.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
+//    @Description("CALL zdr.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
+//            "为一个标签下的所有节点的指定属性添加索引")
+//    public Stream<NodeIndexMessage> addChineseFulltextAutoIndex(@Name("indexName") String indexName,
+//                                                                @Name("properties") List<String> propKeys,
+//                                                                @Name(value = "labelName") String labelName,
+//                                                                @Name(value = "options", defaultValue = "") Map<String, String> options) {
+//
+//        List<NodeIndexMessage> output = new ArrayList<>();
+//
+//        if (propKeys.isEmpty()) {
+//            throw new IllegalArgumentException("No structure given.");
+//        }
+//
+//        // 构建索引并返回MESSAGE - 支持自动更新 autoUpdate
+//        String message = chineseFulltextAutoIndex(indexName, labelName, propKeys, options);
+//
+//        NodeIndexMessage indexMessage = new NodeIndexMessage(message);
+//        output.add(indexMessage);
+//        return output.stream();
+//    }
 
 //    /**
 //     * @param indexName:索引名称
@@ -148,15 +219,17 @@ public class FulltextIndex {
     /**
      * @param
      * @return
-     * @Description: TODO(构建索引并返回MESSAGE - 不支持自动更新)
+     * @Description: TODO(构建索引并返回MESSAGE - 支持自动更新)
      */
-    private String chineseFulltextIndex(String indexName, String labelName, List<String> propKeys) {
+    private String chineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys, Map<String, String> options) {
 
         Label label = Label.label(labelName);
 
         // 按照标签找到该标签下的所有节点
         ResourceIterator<Node> nodes = db.findNodes(label);
-        System.out.println("nodes:" + nodes.toString());
+
+        // 合并用户配置
+        FULL_INDEX_CONFIG.putAll(options);
 
         int nodesSize = 0;
         int propertiesSize = 0;
@@ -186,6 +259,81 @@ public class FulltextIndex {
 
         String message = "IndexName:" + indexName + ",LabelName:" + labelName + ",NodesSize:" + nodesSize + ",PropertiesSize:" + propertiesSize;
         return message;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(构建索引并返回MESSAGE - 不支持自动更新)
+     */
+    private String chineseFulltextIndex(String indexName, String labelName, List<String> propKeys) {
+
+        Label label = Label.label(labelName);
+
+        int nodesSize = 0;
+        int propertiesSize = 0;
+
+        // 按照标签找到该标签下的所有节点
+        ResourceIterator<Node> nodes = db.findNodes(label);
+        Transaction tx = db.beginTx();
+        try {
+            int batch = 0;
+            long startTime = System.nanoTime();
+            while (nodes.hasNext()) {
+                nodesSize++;
+                Node node = nodes.next();
+
+                boolean indexed = false;
+                // 每个节点上需要添加索引的属性
+                Set<Map.Entry<String, Object>> properties = node.getProperties(propKeys.toArray(new String[0])).entrySet();
+
+                // 查询该节点是否已有索引，有的话删除
+                if (db.index().existsForNodes(indexName)) {
+                    Index<Node> oldIndex = db.index().forNodes(indexName);
+                    oldIndex.remove(node);
+                }
+
+                // 为该节点的每个需要添加索引的属性添加全文索引
+                Index<Node> nodeIndex = db.index().forNodes(indexName, FULL_INDEX_CONFIG);
+                for (Map.Entry<String, Object> property : properties) {
+                    indexed = true;
+                    propertiesSize++;
+                    nodeIndex.add(node, property.getKey(), property.getValue());
+                }
+                // 批量提交事务
+                if (indexed) {
+                    if (++batch == 50_000) {
+                        batch = 0;
+                        tx.success();
+                        tx.close();
+                        tx = db.beginTx();
+
+                        // 计算耗时
+                        startTime = indexConsumeTime(startTime, nodesSize, propertiesSize);
+                    }
+                }
+            }
+            tx.success();
+            // 计算耗时
+            indexConsumeTime(startTime, nodesSize, propertiesSize);
+        } finally {
+            tx.close();
+        }
+
+        String message = "IndexName:" + indexName + ",LabelName:" + labelName + ",NodesSize:" + nodesSize + ",PropertiesSize:" + propertiesSize;
+        return message;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(计算索引耗时)
+     */
+    private long indexConsumeTime(long startTime, int nodesSize, int propertiesSize) {
+        long endTime = System.nanoTime();
+        long consume = (endTime - startTime) / 1000000;
+        System.out.println("Build index-nodeSize:" + nodesSize + ",propertieSize:" + propertiesSize + ",consume:" + consume + "ms");
+        return System.nanoTime();
     }
 
     /**

@@ -72,7 +72,12 @@ CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基�
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', 100) YIELD node,weight RETURN node,weight
 ```
 
-7、更多过程与函数请参考源码和测试...
+10、为节点添加索引
+```sql
+MATCH (n) WHERE n.name='A' WITH n CALL zdr.index.addNodeChineseFulltextIndex(n, ['description']) RETURN *
+```
+
+11、更多过程与函数请参考源码和测试...
 
 ## IKAnalyzer分词
 
