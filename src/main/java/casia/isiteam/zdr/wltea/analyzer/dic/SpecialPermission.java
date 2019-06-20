@@ -3,9 +3,9 @@ package casia.isiteam.zdr.wltea.analyzer.dic;
 import java.security.BasicPermission;
 
 /**
- import java.security.BasicPermission;
-
- /**
+ * import java.security.BasicPermission;
+ * <p>
+ * /**
  * Elasticsearch-specific permission to check before entering
  * {@code AccessController.doPrivileged()} blocks.
  * <p>
@@ -57,7 +57,7 @@ public final class SpecialPermission extends BasicPermission {
      * Creates a new SpecialPermission object.
      * This constructor exists for use by the {@code Policy} object to instantiate new Permission objects.
      *
-     * @param name ignored
+     * @param name    ignored
      * @param actions ignored
      */
     public SpecialPermission(String name, String actions) {

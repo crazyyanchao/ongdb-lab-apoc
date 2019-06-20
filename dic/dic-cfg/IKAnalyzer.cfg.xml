@@ -5,7 +5,9 @@
 
     <!--用户可以在这里配置自己的扩展字典 词典的目录与cfg.xml配置文件同一级开始 -->
     <!--<entry key="ext_dict">user-dic/user_defined.dic;</entry>-->
-    <entry key="ext_dict">user-dic/user_defined.dic; extra_single_word_low_freq.dic;extra_single_word_full.dic;extra_single_word.dic;extra_main.dic;</entry>
+    <entry key="ext_dict">user-dic/user_defined.dic;
+        extra_single_word_low_freq.dic;extra_single_word_full.dic;extra_single_word.dic;extra_main.dic;
+    </entry>
 
     <!--用户可以在这里配置自己的扩展停止词字典-->
     <entry key="ext_stopwords">extra_stopword.dic;</entry>

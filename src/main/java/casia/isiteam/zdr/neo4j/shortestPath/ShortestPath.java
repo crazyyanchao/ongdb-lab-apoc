@@ -52,11 +52,11 @@ public class ShortestPath {
                 AllShortestPathsResult result = new AllShortestPathsResult(sourceList.get(i), targetList.get(i), distanceList.get(i), 0);
                 if (!results.contains(result)) {
                     results.add(result);
-                }else {
+                } else {
                     for (int j = 0; j < results.size(); j++) {
-                        AllShortestPathsResult allShortestPathsResult =  results.get(j);
-                        if (allShortestPathsResult.equals(result)){
-                            Number number = allShortestPathsResult.getTightnessSort().intValue()+1;
+                        AllShortestPathsResult allShortestPathsResult = results.get(j);
+                        if (allShortestPathsResult.equals(result)) {
+                            Number number = allShortestPathsResult.getTightnessSort().intValue() + 1;
                             allShortestPathsResult.setTightnessSort(number);
                         }
                     }

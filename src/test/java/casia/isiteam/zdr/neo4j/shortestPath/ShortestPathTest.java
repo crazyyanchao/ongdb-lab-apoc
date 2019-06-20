@@ -77,7 +77,7 @@ public class ShortestPathTest {
 
             Result res = db.execute("CALL zdr.shortestPath.allPathsTightness({sourceIds},{targetIds},{distanceSTE}) YIELD source,target,distance,tightnessSort RETURN source,target,distance,tightnessSort", map);
 
-            while (res.hasNext()){
+            while (res.hasNext()) {
                 Map map2 = res.next();
                 System.out.println(map2.get("source") + " " + map2.get("target") + " " + map2.get("distance") + " " + map2.get("tightnessSort"));
             }

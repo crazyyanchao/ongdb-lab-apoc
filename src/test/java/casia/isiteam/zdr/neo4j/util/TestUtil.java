@@ -27,17 +27,17 @@ import static org.junit.Assume.assumeFalse;
  */
 public class TestUtil {
     public static void testCall(GraphDatabaseService db, String call, Consumer<Map<String, Object>> consumer) {
-        testCall(db,call,null,consumer);
+        testCall(db, call, null, consumer);
     }
 
-    public static void testCall(GraphDatabaseService db, String call, Map<String,Object> params, Consumer<Map<String, Object>> consumer) {
+    public static void testCall(GraphDatabaseService db, String call, Map<String, Object> params, Consumer<Map<String, Object>> consumer) {
         testResult(db, call, params, (res) -> {
             try {
                 assertTrue(res.hasNext());
                 Map<String, Object> row = res.next();
                 consumer.accept(row);
                 assertFalse(res.hasNext());
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 printFullStackTrace(t);
                 throw t;
             }
@@ -55,31 +55,32 @@ public class TestUtil {
                     System.err.println(padding + element.toString());
                 }
             }
-            e=e.getCause();
+            e = e.getCause();
             padding += "    ";
         }
     }
 
-    public static void testCallEmpty(GraphDatabaseService db, String call, Map<String,Object> params) {
-        testResult(db, call, params, (res) -> assertFalse("Expected no results", res.hasNext()) );
+    public static void testCallEmpty(GraphDatabaseService db, String call, Map<String, Object> params) {
+        testResult(db, call, params, (res) -> assertFalse("Expected no results", res.hasNext()));
     }
 
-    public static void testCallCount(GraphDatabaseService db, String call, Map<String,Object> params, final int count ) {
-        testResult( db, call, params, ( res ) -> {
+    public static void testCallCount(GraphDatabaseService db, String call, Map<String, Object> params, final int count) {
+        testResult(db, call, params, (res) -> {
             int left = count;
-            while ( left > 0 ) {
-                assertTrue( "Expected " + count + " results, but got only " + (count - left), res.hasNext() );
+            while (left > 0) {
+                assertTrue("Expected " + count + " results, but got only " + (count - left), res.hasNext());
                 res.next();
                 left--;
             }
-            assertFalse( "Expected " + count + " results, but there are more ", res.hasNext() );
-        } );
+            assertFalse("Expected " + count + " results, but there are more ", res.hasNext());
+        });
     }
 
     public static void testResult(GraphDatabaseService db, String call, Consumer<Result> resultConsumer) {
-        testResult(db,call,null,resultConsumer);
+        testResult(db, call, null, resultConsumer);
     }
-    public static void testResult(GraphDatabaseService db, String call, Map<String,Object> params, Consumer<Result> resultConsumer) {
+
+    public static void testResult(GraphDatabaseService db, String call, Map<String, Object> params, Consumer<Result> resultConsumer) {
         try (Transaction tx = db.beginTx()) {
             Map<String, Object> p = (params == null) ? Collections.<String, Object>emptyMap() : params;
             resultConsumer.accept(db.execute(call, p));
@@ -87,19 +88,19 @@ public class TestUtil {
         }
     }
 
-    public static void registerProcedure(GraphDatabaseService db, Class<?>...procedures) throws KernelException {
+    public static void registerProcedure(GraphDatabaseService db, Class<?>... procedures) throws KernelException {
         Procedures proceduresService = ((GraphDatabaseAPI) db).getDependencyResolver().resolveDependency(Procedures.class);
         for (Class<?> procedure : procedures) {
-            proceduresService.registerProcedure(procedure,true);
+            proceduresService.registerProcedure(procedure, true);
             proceduresService.registerFunction(procedure, true);
             proceduresService.registerAggregationFunction(procedure, true);
         }
     }
 
-    public static boolean hasCauses(Throwable t, Class<? extends Throwable>...types) {
+    public static boolean hasCauses(Throwable t, Class<? extends Throwable>... types) {
         if (anyInstance(t, types)) return true;
         while (t != null && t.getCause() != t) {
-            if (anyInstance(t,types)) return true;
+            if (anyInstance(t, types)) return true;
             t = t.getCause();
         }
         return false;
@@ -113,12 +114,12 @@ public class TestUtil {
     }
 
 
-    public static void ignoreException(Runnable runnable, Class<? extends Throwable>...causes) {
+    public static void ignoreException(Runnable runnable, Class<? extends Throwable>... causes) {
         try {
             runnable.run();
-        } catch(Throwable x) {
-            if (TestUtil.hasCauses(x,causes)) {
-                System.err.println("Ignoring Exception "+x+": "+x.getMessage()+" due to causes "+ Arrays.toString(causes));
+        } catch (Throwable x) {
+            if (TestUtil.hasCauses(x, causes)) {
+                System.err.println("Ignoring Exception " + x + ": " + x.getMessage() + " due to causes " + Arrays.toString(causes));
             } else {
                 throw x;
             }
@@ -131,22 +132,21 @@ public class TestUtil {
         try {
             result = function.get();
         } finally {
-            assertThat("duration " + matcher, System.currentTimeMillis()-start, matcher);
+            assertThat("duration " + matcher, System.currentTimeMillis() - start, matcher);
             return result;
         }
     }
 
     public static void assumeTravis() {
-        assumeFalse("we're running on travis, so skipping","true".equals(System.getenv("TRAVIS")));
+        assumeFalse("we're running on travis, so skipping", "true".equals(System.getenv("TRAVIS")));
     }
 
     public static GraphDatabaseBuilder apocGraphDatabaseBuilder() {
-        return new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder().setConfig(GraphDatabaseSettings.procedure_unrestricted,"apoc.*");
+        return new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder().setConfig(GraphDatabaseSettings.procedure_unrestricted, "apoc.*");
     }
 
-    public static boolean serverListening(String host, int port)
-    {
-        try (Socket s = new Socket(host, port)){
+    public static boolean serverListening(String host, int port) {
+        try (Socket s = new Socket(host, port)) {
             return true;
         } catch (Exception e) {
             return false;

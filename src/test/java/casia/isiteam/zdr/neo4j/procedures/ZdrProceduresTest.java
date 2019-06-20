@@ -53,22 +53,22 @@ public class ZdrProceduresTest {
     public void shouldGreetWorld() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
-        try ( Transaction tx = db.beginTx() ) {
+        try (Transaction tx = db.beginTx()) {
             String name = "World";
 
-            Map<String, Object> params = new HashMap<>(  );
+            Map<String, Object> params = new HashMap<>();
             params.put("name", name);
 
-            Result result = db.execute( "RETURN zdr.apoc.hello({name}) as greeting", params);
+            Result result = db.execute("RETURN zdr.apoc.hello({name}) as greeting", params);
 
             String greeting = (String) result.next().get("greeting");
 
-            assertEquals( "Hello, "+ name, greeting );
+            assertEquals("Hello, " + name, greeting);
         }
     }
 
     @Test
-    public void test01(){
+    public void test01() {
         System.out.println(String.format("Hello, %s", "neo4j"));
     }
 

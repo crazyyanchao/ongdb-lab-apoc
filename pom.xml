@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>casia.isiteam.zdr</groupId>
-    <artifactId>zdr_neo4j_workshop</artifactId>
+    <artifactId>neo4j-graph-plugin</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -67,11 +67,11 @@
             <version>1.2.15.v201012070815</version>
         </dependency>
 
-         <!--&lt;!&ndash;https://mvnrepository.com/artifact/org.neo4j.procedure/apoc&ndash;&gt;-->
+        <!--&lt;!&ndash;https://mvnrepository.com/artifact/org.neo4j.procedure/apoc&ndash;&gt;-->
         <!--<dependency>-->
-            <!--<groupId>org.neo4j.procedure</groupId>-->
-            <!--<artifactId>apoc</artifactId>-->
-            <!--<version>3.4.0.1</version>-->
+        <!--<groupId>org.neo4j.procedure</groupId>-->
+        <!--<artifactId>apoc</artifactId>-->
+        <!--<version>3.4.0.1</version>-->
         <!--</dependency>-->
 
     </dependencies>

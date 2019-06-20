@@ -223,6 +223,98 @@ public class FriendAnalysis {
     }
 
     /**
+     * @param relationships:当前路径中的关系集合
+     * @param conditionRelas:当前路径中的必须包含的关系（任意一条路径中关系列表中某一个关系不包含在此列表中则返回FALSE）(好友关系分析路径过滤)
+     * @param relationshipName:关系名（例如关注关系）
+     * @param key:被用来判断的键
+     * @param value:被用来判断的值
+     * @return 当前路径是否满足
+     * @Description: TODO(通过关系过滤路径 - 寻找满足条件的点)
+     */
+    @UserFunction(name = "zdr.apoc.targetNodesRelasFilterByKey")
+    @Description("Filter target nodes by labels and relationships")
+    public boolean targetNodesRelasFilterByKey(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas,
+                                               @Name("relationshipName") String relationshipName, @Name("key") String key,
+                                               @Name("value") String value, @Name("countThreshold") Number countThreshold) {
+        // 关系是否满足体条件
+        boolean relaBool = isPathRelas(relationships, conditionRelas);
+
+        // 某种关系是否满足条件 (此过滤条件是上一个条件之上的再次过滤)
+        boolean relaKeyBool = isPathRelaKey(relationships, relationshipName, key, value, countThreshold.intValue());
+
+        if (relaBool && relaKeyBool) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(某种关系是否满足条件 - 不满足条件返回false / 默认返回true)
+     */
+    private boolean isPathRelaKey(List<Relationship> relationships, String relationshipName, String key, String value, int countThreshold) {
+        // 共同好友分析 - PATH必须有两条关注关系满足Friend属性
+        int count = 0;
+        for (int i = 0; i < relationships.size(); i++) {
+            Relationship relationship = relationships.get(i);
+            // 创建时默认NAME属性为关系TYPE展示名称
+            if (relationship != null) {
+                String relaName = relationship.getType().name();
+                if (relaName.equals(relationshipName)) {
+                    if (relationship.hasProperty(key)) {
+                        Object valueObj = relationship.getProperty(key);
+                        if (String.valueOf(valueObj).equals(value)) {
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        if (count >= countThreshold) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param relationships:当前路径中的关系集合
+     * @param conditionRelas:当前路径中的必须包含的关系（过滤条件中任意一条关系包含在路径中则返回TRUE）
+     * @return 当前路径是否满足
+     * @Description: TODO(通过关系过滤路径 - 寻找满足关系条件的路径)
+     */
+    @UserFunction(name = "zdr.apoc.targetRelasIsContainsOneOrNot")
+    @Description("Filter target nodes by labels and relationships")
+    public boolean targetRelasIsContainsOneOrNot(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas) {
+        // 关系是否满足体条件
+        return isPathRelasContainsOne(relationships, conditionRelas);
+    }
+
+    /**
+     * @param relationships:当前路径中的关系集合
+     * @return conditionRelas:当前路径中的必须包含的关系 - CONDITIONS设置为NULL默认不过滤
+     * @Description: TODO(过滤条件中任意一条关系包含在路径中则返回TRUE)
+     */
+    private boolean isPathRelasContainsOne(List<Relationship> relationships, List<String> conditionRelas) {
+        if (conditionRelas == null) {
+            return true;
+        }
+        List<String> rawRela = new ArrayList<>();
+        for (int i = 0; i < relationships.size(); i++) {
+            Relationship relationship = relationships.get(i);
+            String relaName = relationship.getType().name();
+            rawRela.add(relaName);
+        }
+        for (int i = 0; i < conditionRelas.size(); i++) {
+            String relationship = conditionRelas.get(i);
+            if (rawRela.contains(relationship)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param node:与源节点相连接的目标节点
      * @param conditionLabels:目标节点必须满足的标签（任意满足一个即可） - CONDITIONS设置为NULL默认不过滤
      * @return

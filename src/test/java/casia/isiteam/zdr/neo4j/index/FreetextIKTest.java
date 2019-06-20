@@ -69,7 +69,7 @@ public class FreetextIKTest {
         System.out.println(index++);
         System.out.println(index);
 
-        int begin=100;
+        int begin = 100;
         System.out.println(++begin);
         System.out.println(begin);
     }
