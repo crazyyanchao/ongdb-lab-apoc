@@ -1,4 +1,4 @@
-package casia.isiteam.zdr.neo4j.fiter;
+package casia.isiteam.zdr.neo4j.function;
 /**
  * 　　　　　　　 ┏┓       ┏┓+ +
  * 　　　　　　　┏┛┻━━━━━━━┛┻┓ + +
@@ -24,7 +24,6 @@ package casia.isiteam.zdr.neo4j.fiter;
  */
 
 import org.neo4j.graphdb.*;
-import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
 import java.util.*;
@@ -32,7 +31,7 @@ import java.util.*;
 /**
  * @author YanchaoMa yanchaoma@foxmail.com
  * @PACKAGE_NAME: casia.isiteam.zdr.neo4j.fiter
- * @Description: TODO(Describe the role of this JAVA class)
+ * @Description: TODO(路径过滤)
  * @date 2019/7/12 12:07
  */
 public class PathFilter {
@@ -42,16 +41,13 @@ public class PathFilter {
     @Context
     public GraphDatabaseService db;
 
-    @Context
-    public Log log;
-
     /**
      * @param node:目标节点列表
      * @param filterLabels:目标节点必须满足的标签（任意满足一个即可）
      * @return 路径中必须要有这些标签filterLabels类型的节点
      * @Description: TODO(通过关系和节点标签过滤路径 - 寻找满足条件的点)
      */
-    @UserFunction(name = "casia.apoc.targetPathFilterByNodeLabels")
+    @UserFunction(name = "casia.filter.pathByNodeLabels")
     @Description("Filter target path by node labels")
     public boolean targetPathFilterByNodeLabels(@Name("node") List<Node> node, @Name("conditionLabels") List<String> filterLabels) {
 

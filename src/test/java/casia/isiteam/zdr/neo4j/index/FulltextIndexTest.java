@@ -1,8 +1,5 @@
 package casia.isiteam.zdr.neo4j.index;
 
-import casia.isiteam.zdr.neo4j.util.TestUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import org.apache.log4j.PropertyConfigurator;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -13,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.harness.junit.Neo4jRule;
-import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.util.*;
 
@@ -57,9 +53,9 @@ public class FulltextIndexTest {
 
     @Before
     public void setUp() throws Exception {
-        System.setProperty("hadoop.home.dir", "C:\\Users\\11416\\Desktop\\project\\workspace\\neo4j-apoc-procedures-3.4.0.1\\hadoop");
-        db = new TestGraphDatabaseFactory().newImpermanentDatabase();
-        TestUtil.registerProcedure(db, FulltextIndex.class);
+//        System.setProperty("hadoop.home.dir", "C:\\Users\\11416\\Desktop\\project\\workspace\\neo4j-apoc-procedures-3.4.0.1\\hadoop");
+//        db = new TestGraphDatabaseFactory().newImpermanentDatabase();
+//        TestUtil.registerProcedure(db, FulltextIndex.class);
     }
 
     @After

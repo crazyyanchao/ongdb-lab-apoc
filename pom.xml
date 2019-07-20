@@ -6,10 +6,10 @@
 
     <groupId>casia.isiteam.zdr</groupId>
     <artifactId>neo4j-graph-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
-        <neo4j.version>3.4.9</neo4j.version>
+        <neo4j.version>3.5.7</neo4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -25,7 +25,6 @@
             <version>${neo4j.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <!-- Test Dependencies -->
         <dependency>
             <!-- This is used for a utility that lets us start Neo4j with
@@ -35,47 +34,30 @@
             <version>${neo4j.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <!-- Used to send cypher statements to our procedure. -->
-            <groupId>org.neo4j.driver</groupId>
-            <artifactId>neo4j-java-driver</artifactId>
-            <version>1.4.2</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
         <dependency>
-            <groupId>org.eclipse.ecf</groupId>
-            <artifactId>org.apache.log4j</artifactId>
-            <version>1.2.15.v201012070815</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
-
-        <!--&lt;!&ndash;https://mvnrepository.com/artifact/org.neo4j.procedure/apoc&ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>org.neo4j.procedure</groupId>-->
-        <!--<artifactId>apoc</artifactId>-->
-        <!--<version>3.4.0.1</version>-->
-        <!--</dependency>-->
-
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.58</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -140,3 +122,4 @@
         </plugins>
     </build>
 </project>
+

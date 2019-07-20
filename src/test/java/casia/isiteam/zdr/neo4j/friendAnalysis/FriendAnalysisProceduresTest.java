@@ -1,8 +1,6 @@
 package casia.isiteam.zdr.neo4j.friendAnalysis;
 
-import casia.isiteam.zdr.neo4j.index.FulltextIndex;
 import casia.isiteam.zdr.neo4j.util.TestUtil;
-import jline.internal.TestAccessible;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -12,13 +10,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.harness.junit.Neo4jRule;
-import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.*;
-import static org.neo4j.helpers.collection.MapUtil.map;
 /**
  * 　　　　　　　 ┏┓       ┏┓+ +
  * 　　　　　　　┏┛┻━━━━━━━┛┻┓ + +
@@ -196,8 +192,8 @@ public class FriendAnalysisProceduresTest {
 
     @Before
     public void setUp() throws Exception {
-        db = new TestGraphDatabaseFactory().newImpermanentDatabase();
-        TestUtil.registerProcedure(db, FriendAnalysis.class);
+//        db = new TestGraphDatabaseFactory().newImpermanentDatabase();
+//        TestUtil.registerProcedure(db, FriendAnalysis.class);
     }
 
     @After
