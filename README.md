@@ -53,7 +53,7 @@ zdr.apoc.scorePercentage
 zdr.apoc.moveDecimalPoint
 ```
 
-7、中文分词
+7、中文分词 *-true 智能分词，false 细粒度分词
 ```sql
 RETURN zdr.index.iKAnalyzer('复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？',true) AS words
 ```
