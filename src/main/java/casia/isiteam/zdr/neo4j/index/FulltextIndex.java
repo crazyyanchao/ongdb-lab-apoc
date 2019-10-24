@@ -95,7 +95,12 @@ public class FulltextIndex {
             log.debug("如果索引不存在则跳过本次查询：`%s`", indexName);
             return Stream.empty();
         }
-        QueryContext queryParam = new QueryContext(query).sortByScore().top((int) limit);
+        QueryContext queryParam;
+        if (limit == -1) {
+            queryParam = new QueryContext(query).sortByScore();
+        } else {
+            queryParam = new QueryContext(query).sortByScore().top((int) limit);
+        }
         return toWeightedNodeResult(db.index().forNodes(indexName, FULL_INDEX_CONFIG).query(queryParam));
     }
 

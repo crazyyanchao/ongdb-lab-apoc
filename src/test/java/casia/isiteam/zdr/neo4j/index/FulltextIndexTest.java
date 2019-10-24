@@ -60,7 +60,7 @@ public class FulltextIndexTest {
 
     @After
     public void tearDown() {
-        db.shutdown();
+//        db.shutdown();
         db = null;
     }
 
@@ -130,9 +130,16 @@ public class FulltextIndexTest {
 
         try (Transaction tx = db.beginTx()) {
             // 创建节点
-            Node node = db.createNode(Label.label("Loc"));
-            node.setProperty("name", "A");
-            node.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
+            for (int i = 0; i < 10; i++) {
+                Node node = db.createNode(Label.label("Loc"));
+                node.setProperty("name", "A");
+                if (i == 5) {
+                    node.setProperty("_entity_name", "印度复仇者联盟"); // 美国复仇者联盟
+                } else {
+                    node.setProperty("_entity_name", "复仇者联盟");
+                }
+//                node.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？");
+            }
 
             // 给节点建立中文全文索引
             db.execute("CALL zdr.index.addChineseFulltextIndex('Loc', ['description'],'Loc') YIELD message RETURN message");
@@ -142,7 +149,11 @@ public class FulltextIndexTest {
         }
         try (Transaction tx = db.beginTx()) {
             // 查询节点
-            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*', 100) YIELD node,weight RETURN node,weight");
+//            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*', 3) YIELD node,weight RETURN node,weight");
+//            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*',-1) YIELD node,weight RETURN node,weight");
+            // +(description:复联*) OR +(_entity_name:美国)
+            // +(description:复联) AND -(_entity_name:美国)
+            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', '+(_entity_name:印度*)', 3) YIELD node,weight RETURN node,weight");
 
             while (res2.hasNext()) {
                 Map<String, Object> mapO = res2.next();
