@@ -1,6 +1,6 @@
 # Neo4j自定义函数与过程插件
 
-> 此插件对应版本：NEO4J-3.4.X
+> 此插件对应版本：NEO4J-3.5.X
 
 > PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到NEO4J安装目录下的PLUGIN目录，将dic文件夹移动到NEO4J安装根目录即可。
 
