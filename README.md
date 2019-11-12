@@ -73,6 +73,9 @@ CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基�
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:吖啶基氨基甲烷磺酰甲氧基苯胺', -1) YIELD node,weight RETURN node,weight
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '+(description:复联) AND -(_entity_name:美国)',10) YIELD node,weight RETURN node,weight
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '+(site_name:东方网) OR +(_entity_name:东方网)',10) YIELD node,weight RETURN node,weight
+-- 包含小和合 不包含婷、诗和Jason Lim
+CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '_entity_name:(+小 +合 -"婷" -诗 -"Jason Lim")',10) YIELD node,weight RETURN node,weight
+
 ```
 
 10、为节点添加索引
