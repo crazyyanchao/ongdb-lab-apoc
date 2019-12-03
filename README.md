@@ -83,7 +83,14 @@ CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '_entity_name:(+小 +合
 MATCH (n) WHERE n.name='A' WITH n CALL zdr.index.addNodeChineseFulltextIndex(n, ['description']) RETURN *
 ```
 
-11、更多过程与函数请参考源码和测试...
+11、生成JSON-从CYPHER直接生成JSON【支持节点转换/属性转换/路径转换】
+```sql
+match (n) return casia.convert.json(n) limit 10
+match p=(n)--() return casia.convert.json(p) limit 1
+match (n) return casia.convert.json(properties(n)) limit 10
+```
+
+12、更多过程与函数请参考源码和测试...
 
 ## IKAnalyzer分词
 
