@@ -23,6 +23,9 @@ package casia.isiteam.zdr.neo4j.function;
  * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
  */
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.neo4j.graphdb.*;
 import org.neo4j.procedure.*;
 
@@ -64,6 +67,85 @@ public class PathFilter {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(将输入的数据转换为JSON)
+     */
+    @UserFunction(name = "casia.convert.json")
+    @Description("CONVERT JSON")
+    public String convertJson(@Name("object") Object object) {
+        if (object instanceof Node) {
+            return packNode((Node) object).toJSONString();
+        } else if (object instanceof Path) {
+            return packPath((Path) object).toJSONString();
+        } else if (object instanceof Map) {
+            return JSONObject.parseObject(JSON.toJSONString(object)).toJSONString();
+        }
+        return "";
+    }
+
+    private static JSONObject packPath(Path path) {
+        JSONObject graph = new JSONObject();
+        JSONArray relationships = new JSONArray();
+        JSONArray nodes = new JSONArray();
+        JSONArray objectNodes = packNodeByPath(path);
+        objectNodes.forEach(node -> {
+            JSONObject nodeObj = (JSONObject) node;
+            if (!nodes.contains(nodeObj)) nodes.add(nodeObj);
+        });
+
+        JSONArray objectRelas = packRelations(path);
+        objectRelas.forEach(relation -> {
+            JSONObject relationObj = (JSONObject) relation;
+            if (!relationships.contains(relationObj)) relationships.add(relationObj);
+        });
+        graph.put("relationships", relationships);
+        graph.put("nodes", nodes);
+        return graph;
+    }
+
+    private static JSONArray packRelations(Path path) {
+        JSONArray arrayRelations = new JSONArray();
+        for (Relationship relationship : path.relationships()) {
+            arrayRelations.add(packRelation(relationship));
+        }
+        return arrayRelations;
+    }
+
+    private static JSONObject packRelation(Relationship relationship) {
+        JSONObject currentRelation = new JSONObject();
+        currentRelation.put("startNode", relationship.getStartNodeId());
+        currentRelation.put("id", relationship.getId());
+        currentRelation.put("type", relationship.getType().name());
+        currentRelation.put("endNode", relationship.getEndNodeId());
+        currentRelation.put("properties", JSONObject.parseObject(JSON.toJSONString(relationship.getAllProperties())));
+        return currentRelation;
+    }
+
+    private static JSONArray packNodeByPath(Path path) {
+        JSONArray pathNodes = new JSONArray();
+        for (Node node : path.nodes()) {
+            pathNodes.add(packNode(node));
+        }
+        return pathNodes;
+    }
+
+    private static JSONObject packNode(Node node) {
+        JSONObject currentNode = new JSONObject();
+        currentNode.put("id", node.getId());
+        currentNode.put("properties", JSONObject.parseObject(JSON.toJSONString(node.getAllProperties())));
+
+        ArrayList labelList = new ArrayList();
+        Iterable<Label> iterable = node.getLabels();
+        iterable.forEach(label -> {
+            labelList.add(label.name());
+        });
+        currentNode.put("labels", JSONArray.parseArray(JSON.toJSONString(labelList)));
+
+        return currentNode;
     }
 
     /**
