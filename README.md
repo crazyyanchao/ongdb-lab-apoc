@@ -86,7 +86,7 @@ MATCH (n) WHERE n.name='A' WITH n CALL zdr.index.addNodeChineseFulltextIndex(n, 
 11、生成JSON-从CYPHER直接生成JSON【支持节点转换/属性转换/路径转换】
 ```sql
 match (n) return casia.convert.json(n) limit 10
-match p=(n)--() return casia.convert.json(p) limit 1
+match p=(n)-[]-() return casia.convert.json(p) limit 1
 match (n) return casia.convert.json(properties(n)) limit 10
 ```
 
