@@ -75,6 +75,8 @@ CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '+(description:复联) A
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '+(site_name:东方网) OR +(_entity_name:东方网)',10) YIELD node,weight RETURN node,weight
 -- 包含小和合 不包含婷、诗和Jason Lim
 CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '_entity_name:(+小 +合 -"婷" -诗 -"Jason Lim")',10) YIELD node,weight RETURN node,weight
+-- 范围查询
+CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '+(name:东方网) AND +(testTime:[1582279892461 TO 1582279892461])',10) YIELD node,weight RETURN node,weight
 
 ```
 
