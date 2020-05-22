@@ -6,7 +6,6 @@ package data.lab.ongdb.procedures;
  */
 
 import data.lab.ongdb.result.NodeResult;
-import data.lab.ongdb.similarity.simhash.SimHash;
 import data.lab.ongdb.util.ChineseVerify;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
@@ -39,16 +38,7 @@ public class Procedures {
     public String hello(@Name("world") String world) {
         return String.format("Hello, %s", world);
     }
-//    /**
-//     * @param text:函数参数
-//     * @return
-//     * @Description: TODO(为文本生成simhash值)
-//     */
-//    @UserFunction(name = "olab.simhash")
-//    @Description("produce sim hash!")
-//    public String produceSimHash(@Name("text") String text) {
-//        return SimHash.hash().setText(text).getSimHash();
-//    }
+
     /**
      * @param
      * @return

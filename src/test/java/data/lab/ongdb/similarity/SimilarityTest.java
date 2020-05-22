@@ -1,42 +1,40 @@
 package data.lab.ongdb.similarity;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Result;
+import org.neo4j.harness.junit.Neo4jRule;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  *
  * Data Lab - graph database organization.
  *
  */
 
-import data.lab.ongdb.procedures.Procedures;
-import org.junit.Rule;
-import org.junit.Test;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.harness.junit.Neo4jRule;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.similarity
+ * @PACKAGE_NAME: data.lab.ongdb.friendAnalysis
  * @Description: TODO
- * @date 2020/5/22 15:16
+ * @date 2020/5/22 18:08
  */
 public class SimilarityTest {
 
     @Rule
-    public Neo4jRule neo4j = new Neo4jRule().withProcedure(Similarity.class);
+    public Neo4jRule neo4j = new Neo4jRule().withFunction(Similarity.class);
 
     @Test
-    public void produceSimHash() {
+    public void shouldGreetWorld() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        String name = "公司系经长春经济体制改革委员会长体改(1993)165号文批准，由长春第一光学仪器厂、长春长顺体育综合开发公司、天津利源总公司三家共同发起成立的股份有限公司。公司股票于1996年7月15日上市。";
         Map<String, Object> params = new HashMap<>();
-        params.put("text", "北京全媒体融媒体国内媒体国外媒体世界媒体");
-        Result result = db.execute("RETURN olab.simhash({text}) AS simHash", params);
-        while (result.hasNext()) {
-            Map<String, Object> map = result.next();
-            System.out.println(map.get("simHash"));
-        }
+        params.put("name", name);
+        Result result = db.execute("RETURN olab.simhash({name}) AS simHash", params);
+        String greeting = (String) result.next().get("simHash");
+        System.out.println(greeting);
     }
 
 }

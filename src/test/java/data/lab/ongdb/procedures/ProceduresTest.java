@@ -46,23 +46,6 @@ public class ProceduresTest {
         }
     }
 
-//    @Test
-//    public void simhash() {
-//        GraphDatabaseService db = neo4j.getGraphDatabaseService();
-//
-//        try (Transaction tx = db.beginTx()) {
-//            String name = "World";
-//
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("name", name);
-//
-//            Result result = db.execute("RETURN olab.simhash({name}) AS simHash", params);
-//
-//            String greeting = (String) result.next().get("greeting");
-//            System.out.println(greeting);
-//        }
-//    }
-
     @Test
     public void test01() {
         System.out.println(String.format("Hello, %s", "neo4j"));
