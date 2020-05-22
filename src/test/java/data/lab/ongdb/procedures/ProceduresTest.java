@@ -42,10 +42,26 @@ public class ProceduresTest {
             Result result = db.execute("RETURN olab.hello({name}) AS greeting", params);
 
             String greeting = (String) result.next().get("greeting");
-
             assertEquals("Hello, " + name, greeting);
         }
     }
+
+//    @Test
+//    public void simhash() {
+//        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+//
+//        try (Transaction tx = db.beginTx()) {
+//            String name = "World";
+//
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("name", name);
+//
+//            Result result = db.execute("RETURN olab.simhash({name}) AS simHash", params);
+//
+//            String greeting = (String) result.next().get("greeting");
+//            System.out.println(greeting);
+//        }
+//    }
 
     @Test
     public void test01() {

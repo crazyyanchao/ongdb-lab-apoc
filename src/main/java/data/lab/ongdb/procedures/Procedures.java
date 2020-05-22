@@ -6,6 +6,7 @@ package data.lab.ongdb.procedures;
  */
 
 import data.lab.ongdb.result.NodeResult;
+import data.lab.ongdb.similarity.simhash.SimHash;
 import data.lab.ongdb.util.ChineseVerify;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
@@ -38,7 +39,16 @@ public class Procedures {
     public String hello(@Name("world") String world) {
         return String.format("Hello, %s", world);
     }
-
+//    /**
+//     * @param text:函数参数
+//     * @return
+//     * @Description: TODO(为文本生成simhash值)
+//     */
+//    @UserFunction(name = "olab.simhash")
+//    @Description("produce sim hash!")
+//    public String produceSimHash(@Name("text") String text) {
+//        return SimHash.hash().setText(text).getSimHash();
+//    }
     /**
      * @param
      * @return
@@ -47,13 +57,10 @@ public class Procedures {
     @UserFunction(name = "olab.sortDESC")
     public List<Object> sortDESC(@Name("coll") List<Object> coll) {
         List sorted = new ArrayList<>(coll);
-        Collections.sort(sorted, new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Integer o1Int = Integer.valueOf(String.valueOf(o1));
-                Integer o2Int = Integer.valueOf(String.valueOf(o2));
-                return o2Int.compareTo(o1Int);
-            }
+        Collections.sort(sorted, (o1, o2) -> {
+            Integer o1Int = Integer.valueOf(String.valueOf(o1));
+            Integer o2Int = Integer.valueOf(String.valueOf(o2));
+            return o2Int.compareTo(o1Int);
         });
         return sorted;
     }

@@ -126,9 +126,7 @@ public class PathFilter {
 
         ArrayList labelList = new ArrayList();
         Iterable<Label> iterable = node.getLabels();
-        iterable.forEach(label -> {
-            labelList.add(label.name());
-        });
+        iterable.forEach(label -> labelList.add(label.name()));
         currentNode.put("labels", JSONArray.parseArray(JSON.toJSONString(labelList)));
 
         return currentNode;
