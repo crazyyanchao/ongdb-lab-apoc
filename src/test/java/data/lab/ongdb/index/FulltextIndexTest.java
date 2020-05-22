@@ -167,6 +167,49 @@ public class FulltextIndexTest {
     }
 
     @Test
+    public void iKAnalyzer() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        // 查询节点
+        Result res = db.execute("CALL olab.iKAnalyzer('为充分发挥党委在公司治理及运营管理中的核心作用',true) YIELD words RETURN words");
+        while (res.hasNext()) {
+            List<String> word = (List<String>) res.next().get("words");
+            System.out.println(word);
+        }
+    }
+
+    @Test
+    public void iKAnalyzerCouple() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        // 查询节点
+        Result res = db.execute("CALL olab.iKAnalyzer('充分发挥党委在公司治理及运营管理中的核心作用',true) YIELD words WITH words\n" +
+                "CALL olab.ik.combination.couple(words) YIELD wordF,wordT RETURN wordF,wordT");
+        while (res.hasNext()) {
+           Map<String,Object> map =  res.next();
+            List<String> wordF = (List<String>) map.get("wordF");
+            List<String> wordT = (List<String>) map.get("wordT");
+            System.out.println(wordF);
+            System.out.println(wordT);
+        }
+    }
+
+    @Test
+    public void iKAnalyzerTriple() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        // 查询节点
+        Result res = db.execute("CALL olab.iKAnalyzer('充分发挥党委在公司治理及运营管理中的核心作用',true) YIELD words WITH words\n" +
+                "CALL olab.ik.combination.triple(words) YIELD wordF,wordT,wordR RETURN wordF,wordT,wordR");
+        while (res.hasNext()) {
+            Map<String,Object> map =  res.next();
+            List<String> wordF = (List<String>) map.get("wordF");
+            List<String> wordT = (List<String>) map.get("wordT");
+            List<String> wordR = (List<String>) map.get("wordR");
+            System.out.println(wordF);
+            System.out.println(wordT);
+            System.out.println(wordR);
+        }
+    }
+
+    @Test
     public void autoIndex() {
         PropertyConfigurator.configureAndWatch("dic/log4j.properties");
         // given

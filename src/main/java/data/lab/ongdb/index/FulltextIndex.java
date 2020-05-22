@@ -7,6 +7,13 @@ package data.lab.ongdb.index;
 
 import data.lab.ongdb.message.NodeIndexMessage;
 import data.lab.ongdb.result.ChineseHit;
+import data.lab.ongdb.result.OutputWords;
+import data.lab.ongdb.result.OutputWordsCouple;
+import data.lab.ongdb.result.OutputWordsTriple;
+import data.lab.wltea.analyzer.cfg.Configuration;
+import data.lab.wltea.analyzer.core.IKSegmenter;
+import data.lab.wltea.analyzer.core.Lexeme;
+import org.apache.log4j.PropertyConfigurator;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
@@ -18,6 +25,9 @@ import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -59,6 +69,74 @@ public class FulltextIndex {
             this.property = property;
             this.nodeCount = nodeCount;
         }
+    }
+
+    /**
+     * @param text:待分词文本
+     * @param isSmart:分词模式-true:智能呢个分词，false:细粒度分词
+     * @return
+     * @Description: TODO
+     */
+    @Procedure(value = "olab.iKAnalyzer", mode = Mode.READ)
+    @Description("CALL olab.iKAnalyzer({text},true) YIELD words RETURN words")
+    public Stream<OutputWords> chineseFulltextIndexSearch(@Name("text") String text, @Name("isSmart") boolean isSmart) {
+        PropertyConfigurator.configureAndWatch("dic" + File.separator + "log4j.properties");
+        Configuration cfg = new Configuration(isSmart);
+
+        StringReader input = new StringReader(text.trim());
+        IKSegmenter ikSegmenter = new IKSegmenter(input, cfg);
+
+        List<String> results = new ArrayList<>();
+        try {
+            for (Lexeme lexeme = ikSegmenter.next(); lexeme != null; lexeme = ikSegmenter.next()) {
+                results.add(lexeme.getLexemeText());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Stream.of(new OutputWords(results));
+    }
+
+    /**
+     * @param words:词列表
+     * @return
+     * @Description: TODO(列表中的词两两组合)
+     */
+    @Procedure(value = "olab.ik.combination.couple", mode = Mode.READ)
+    @Description("CALL olab.ik.combination.couple(words) YIELD wordF,wordT RETURN wordF,wordT")
+    public Stream<OutputWordsCouple> combinationWordsCouple(@Name("words") List<String> words) {
+        List<String> wordF = new ArrayList<>();
+        List<String> wordT = new ArrayList<>();
+        for (String word1 : words) {
+            for (String word2 : words) {
+                wordF.add(word1);
+                wordT.add(word2);
+            }
+        }
+        return Stream.of(new OutputWordsCouple(wordF, wordT));
+    }
+
+    /**
+     * @param words:词列表
+     * @return
+     * @Description: TODO(列表中的词组合三列)
+     */
+    @Procedure(value = "olab.ik.combination.triple", mode = Mode.READ)
+    @Description("CALL olab.ik.combination.triple(words) YIELD wordF,wordT RETURN wordF,wordT,wordR")
+    public Stream<OutputWordsTriple> combinationWordsTriple(@Name("words") List<String> words) {
+        List<String> wordF = new ArrayList<>();
+        List<String> wordT = new ArrayList<>();
+        List<String> wordR = new ArrayList<>();
+        for (String word1 : words) {
+            for (String word2 : words) {
+                for (String word3 : words) {
+                    wordF.add(word1);
+                    wordT.add(word2);
+                    wordR.add(word3);
+                }
+            }
+        }
+        return Stream.of(new OutputWordsTriple(wordF, wordT,wordR));
     }
 
     /**
