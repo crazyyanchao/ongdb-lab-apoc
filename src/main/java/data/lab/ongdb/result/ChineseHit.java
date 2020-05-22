@@ -9,9 +9,9 @@ import org.neo4j.graphdb.Node;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.result
+ * @PACKAGE_NAME: data.lab.ongdb.result.ChineseHit
  * @Description: TODO(中文全文检索结果)
- * @date 2019/4/11 14:11
+ * @date 2020/5/22 10:30
  */
 public class ChineseHit {
     public final Node node;

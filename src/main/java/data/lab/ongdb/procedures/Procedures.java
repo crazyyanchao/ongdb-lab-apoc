@@ -22,18 +22,18 @@ import java.util.stream.Collectors;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.procedures
+ * @PACKAGE_NAME: data.lab.ongdb.procedures.ZdrProcedures
  * @Description: TODO(执行查询的存储过程 / 函数)
- * @date 2018/8/3 17:54
+ * @date 2020/5/22 10:28
  */
-public class ZdrProcedures {
+public class Procedures {
 
     /**
      * @param world:函数参数
      * @return
      * @Description: TODO(@ Description的内容会在Neo4j浏览器中调用dbms.functions () 时显示)
      */
-    @UserFunction(name = "zdr.apoc.hello") // 自定义函数名
+    @UserFunction(name = "olab.hello") // 自定义函数名
     @Description("hello(world) - Say hello!")   // 函数说明
     public String hello(@Name("world") String world) {
         return String.format("Hello, %s", world);
@@ -44,7 +44,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(自定义函数 - 降序排序集合的元素)
      */
-    @UserFunction(name = "zdr.apoc.sortDESC")
+    @UserFunction(name = "olab.sortDESC")
     public List<Object> sortDESC(@Name("coll") List<Object> coll) {
         List sorted = new ArrayList<>(coll);
         Collections.sort(sorted, new Comparator<Object>() {
@@ -63,7 +63,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(获取命中关键词关系的属性ids的长度 ， ids的值是用逗号分隔的id)
      */
-    @UserFunction(name = "zdr.apoc.getEventIdsSize")
+    @UserFunction(name = "olab.getEventIdsSize")
     public Number getEventIdsSize(@Name("ids") String ids) {
         String[] array = ids.split(",");
         int eventIdsSize = array.length;
@@ -75,7 +75,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(截取时间的年份)
      */
-    @UserFunction(name = "zdr.apoc.initAnnualTime")
+    @UserFunction(name = "olab.initAnnualTime")
     public long convertInitAnnualTime(@Name("startTime") String startTime) {
         if (startTime != null) {
             String[] array = startTime.split("-");
@@ -93,7 +93,7 @@ public class ZdrProcedures {
      * @return 1、符合时间区间 0、不符合时间区间
      * @Description: TODO(判断通联时间段是否匹配)
      */
-    @UserFunction(name = "zdr.apoc.matchTimeZone")
+    @UserFunction(name = "olab.matchTimeZone")
     public Number matchTimeZone(@Name("mapPara") Map<String, String> mapPara) {
 
         String startTime = mapPara.get("startTime");
@@ -123,7 +123,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(找出匹配的时间段)
      */
-    @UserFunction(name = "zdr.apoc.matchTimeListString")
+    @UserFunction(name = "olab.matchTimeListString")
     public String matchTimeListString(@Name("mapPara") Map<String, String> mapPara) {
         String startTime = mapPara.get("startTime");
         String stopTime = mapPara.get("stopTime");
@@ -157,7 +157,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(百分比映射)
      */
-    @UserFunction(name = "zdr.apoc.scorePercentage")
+    @UserFunction(name = "olab.scorePercentage")
     @Description("Set node influence score percentage")
     public Number percentageInfluenceScore(@Name("mapPara") Map<String, Object> mapPara) {
 
@@ -209,7 +209,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(小数点向后移动)
      */
-    @UserFunction(name = "zdr.apoc.moveDecimalPoint")
+    @UserFunction(name = "olab.moveDecimalPoint")
     @Description("Move six decimal points")
     public Number moveDecimalPoint(@Name("mapPara") Map<String, Object> mapPara) {
         double scoreObject = shiftDouble(mapPara.get("scoreObject"));
@@ -225,7 +225,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(Present字符转换获取当前系统时间)
      */
-    @UserFunction(name = "zdr.apoc.presentStringToDate")
+    @UserFunction(name = "olab.presentStringToDate")
     @Description("Present-Convert date to relevant format")
     public String presentStringToDate(@Name("present") String present) {
         if ("Present".equals(present)) {
@@ -240,7 +240,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(判断两个时间区间是否有交叉)
      */
-    @UserFunction(name = "zdr.apoc.timeCrossOrNot")
+    @UserFunction(name = "olab.timeCrossOrNot")
     @Description("Time zone cross or not")
     public boolean timeCrossOrNot(@Name("mapPara") Map<String, Object> mapPara) {
 
@@ -279,7 +279,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(是否包含某字符串 | | - 任意包含一个 & & - 全部包含)
      */
-    @UserFunction(name = "zdr.apoc.isContainsString")
+    @UserFunction(name = "olab.isContainsString")
     @Description("Is contains string? &&-All contains ||-Or contains (Chinese||English Chinese&&English)")
     public boolean isContainsString(@Name("mapPara") Map<String, Object> mapPara) {
 
@@ -321,7 +321,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(统计字符串中包含某个字符的数量)
      */
-    @UserFunction(name = "zdr.apoc.stringCharCount")
+    @UserFunction(name = "olab.stringCharCount")
     @Description("Count char in string")
     public long stringCharCount(@Name("mapPara") Map<String, Object> mapPara) {
         return StringUtils.countMatches((String) mapPara.get("original"), (String) mapPara.get("char"));
@@ -334,7 +334,7 @@ public class ZdrProcedures {
      * @return 两个集合同时包含某一个标签 返回TRUE
      * @Description: TODO(两个集合同时包含某一个标签)
      */
-    @UserFunction(name = "zdr.apoc.relatCalculateRestrict")
+    @UserFunction(name = "olab.relatCalculateRestrict")
     @Description("Graph relationships calculate restrict")
     public boolean relatCalculateRestrict(@Name("nLabels") List<String> nLabels, @Name("mLabels") List<String> mLabels, @Name("restrictLabels") String strictLabels) {
 
@@ -363,7 +363,7 @@ public class ZdrProcedures {
      * @return 是否为中文
      * @warn 不能校验是否为中文标点符号
      */
-    @UserFunction(name = "zdr.apoc.isContainChinese")
+    @UserFunction(name = "olab.isContainChinese")
     @Description("Node is contains chinese or not")
     public long isContainChinese(@Name("node") Node node) {
 
@@ -395,7 +395,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(节点是否包含权限)
      */
-    @UserFunction(name = "zdr.apoc.isContainAuthority")
+    @UserFunction(name = "olab.isContainAuthority")
     @Description("Node is contains authority or not")
     public boolean isContainAuthority(@Name("node") Node node) {
         Iterable<String> iterableKeys = node.getPropertyKeys();
@@ -415,7 +415,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(去重合并多个节点列表)
      */
-    @UserFunction(name = "zdr.apoc.mergeNodes")
+    @UserFunction(name = "olab.mergeNodes")
     @Description("Merge node list")
     public List<Node> mergeNodes(@Name("nodePackArray") List<List<Node>> nodePackArray) {
 
@@ -435,7 +435,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(地理位置名称多字段检索 -)
      */
-    @UserFunction(name = "zdr.apoc.locMultiFieldsFullTextSearchCondition")
+    @UserFunction(name = "olab.locMultiFieldsFullTextSearchCondition")
     @Description("Location multi fields search- 找共同居住地的人 - EXAMPLE:location:`\"+location+\"`* OR location:`\"+location+\"`*")
     public String locMultiFieldsFullTextSearchCondition(@Name("node") Node node, @Name("locMultiFields") List<String> locMultiFields) {
 
@@ -459,14 +459,14 @@ public class ZdrProcedures {
         return "`null`";
     }
 
-    //    zdr.apoc.nodeIsContainsKey
+    //    olab.nodeIsContainsKey
 
     /**
      * @param
      * @return
      * @Description: TODO(节点是否包含某个KEY - 多个中的任意一个)
      */
-    @UserFunction(name = "zdr.apoc.nodeIsContainsKey")
+    @UserFunction(name = "olab.nodeIsContainsKey")
     @Description("Node is contain key or not")
     public boolean nodeIsContainsKey(@Name("node") Node node, @Name("locMultiFields") List<String> locMultiFields) {
         Map<String, Object> mapProperties = node.getAllProperties();
@@ -494,7 +494,7 @@ public class ZdrProcedures {
      * @return
      * @Description: TODO(节点ID集合移除某些节点)
      */
-    @UserFunction(name = "zdr.apoc.removeIdsFromRawList")
+    @UserFunction(name = "olab.removeIdsFromRawList")
     @Description("Remove ids from raw node id list")
     public List<Long> removeIdsFromRawList(@Name("rawIDs") List<Long> rawIDs, @Name("ids") List<Long> ids) {
         if (rawIDs != null && ids != null) {

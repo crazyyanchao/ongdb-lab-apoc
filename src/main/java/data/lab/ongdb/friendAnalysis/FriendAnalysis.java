@@ -17,9 +17,9 @@ import java.util.stream.Stream;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.friendAnalysis
+ * @PACKAGE_NAME: data.lab.ongdb.friendAnalysis.FriendAnalysis
  * @Description: TODO(好友关系分析过程 / 函数)
- * @date 2019/3/30 17:05
+ * @date 2020/5/22 10:21
  */
 public class FriendAnalysis {
     /**
@@ -41,7 +41,7 @@ public class FriendAnalysis {
      * UNWIND nodes AS target
      * WITH source,target WHERE id(source)<id(target)
      * MATCH paths=(source)-[:好友]-(target) WITH collect(source) AS sourceNodes,collect(target) AS targetNodes
-     * CALL zdr.apoc.publicFriendAnalysis(sourceNodes,targetNodes) YIELD node RETURN node
+     * CALL olab.publicFriendAnalysis(sourceNodes,targetNodes) YIELD node RETURN node
      *
      * 2.Nodes id list
      * WITH [60667,60652,60669,60635,80988] AS groupIds
@@ -51,7 +51,7 @@ public class FriendAnalysis {
      * UNWIND nodes AS target
      * WITH source,target WHERE id(source)<id(target)
      * MATCH paths=(source)-[:好友]-(target) WITH collect(id(source)) AS sourceList,collect(id(target)) AS targetList
-     * CALL zdr.apoc.publicFriendAnalysisMap(sourceList,targetList) YIELD list WITH list
+     * CALL olab.publicFriendAnalysisMap(sourceList,targetList) YIELD list WITH list
      * UNWIND list AS row
      * MATCH (n) WHERE id(n)=row.id SET n.targetGroupFriendsRelaCount=row.count RETURN n
      * **/
@@ -61,7 +61,7 @@ public class FriendAnalysis {
      * @return
      * @Description: TODO(两两之间的好友关系分析)
      */
-    @Procedure(name = "zdr.apoc.publicFriendAnalysis", mode = Mode.WRITE)
+    @Procedure(name = "olab.publicFriendAnalysis", mode = Mode.WRITE)
     @Description("Public friend analysis")
     public Stream<NodeResult> publicFriendAnalysis(@Name("sourceList") List<Node> sourceList, @Name("targetList") List<Node> targetList) {
 
@@ -87,7 +87,7 @@ public class FriendAnalysis {
      * @return
      * @Description: TODO(两两之间的好友关系分析)
      */
-    @Procedure(name = "zdr.apoc.publicFriendAnalysisMap", mode = Mode.WRITE)
+    @Procedure(name = "olab.publicFriendAnalysisMap", mode = Mode.WRITE)
     @Description("Public friend analysis")
     public Stream<NodeFriendCountList> publicFriendAnalysisMap(@Name("sourceList") List<Long> sourceList, @Name("targetList") List<Long> targetList) {
 
@@ -188,7 +188,7 @@ public class FriendAnalysis {
      * @return 当前路径是否满足
      * @Description: TODO(通过关系和节点标签过滤路径 - 寻找满足条件的点)
      */
-    @UserFunction(name = "zdr.apoc.targetNodesRelasFilter")
+    @UserFunction(name = "olab.targetNodesRelasFilter")
     @Description("Filter target nodes by labels and relationships")
     public boolean targetNodesRelasFilter(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas,
                                           @Name("node") Node node, @Name("conditionLabels") List<String> conditionLabels) {
@@ -213,7 +213,7 @@ public class FriendAnalysis {
      * @return 当前路径是否满足
      * @Description: TODO(通过关系过滤路径 - 寻找满足条件的点)
      */
-    @UserFunction(name = "zdr.apoc.targetNodesRelasFilterByKey")
+    @UserFunction(name = "olab.targetNodesRelasFilterByKey")
     @Description("Filter target nodes by labels and relationships")
     public boolean targetNodesRelasFilterByKey(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas,
                                                @Name("relationshipName") String relationshipName, @Name("key") String key,
@@ -265,7 +265,7 @@ public class FriendAnalysis {
      * @return 当前路径是否满足
      * @Description: TODO(通过关系过滤路径 - 寻找满足关系条件的路径)
      */
-    @UserFunction(name = "zdr.apoc.targetRelasIsContainsOneOrNot")
+    @UserFunction(name = "olab.targetRelasIsContainsOneOrNot")
     @Description("Filter target nodes by labels and relationships")
     public boolean targetRelasIsContainsOneOrNot(@Name("relationships") List<Relationship> relationships, @Name("conditionRelas") List<String> conditionRelas) {
         // 关系是否满足体条件

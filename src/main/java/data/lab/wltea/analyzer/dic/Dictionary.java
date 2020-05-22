@@ -190,24 +190,25 @@ public class Dictionary {
     private void walkFileTree(List<String> files, Path path) {
         if (Files.isRegularFile(path)) {
             files.add(path.toString());
-        } else if (Files.isDirectory(path)) try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    files.add(file.toString());
-                    return FileVisitResult.CONTINUE;
-                }
+        } else if (Files.isDirectory(path)) {
+            try {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        files.add(file.toString());
+                        return FileVisitResult.CONTINUE;
+                    }
 
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException e) {
-                    logger.error("[Ext Loading] listing files", e);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            logger.error("[Ext Loading] listing files", e);
-        }
-        else {
+                    @Override
+                    public FileVisitResult visitFileFailed(Path file, IOException e) {
+                        logger.error("[Ext Loading] listing files", e);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                logger.error("[Ext Loading] listing files", e);
+            }
+        } else {
             logger.warn("[Ext Loading] file not found: " + path);
         }
     }
@@ -218,17 +219,22 @@ public class Dictionary {
                     new InputStreamReader(is, "UTF-8"), 512);
             String word = br.readLine();
             if (word != null) {
-                if (word.startsWith("\uFEFF"))
+                if (word.startsWith("\uFEFF")) {
                     word = word.substring(1);
+                }
                 for (; word != null; word = br.readLine()) {
                     word = word.trim();
-                    if (word.isEmpty()) continue;
+                    if (word.isEmpty()) {
+                        continue;
+                    }
                     dict.fillSegment(word.toCharArray());
                 }
             }
         } catch (FileNotFoundException e) {
             logger.error("ik-analyzer: " + name + " not found", e);
-            if (critical) throw new RuntimeException("ik-analyzer: " + name + " not found!!!", e);
+            if (critical) {
+                throw new RuntimeException("ik-analyzer: " + name + " not found!!!", e);
+            }
         } catch (IOException e) {
             logger.error("ik-analyzer: " + name + " loading failed", e);
         }

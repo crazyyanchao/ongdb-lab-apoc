@@ -15,9 +15,9 @@ import java.util.*;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.fiter
+ * @PACKAGE_NAME: data.lab.ongdb.function.PathFilter
  * @Description: TODO(路径过滤)
- * @date 2019/7/12 12:07
+ * @date 2020/5/22 10:22
  */
 public class PathFilter {
     /**
@@ -32,7 +32,7 @@ public class PathFilter {
      * @return 路径中必须要有这些标签filterLabels类型的节点
      * @Description: TODO(通过关系和节点标签过滤路径 - 寻找满足条件的点)
      */
-    @UserFunction(name = "casia.filter.pathByNodeLabels")
+    @UserFunction(name = "olab.filter.pathByNodeLabels")
     @Description("Filter target path by node labels")
     public boolean targetPathFilterByNodeLabels(@Name("node") List<Node> node, @Name("conditionLabels") List<String> filterLabels) {
 
@@ -56,7 +56,7 @@ public class PathFilter {
      * @return
      * @Description: TODO(将输入的数据转换为JSON)
      */
-    @UserFunction(name = "casia.convert.json")
+    @UserFunction(name = "olab.convert.json")
     @Description("CONVERT JSON")
     public String convertJson(@Name("object") Object object) {
         if (object instanceof Node) {
@@ -76,13 +76,17 @@ public class PathFilter {
         JSONArray objectNodes = packNodeByPath(path);
         objectNodes.forEach(node -> {
             JSONObject nodeObj = (JSONObject) node;
-            if (!nodes.contains(nodeObj)) nodes.add(nodeObj);
+            if (!nodes.contains(nodeObj)) {
+                nodes.add(nodeObj);
+            }
         });
 
         JSONArray objectRelas = packRelations(path);
         objectRelas.forEach(relation -> {
             JSONObject relationObj = (JSONObject) relation;
-            if (!relationships.contains(relationObj)) relationships.add(relationObj);
+            if (!relationships.contains(relationObj)) {
+                relationships.add(relationObj);
+            }
         });
         graph.put("relationships", relationships);
         graph.put("nodes", nodes);

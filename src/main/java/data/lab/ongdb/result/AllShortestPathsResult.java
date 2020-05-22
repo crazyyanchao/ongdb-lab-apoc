@@ -9,9 +9,9 @@ import java.util.Objects;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.result
+ * @PACKAGE_NAME: data.lab.ongdb.result.AllShortestPathsResult
  * @Description: TODO(全源最短路径结果对象)
- * @date 2019/4/8 18:32
+ * @date 2020/5/22 10:30
  */
 public class AllShortestPathsResult {
     public long source;
@@ -36,8 +36,12 @@ public class AllShortestPathsResult {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         AllShortestPathsResult result = (AllShortestPathsResult) o;
         return (source == result.source &&
                 target == result.target &&

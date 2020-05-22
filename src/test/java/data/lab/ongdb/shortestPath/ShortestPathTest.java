@@ -54,7 +54,7 @@ public class ShortestPathTest {
             map.put("targetIds", targetIds);
             map.put("distanceSTE", distanceSTE);
 
-            Result res = db.execute("CALL zdr.shortestPath.allPathsTightness({sourceIds},{targetIds},{distanceSTE}) YIELD source,target,distance,tightnessSort RETURN source,target,distance,tightnessSort", map);
+            Result res = db.execute("CALL olab.shortestPath.allPathsTightness({sourceIds},{targetIds},{distanceSTE}) YIELD source,target,distance,tightnessSort RETURN source,target,distance,tightnessSort", map);
 
             while (res.hasNext()) {
                 Map map2 = res.next();

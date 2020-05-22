@@ -34,9 +34,9 @@ import static org.neo4j.procedure.Mode.READ;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
+ * @PACKAGE_NAME: data.lab.ongdb.index.CustomizeFullTextSearcher
  * @Description: TODO(自定义全文检索得分算法)
- * @date 2019/8/16 14:30
+ * @date 2020/5/22 10:23
  */
 public class CustomizeFullTextSearcher {
 
@@ -62,7 +62,7 @@ public class CustomizeFullTextSearcher {
      * @Description: TODO(使用SimHash计算得分)
      */
     @Description("Query the given fulltext index. Returns the matching nodes and their lucene query score, ordered by score.")
-    @Procedure(name = "db.index.fulltext.queryNodesBySimHash", mode = READ)
+    @Procedure(name = "olab.index.fulltext.queryNodesBySimHash", mode = READ)
     public Stream<NodeOutput> queryFulltextForNodesBySimHash(@Name("indexName") String name, @Name("queryString") String query)
             throws ParseException, IndexNotFoundKernelException, IOException {
         IndexReference indexReference = getValidIndexReference(name);
@@ -101,13 +101,11 @@ public class CustomizeFullTextSearcher {
         // We will get an exception later, when we try to get an IndexReader, so this is fine.
     }
 
-    public static final class NodeOutput
-    {
+    public static final class NodeOutput {
         public final Node node;
         public final double score;
 
-        protected NodeOutput( Node node, double score )
-        {
+        protected NodeOutput(Node node, double score) {
             this.node = node;
             this.score = score;
         }

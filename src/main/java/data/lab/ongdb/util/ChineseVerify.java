@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.util
+ * @PACKAGE_NAME: data.lab.ongdb.util.ChineseVerify
  * @Description: TODO(中文文本校验)
- * @date 2019/4/3 10:19
+ * @date 2020/5/22 10:32
  */
 public class ChineseVerify {
 

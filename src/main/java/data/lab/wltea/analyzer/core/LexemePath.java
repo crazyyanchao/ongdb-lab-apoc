@@ -193,6 +193,7 @@ class LexemePath extends QuickSortSet implements Comparable<LexemePath> {
         return theCopy;
     }
 
+    @Override
     public int compareTo(LexemePath o) {
         //比较有效文本长度
         if (this.payloadLength > o.payloadLength) {
@@ -239,6 +240,7 @@ class LexemePath extends QuickSortSet implements Comparable<LexemePath> {
         return 0;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("pathBegin  : ").append(pathBegin).append("\r\n");

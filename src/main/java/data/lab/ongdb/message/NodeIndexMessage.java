@@ -7,9 +7,9 @@ package data.lab.ongdb.message;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.message
+ * @PACKAGE_NAME: data.lab.ongdb.message.NodeIndexMessage
  * @Description: TODO(消息)
- * @date 2019/4/11 14:13
+ * @date 2020/5/22 10:27
  */
 public class NodeIndexMessage {
     public final String message;

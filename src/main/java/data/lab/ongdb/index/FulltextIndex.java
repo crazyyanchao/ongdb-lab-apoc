@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
- * @Description: TODO(基于中文分词的NEO4J全文检索)
- * @date 2019/4/9 11:42
+ * @PACKAGE_NAME: data.lab.ongdb.index.FulltextIndex
+ * @Description: TODO(基于中文分词的ONgDB全文检索)
+ * @date 2020/5/22 10:25
  */
 public class FulltextIndex {
 
@@ -68,8 +68,8 @@ public class FulltextIndex {
      * @return
      * @Description: TODO(查询中文全文索引 - 不区分标签返回)
      */
-    @Procedure(value = "zdr.index.chineseFulltextIndexSearch", mode = Mode.WRITE)
-    @Description("CALL zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight" +
+    @Procedure(value = "olab.index.chineseFulltextIndexSearch", mode = Mode.WRITE)
+    @Description("CALL olab.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight" +
             "执行LUCENE全文检索，返回前{limit个结果}")
     public Stream<ChineseHit> chineseFulltextIndexSearch(@Name("indexName") String indexName,
                                                          @Name("query") String query, @Name("limit") long limit) {
@@ -93,8 +93,8 @@ public class FulltextIndex {
      * @return
      * @Description: TODO(创建中文全文索引 - 不支持自动更新 ( 不区分标签 - 多个标签使用相同的索引名称即可同时检索))
      */
-    @Procedure(value = "zdr.index.addChineseFulltextIndex", mode = Mode.WRITE)
-    @Description("CALL zdr.index.addChineseFulltextIndex(String indexName, String labelName, List<String> propKeys) YIELD message RETURN message," +
+    @Procedure(value = "olab.index.addChineseFulltextIndex", mode = Mode.WRITE)
+    @Description("CALL olab.index.addChineseFulltextIndex(String indexName, String labelName, List<String> propKeys) YIELD message RETURN message," +
             "为一个标签下的所有节点的指定属性添加索引")
     public Stream<NodeIndexMessage> addChineseFulltextIndex(@Name("indexName") String indexName,
                                                             @Name("properties") List<String> propKeys,
@@ -114,7 +114,7 @@ public class FulltextIndex {
      * @return
      * @Description: TODO(节点单独更新到索引)
      */
-    @Procedure(value = "zdr.index.addNodeChineseFulltextIndex", mode = Mode.WRITE)
+    @Procedure(value = "olab.index.addNodeChineseFulltextIndex", mode = Mode.WRITE)
     @Description("apoc.index.addNodeChineseFulltextIndex(node,['prop1',...]) add node to an index for each label it has - CALL apoc.index.addNodeChineseFulltextIndex(joe, ['name','age','city'])")
     public void addNodeChineseFulltextIndex(@Name("node") Node node, @Name("properties") List<String> propKeys) {
         for (Label label : node.getLabels()) {
@@ -157,8 +157,8 @@ public class FulltextIndex {
 //     * @return
 //     * @Description: TODO(创建中文全文索引 - 支持自动更新 ( 不区分标签))
 //     */
-//    @Procedure(value = "zdr.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
-//    @Description("CALL zdr.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
+//    @Procedure(value = "olab.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
+//    @Description("CALL olab.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
 //            "为一个标签下的所有节点的指定属性添加索引")
 //    public Stream<NodeIndexMessage> addChineseFulltextAutoIndex(@Name("indexName") String indexName,
 //                                                                @Name("properties") List<String> propKeys,
@@ -187,8 +187,8 @@ public class FulltextIndex {
 //     * @return
 //     * @Description: TODO(创建中文全文索引 - 支持自动更新 ( 不区分标签))
 //     */
-//    @Procedure(value = "zdr.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
-//    @Description("CALL zdr.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
+//    @Procedure(value = "olab.index.addChineseFulltextAutoIndex", mode = Mode.WRITE)
+//    @Description("CALL olab.index.addChineseFulltextAutoIndex(String indexName, String labelName, List<String> propKeys) YIELD label,property,nodeCount - create a free chinese text search index " +
 //            "为一个标签下的所有节点的指定属性添加索引")
 //    public Stream<IndexStats> addChineseFulltextAutoIndex(@Name("indexName") String indexName,
 //                                                          @Name("properties") List<String> propKeys,
@@ -401,8 +401,12 @@ public class FulltextIndex {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             LabelProperty that = (LabelProperty) o;
             return Objects.equals(label, that.label) &&
                     Objects.equals(property, that.property);

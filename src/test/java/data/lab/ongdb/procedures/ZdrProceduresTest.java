@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class ZdrProceduresTest {
 
     @Rule
-    public Neo4jRule neo4j = new Neo4jRule().withFunction(ZdrProcedures.class);
+    public Neo4jRule neo4j = new Neo4jRule().withFunction(Procedures.class);
 
     @Test
     public void shouldGreetWorld() {
@@ -39,7 +39,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", name);
 
-            Result result = db.execute("RETURN zdr.apoc.hello({name}) as greeting", params);
+            Result result = db.execute("RETURN olab.hello({name}) as greeting", params);
 
             String greeting = (String) result.next().get("greeting");
 
@@ -64,7 +64,7 @@ public class ZdrProceduresTest {
             list.add(2);
             list.add(3);
             params.put("list", list);
-            Result result = db.execute("RETURN zdr.apoc.sortDESC({list}) as descList", params);
+            Result result = db.execute("RETURN olab.sortDESC({list}) as descList", params);
             List<Integer> descList = (List<Integer>) result.next().get("descList");
             System.out.println(descList);
         }
@@ -77,12 +77,12 @@ public class ZdrProceduresTest {
             String eventIds = "123213,234324,4354353,1231231,2132131";
             Map<String, Object> params = new HashMap<>();
             params.put("eventIds", eventIds);
-            Result result = db.execute("RETURN zdr.apoc.getEventIdsSize({eventIds}) as value", params);
+            Result result = db.execute("RETURN olab.getEventIdsSize({eventIds}) as value", params);
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
 
 // 首先自定义SIZE函数，然后通过关系的属性进行排序：
-// match p=(n:事)<-[r:命中关键词]-(m:虚拟账号ID) where n.name='新闻_1432' and r.eventTargetIds IS NOT NULL return p ORDER BY zdr.apoc.getEventIdsSize(r.eventTargetIds) DESC limit 10
+// match p=(n:事)<-[r:命中关键词]-(m:虚拟账号ID) where n.name='新闻_1432' and r.eventTargetIds IS NOT NULL return p ORDER BY olab.getEventIdsSize(r.eventTargetIds) DESC limit 10
 
         }
     }
@@ -94,7 +94,7 @@ public class ZdrProceduresTest {
             String startTime = "2006-05-01 00:00:00";
             Map<String, Object> params = new HashMap<>();
             params.put("startTime", startTime);
-            Result result = db.execute("RETURN zdr.apoc.initAnnualTime({startTime}) as value", params);
+            Result result = db.execute("RETURN olab.initAnnualTime({startTime}) as value", params);
             long initStartTime = (long) result.next().get("value");
             System.out.println(initStartTime);
         }
@@ -107,7 +107,7 @@ public class ZdrProceduresTest {
             String present = "Present";
             Map<String, Object> params = new HashMap<>();
             params.put("present", present);
-            Result result = db.execute("RETURN zdr.apoc.presentStringToDate({present}) as value", params);
+            Result result = db.execute("RETURN olab.presentStringToDate({present}) as value", params);
             String initStartTime = (String) result.next().get("value");
             System.out.println(initStartTime);
         }
@@ -122,7 +122,7 @@ public class ZdrProceduresTest {
     @Test
     public void matchTimeZone() throws Exception {
         // 测试查询：
-        // MATCH p=(n:手机号)-[r:通联]-(m:手机号) WHERE n.name='13910317532' AND m.name='13910272362' AND zdr.apoc.matchTimeZone({timeList:r.dateHistory,startTime:'2018-03-05 15:37:42',stopTime:'2018-03-05 15:37:43'})=0 RETURN p
+        // MATCH p=(n:手机号)-[r:通联]-(m:手机号) WHERE n.name='13910317532' AND m.name='13910272362' AND olab.matchTimeZone({timeList:r.dateHistory,startTime:'2018-03-05 15:37:42',stopTime:'2018-03-05 15:37:43'})=0 RETURN p
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         try (Transaction tx = db.beginTx()) {
 
@@ -137,7 +137,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN zdr.apoc.matchTimeZone({paras}) as value", params);
+            Result result = db.execute("RETURN olab.matchTimeZone({paras}) as value", params);
 
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -161,7 +161,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN zdr.apoc.matchTimeListString({paras}) as value", params);
+            Result result = db.execute("RETURN olab.matchTimeListString({paras}) as value", params);
 
             String eventIdsSize = (String) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -183,7 +183,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN zdr.apoc.scorePercentage({paras}) as value", params);
+            Result result = db.execute("RETURN olab.scorePercentage({paras}) as value", params);
 
             double eventIdsSize = (double) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -191,7 +191,7 @@ public class ZdrProceduresTest {
         }
     }
 
-    //return zdr.apoc.moveDecimalPoint({scoreObject:21313777.48543,moveLength:100.0})
+    //return olab.moveDecimalPoint({scoreObject:21313777.48543,moveLength:100.0})
     @Test
     public void moveDecimalPoint() throws Exception {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
@@ -212,7 +212,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN zdr.apoc.moveDecimalPoint({paras}) as value", params);
+            Result result = db.execute("RETURN olab.moveDecimalPoint({paras}) as value", params);
 
             Object eventIdsSize = result.next().get("value");
             System.out.println(eventIdsSize);
@@ -232,7 +232,7 @@ public class ZdrProceduresTest {
         Map<String, Object> params = new HashMap<>();
         params.put("paras", map);
 
-        Result result = db.execute("RETURN zdr.apoc.timeCrossOrNot({paras}) AS value", params);
+        Result result = db.execute("RETURN olab.timeCrossOrNot({paras}) AS value", params);
         boolean bool = (boolean) result.next().get("value");
         System.out.println(bool);
     }
@@ -254,7 +254,7 @@ public class ZdrProceduresTest {
         map.put("input", "Chinese");
         Map<String, Object> params = new HashMap<>();
         params.put("paras", map);
-        Result result = db.execute("RETURN zdr.apoc.isContainsString({paras}) AS value", params);
+        Result result = db.execute("RETURN olab.isContainsString({paras}) AS value", params);
         boolean bool = (boolean) result.next().get("value");
         System.out.println(bool);
     }
@@ -267,7 +267,7 @@ public class ZdrProceduresTest {
         map.put("char", "English");
         Map<String, Object> params = new HashMap<>();
         params.put("paras", map);
-        Result result = db.execute("RETURN zdr.apoc.stringCharCount({paras}) AS value", params);
+        Result result = db.execute("RETURN olab.stringCharCount({paras}) AS value", params);
         long num = (long) result.next().get("value");
         System.out.println(num);
     }
@@ -291,7 +291,7 @@ public class ZdrProceduresTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("paras",map);
 
-        Result result = db.execute("RETURN zdr.apoc.relatCalculateRestrict({nLabels},{mLabels},{strictLabels}) AS value", map);
+        Result result = db.execute("RETURN olab.relatCalculateRestrict({nLabels},{mLabels},{strictLabels}) AS value", map);
         boolean bool = (boolean) result.next().get("value");
         System.out.println(bool);
     }
@@ -332,7 +332,7 @@ public class ZdrProceduresTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("paras",map);
 
-            Result result = db.execute("RETURN zdr.apoc.isContainChinese({node}) AS value", map);
+            Result result = db.execute("RETURN olab.isContainChinese({node}) AS value", map);
             long bool = (long) result.next().get("value");
             System.out.println(bool);
         }
@@ -354,7 +354,7 @@ public class ZdrProceduresTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("paras",map);
 
-            Result result = db.execute("RETURN zdr.apoc.isContainAuthority({node}) AS value", map);
+            Result result = db.execute("RETURN olab.isContainAuthority({node}) AS value", map);
             boolean bool = (boolean) result.next().get("value");
             System.out.println(bool);
         }
@@ -396,7 +396,7 @@ public class ZdrProceduresTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("nodeCollections",map);
 
-            Result result = db.execute("RETURN zdr.apoc.mergeNodes({nodeCollections}) AS value", map);
+            Result result = db.execute("RETURN olab.mergeNodes({nodeCollections}) AS value", map);
             List<Node> bool = (List<Node>) result.next().get("value");
             System.out.println(bool.size());
         }
@@ -426,11 +426,11 @@ public class ZdrProceduresTest {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("nodeCollections",map);
 
-//            Result result = db.execute("RETURN zdr.apoc.locMultiFieldsFullTextSearchCondition({node},{locMultiFields}) AS value", map);
+//            Result result = db.execute("RETURN olab.locMultiFieldsFullTextSearchCondition({node},{locMultiFields}) AS value", map);
 //            String str = (String) result.next().get("value");
 //            System.out.println(str);
 
-            Result result = db.execute("RETURN zdr.apoc.nodeIsContainsKey({node},{locMultiFields}) AS value", map);
+            Result result = db.execute("RETURN olab.nodeIsContainsKey({node},{locMultiFields}) AS value", map);
             boolean str = (boolean) result.next().get("value");
             System.out.println(str);
         }
@@ -438,7 +438,7 @@ public class ZdrProceduresTest {
 
     @Test
     public void test14() {
-        ZdrProcedures zdrProcedures = new ZdrProcedures();
+        Procedures zdrProcedures = new Procedures();
         String str = "test,中文s，！";
         char[] array = str.toCharArray();
         for (int i = 0; i < array.length; i++) {
@@ -449,7 +449,7 @@ public class ZdrProceduresTest {
 
     @Test
     public void test15() {
-//        zdr.apoc.removeIdsFromRawList
+//        olab.removeIdsFromRawList
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         try (Transaction tx = db.beginTx()) {
             List<Long> rawIDs = new ArrayList<>();
@@ -465,7 +465,7 @@ public class ZdrProceduresTest {
             map.put("rawIDs", rawIDs);
             map.put("ids", ids);
 
-            Result result = db.execute("RETURN zdr.apoc.removeIdsFromRawList({rawIDs},{ids}) AS value", map);
+            Result result = db.execute("RETURN olab.removeIdsFromRawList({rawIDs},{ids}) AS value", map);
             List<Long> rawIds = (List<Long>) result.next().get("value");
             if (rawIds != null) {
                 for (int i = 0; i < rawIds.size(); i++) {

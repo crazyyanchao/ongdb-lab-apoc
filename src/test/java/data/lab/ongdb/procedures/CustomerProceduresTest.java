@@ -33,7 +33,7 @@ public class CustomerProceduresTest {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
         try (Transaction tx = db.beginTx()) {
-            Result res = db.execute("CALL zdr.apoc.createCustomer('Test') YIELD node RETURN node");
+            Result res = db.execute("CALL olab.createCustomer('Test') YIELD node RETURN node");
 
             Node node = (Node) res.next().get("node");
 
@@ -59,7 +59,7 @@ public class CustomerProceduresTest {
             // CALL training.recommendOnly("Dee Dee Titley_0_linkedin") YIELD stringObjectMap RETURN stringObjectMap
 //            Result res = db.execute("CALL training.recommendOnly(\"Dee Dee Titley_0_linkedin\") YIELD stringObjectMap RETURN stringObjectMap");
 
-            Result res = db.execute("CALL zdr.index.search('linkin', 'name:china*', 10) YIELD node RETURN node");
+            Result res = db.execute("CALL olab.index.search('linkin', 'name:china*', 10) YIELD node RETURN node");
 
 //
 //            System.out.println(res.resultAsString());

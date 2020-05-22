@@ -78,7 +78,7 @@ public class FriendAnalysisProceduresTest {
             map.put("sourceList", sourceList);
             map.put("targetList", targetList);
 
-            Result res = db.execute("CALL zdr.apoc.publicFriendAnalysis({sourceList},{targetList}) YIELD node RETURN node", map);
+            Result res = db.execute("CALL olab.publicFriendAnalysis({sourceList},{targetList}) YIELD node RETURN node", map);
 
             while (res.hasNext()) {
                 Node node = (Node) res.next().get("node");
@@ -120,7 +120,7 @@ public class FriendAnalysisProceduresTest {
             map.put("sourceList", sourceList);
             map.put("targetList", targetList);
 
-            Result res = db.execute("CALL zdr.apoc.publicFriendAnalysisMap({sourceList},{targetList}) YIELD list RETURN list", map);
+            Result res = db.execute("CALL olab.publicFriendAnalysisMap({sourceList},{targetList}) YIELD list RETURN list", map);
 
             while (res.hasNext()) {
                 List<Map<String, Object>> listMap = (List<Map<String, Object>>) res.next().get("list");
@@ -158,7 +158,7 @@ public class FriendAnalysisProceduresTest {
 //            db.execute("MATCH (n),(m) WHERE n.name='A' AND m.name='B' MERGE p=(n)-[r:NEXT]->(m) RETURN p");
 //            db.execute("MATCH (m),(f) WHERE m.name='B' AND f.name='c' MERGE p=(m)-[r:NEXT]->(f) RETURN p");
 
-            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
+            Result res = db.execute("MATCH p=(n)-[*2]-(m) WHERE olab.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN m");
             while (res.hasNext()) {
                 Node nodeRe = (Node) res.next().get("m");
                 System.out.println("Node id:" + nodeRe.getId());
@@ -197,9 +197,9 @@ public class FriendAnalysisProceduresTest {
 //        execute("CREATE (:Movie{name:'person1'})-[r:NEXT]->(n:Movie{name:'person2'})-[r2:NEXT]->(:Movie{name:'person3'})");
 //
 //        // 操作属性忽略标签
-//        execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN p");
+//        execute("MATCH p=(n)-[*2]-(m) WHERE olab.targetNodesRelasFilter(relationships(p),['NEXT','LAST'],m,['Linkin','Loc','City'])=true RETURN p");
 
-        //        execute("MATCH p=(n)-[*2]-(m) WHERE zdr.apoc.targetNodesRelasFilter(relationships(p),null,m,null)=true RETURN p");
+        //        execute("MATCH p=(n)-[*2]-(m) WHERE olab.targetNodesRelasFilter(relationships(p),null,m,null)=true RETURN p");
 
         try (Transaction tx = db.beginTx()) {
             FriendAnalysis analysis = new FriendAnalysis();

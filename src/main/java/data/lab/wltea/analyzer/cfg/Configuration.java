@@ -1,7 +1,10 @@
-/**
+package data.lab.wltea.analyzer.cfg;
+
+/*
+ *
+ * Data Lab - graph database organization.
  *
  */
-package data.lab.wltea.analyzer.cfg;
 
 import data.lab.wltea.analyzer.dic.Dictionary;
 

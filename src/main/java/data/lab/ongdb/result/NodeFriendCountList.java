@@ -10,9 +10,9 @@ import java.util.Map;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.result
+ * @PACKAGE_NAME: data.lab.ongdb.result.NodeFriendCountList
  * @Description: TODO(好友统计结果返回)
- * @date 2019/3/30 21:55
+ * @date 2020/5/22 10:30
  */
 public class NodeFriendCountList {
 

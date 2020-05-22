@@ -12,9 +12,9 @@ import java.util.List;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: casia.isiteam.util
+ * @PACKAGE_NAME: data.lab.ongdb.util.DateHandle
  * @Description: TODO(Date handle class)
- * @date 2018/5/15 14:09
+ * @date 2020/5/22 10:32
  */
 public class DateHandle {
     /**

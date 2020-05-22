@@ -38,7 +38,7 @@ public class FreetextIKTest {
         map.put("text", text);
         map.put("useSmart", true);
 
-        Result res = db.execute("RETURN zdr.index.iKAnalyzer({text},{useSmart}) AS words", map);
+        Result res = db.execute("RETURN olab.index.iKAnalyzer({text},{useSmart}) AS words", map);
         List<String> words = (List<String>) res.next().get("words");
         System.out.println(JSONArray.parseArray(JSON.toJSONString(words)));
     }

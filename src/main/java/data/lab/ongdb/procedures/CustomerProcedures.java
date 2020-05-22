@@ -47,7 +47,7 @@ public class CustomerProcedures {
      * @return
      * @Description: TODO(@ Description的内容会在Neo4j浏览器中调用dbms.functions () 时显示)
      */
-    @Procedure(name = "zdr.apoc.createCustomer", mode = Mode.WRITE)
+    @Procedure(name = "olab.createCustomer", mode = Mode.WRITE)
     @Description("customers.create(name) | Create a new Customer node")
     public Stream<NodeResult> createCustomer(@Name("name") String name) {
         List<NodeResult> output = new ArrayList<>();
@@ -68,7 +68,7 @@ public class CustomerProcedures {
         return output.stream();
     }
 
-    @Procedure(name = "training.recommendOnly", mode = Mode.READ)
+    @Procedure(name = "olab.training.recommendOnly", mode = Mode.READ)
     @Description("Find recommender by an linkin account")
     public Stream<Movie> recommendOnly(@Name("name") String name) throws InvalidArgumentsException, IOException {
         String query = "MATCH (n:LinkedinID {name: {name}}) RETURN n";
@@ -86,8 +86,8 @@ public class CustomerProcedures {
         }
     }
 
-    @Procedure(value = "zdr.index.search", mode = Mode.WRITE)
-    @Description("CALL zdr.index.search(String indexName, String query, long limit) YIELD node,执行LUCENE全文检索，返回前{limit个结果}")
+    @Procedure(value = "olab.index.search", mode = Mode.WRITE)
+    @Description("CALL olab.index.search(String indexName, String query, long limit) YIELD node,执行LUCENE全文检索，返回前{limit个结果}")
     public Stream<ChineseHit> search(@Name("indexName") String indexName, @Name("query") String query, @Name("limit") long limit) {
         if (!db.index().existsForNodes(indexName)) {
             log.debug("如果索引不存在则跳过本次查询：`%s`", indexName);

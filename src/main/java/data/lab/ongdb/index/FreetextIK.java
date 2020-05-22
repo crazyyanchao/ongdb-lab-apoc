@@ -20,9 +20,9 @@ import java.util.List;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
+ * @PACKAGE_NAME: data.lab.ongdb.index.FreetextIK
  * @Description: TODO(分词函数)
- * @date 2019/4/23 9:49
+ * @date 2020/5/22 10:25
  */
 public class FreetextIK {
 
@@ -32,8 +32,8 @@ public class FreetextIK {
      * @return
      * @Description: TODO(支持中英文本分词)
      */
-    @UserFunction(name = "zdr.index.iKAnalyzer")
-    @Description("Fulltext index iKAnalyzer - RETURN zdr.index.iKAnalyzer({text},true) AS words")
+    @UserFunction(name = "olab.index.iKAnalyzer")
+    @Description("Fulltext index iKAnalyzer - RETURN olab.index.iKAnalyzer({text},true) AS words")
     public List<String> iKAnalyzer(@Name("text") String text, @Name("useSmart") boolean useSmart) {
 
         PropertyConfigurator.configureAndWatch("dic" + File.separator + "log4j.properties");

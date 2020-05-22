@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.shortestPath
+ * @PACKAGE_NAME: data.lab.ongdb.shortestPath.ShortestPath
  * @Description: TODO(最短路径相关)
- * @date 2019/4/8 18:39
+ * @date 2020/5/22 10:31
  */
 public class ShortestPath {
 
-    @Procedure(name = "zdr.shortestPath.allPathsTightness", mode = Mode.READ)
+    @Procedure(name = "olab.shortestPath.allPathsTightness", mode = Mode.READ)
     @Description("algo.allShortestPaths.stream result analysis")
     public Stream<AllShortestPathsResult> allPathsTightness(@Name("sourceList") List<Long> sourceList, @Name("targetList") List<Long> targetList, @Name("distanceList") List<Double> distanceList) throws InvalidArgumentsException, IOException {
 

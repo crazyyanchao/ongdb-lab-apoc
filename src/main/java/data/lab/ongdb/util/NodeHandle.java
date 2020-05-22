@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.util
+ * @PACKAGE_NAME: data.lab.ongdb.util.NodeHandle
  * @Description: TODO(操作节点)
- * @date 2019/3/31 16:53
+ * @date 2020/5/22 10:32
  */
 public class NodeHandle {
 

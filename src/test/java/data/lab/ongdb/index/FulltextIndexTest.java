@@ -73,9 +73,9 @@ public class FulltextIndexTest {
             node2.setProperty("description", "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！");
 
             // 给节点建立中文全文索引
-            Result res = db.execute("CALL zdr.index.addChineseFulltextIndex('IKAnalyzer', ['description'],'Loc') YIELD message RETURN message");
-//            Result res = db.execute("CALL zdr.index.addChineseFulltextAutoIndex('IKAnalyzer', 'Loc', ['description'],{autoUpdate:'true'}) YIELD label,property,nodeCount RETURN label,property,nodeCount");
-//            Result res = db.execute("CALL zdr.index.addAllNodes('IKAnalyzer',{Loc:['description','year']},{autoUpdate:'true'})");
+            Result res = db.execute("CALL olab.index.addChineseFulltextIndex('IKAnalyzer', ['description'],'Loc') YIELD message RETURN message");
+//            Result res = db.execute("CALL olab.index.addChineseFulltextAutoIndex('IKAnalyzer', 'Loc', ['description'],{autoUpdate:'true'}) YIELD label,property,nodeCount RETURN label,property,nodeCount");
+//            Result res = db.execute("CALL olab.index.addAllNodes('IKAnalyzer',{Loc:['description','year']},{autoUpdate:'true'})");
 
             Map<String, Object> map = res.next();
             for (Map.Entry entry : map.entrySet()) {
@@ -89,7 +89,7 @@ public class FulltextIndexTest {
         }
         try (Transaction tx = db.beginTx()) {
             // 查询节点
-            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:复联终章', 100) YIELD node,weight RETURN node,weight");
+            Result res2 = db.execute("CALL olab.index.chineseFulltextIndexSearch('IKAnalyzer', 'description:复联终章', 100) YIELD node,weight RETURN node,weight");
 
             while (res2.hasNext()) {
                 Map<String, Object> mapO = res2.next();
@@ -124,18 +124,18 @@ public class FulltextIndexTest {
             }
 
             // 给节点建立中文全文索引
-            db.execute("CALL zdr.index.addChineseFulltextIndex('Loc', ['description'],'Loc') YIELD message RETURN message");
-            db.execute("MATCH (n) WHERE n.name='A' WITH n CALL zdr.index.addNodeChineseFulltextIndex(n, ['description']) RETURN *");
+            db.execute("CALL olab.index.addChineseFulltextIndex('Loc', ['description'],'Loc') YIELD message RETURN message");
+            db.execute("MATCH (n) WHERE n.name='A' WITH n CALL olab.index.addNodeChineseFulltextIndex(n, ['description']) RETURN *");
 
             tx.success();
         }
         try (Transaction tx = db.beginTx()) {
             // 查询节点
-//            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*', 3) YIELD node,weight RETURN node,weight");
-//            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', 'description:复联*',-1) YIELD node,weight RETURN node,weight");
+//            Result res2 = db.execute("CALL olab.index.chineseFulltextIndexSearch('Loc', 'description:复联*', 3) YIELD node,weight RETURN node,weight");
+//            Result res2 = db.execute("CALL olab.index.chineseFulltextIndexSearch('Loc', 'description:复联*',-1) YIELD node,weight RETURN node,weight");
             // +(description:复联*) OR +(_entity_name:美国)
             // +(description:复联) AND -(_entity_name:美国)
-            Result res2 = db.execute("CALL zdr.index.chineseFulltextIndexSearch('Loc', '+(_entity_name:印度*)', 3) YIELD node,weight RETURN node,weight");
+            Result res2 = db.execute("CALL olab.index.chineseFulltextIndexSearch('Loc', '+(_entity_name:印度*)', 3) YIELD node,weight RETURN node,weight");
 
             while (res2.hasNext()) {
                 Map<String, Object> mapO = res2.next();
@@ -157,7 +157,7 @@ public class FulltextIndexTest {
 
         // 查询节点
         try (Transaction tx = db.beginTx()) {
-            Result res = db.execute("CALL zdr.index.chineseFulltextIndexSearch('IKAnalyzer', '复联', 100) YIELD node RETURN node");
+            Result res = db.execute("CALL olab.index.chineseFulltextIndexSearch('IKAnalyzer', '复联', 100) YIELD node RETURN node");
             while (res.hasNext()) {
                 Node message = (Node) res.next().get("message");
                 System.out.println(message.getId());
@@ -175,7 +175,7 @@ public class FulltextIndexTest {
         execute("UNWIND range(80000,90000) as x CREATE (n:Person{name:'person'+x}) SET n.description='description'+x");
 
         // 操作属性忽略标签
-//        execute("CALL zdr.index.addChineseFulltextAutoIndex('people',['name','description'],'Movie',{autoUpdate:'true'})");
+//        execute("CALL olab.index.addChineseFulltextAutoIndex('people',['name','description'],'Movie',{autoUpdate:'true'})");
 
         // then
         ResourceIterator<Node> iterator = search("people", "name:person89999");
@@ -248,8 +248,8 @@ public class FulltextIndexTest {
     }
 
     private ResourceIterator<Node> search(String index, String value) {
-//        zdr.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight
-        return db.execute("CALL zdr.index.chineseFulltextIndexSearch({index}, {value},{limit}) YIELD node,weight SET node.weight=weight RETURN node ORDER BY node.weight DESC",
+//        olab.index.chineseFulltextIndexSearch(String indexName, String query, long limit) YIELD node,weight RETURN node,weight
+        return db.execute("CALL olab.index.chineseFulltextIndexSearch({index}, {value},{limit}) YIELD node,weight SET node.weight=weight RETURN node ORDER BY node.weight DESC",
                 map("index", index, "value", value, "limit", 100)).columnAs("node");
     }
 
