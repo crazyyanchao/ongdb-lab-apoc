@@ -16,9 +16,9 @@ import java.io.StringReader;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.ikconf
+ * @PACKAGE_NAME: data.lab.ikconf.IKFulltextTest
  * @Description: TODO(自定义分词词典测试)
- * @date 2019/4/9 14:50
+ * @date 2020/5/22 10:45
  */
 public class IKFulltextTest {
 
@@ -50,7 +50,7 @@ public class IKFulltextTest {
     @Test
     public void queryWords() throws IOException {
         PropertyConfigurator.configureAndWatch("dic/log4j.properties");
-        String query = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？";
+        String query = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨酸基本基甲烷磺酰甲氧基苯胺是一种药嘛？";
 
 //        String query = "You are probably compiling (or using dependencies compiled) with java 9, but still using JDK 8.0 " +
 //                "Install java 9 and change your OS environment settings to point to the new JDK. This should solve your problem.";
@@ -58,7 +58,7 @@ public class IKFulltextTest {
 //        Environment env = new Environment();
 //        Settings settings = new Settings();
 
-        boolean useSmart = false; // true 用智能分词，false 细粒度
+        boolean useSmart = true; // true 用智能分词，false 细粒度
 
 //        new Configuration(env, settings).setUseSmart(useSmart);
 

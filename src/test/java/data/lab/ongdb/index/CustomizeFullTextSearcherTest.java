@@ -34,19 +34,19 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
+ * @PACKAGE_NAME: data.lab.ongdb.index.CustomizeFullTextSearcherTest
  * @Description: TODO(测试自定义得分计算)
- * @date 2019/8/16 14:49
+ * @date 2020/5/22 10:48
  */
 public class CustomizeFullTextSearcherTest {
 
     @Rule
     public Neo4jRule neo4j = new Neo4jRule().withProcedure(CustomizeFullTextSearcher.class);
 
-//    static final String QUERY_NODES = "CALL db.index.fulltext.queryNodesBySimHash(\"%s\", \"%s\")";
-    static final String QUERY_NODES = "CALL db.index.fulltext.queryNodes(\"%s\", \"%s\")";
+    //    static final String QUERY_NODES = "CALL olab.index.fulltext.queryNodesBySimHash(\"%s\", \"%s\")";
+    static final String QUERY_NODES = "CALL olab.index.fulltext.queryNodes(\"%s\", \"%s\")";
 
-    static final String NODE_CREATE = "CALL db.index.fulltext.createNodeIndex(\"%s\", %s, %s )";
+    static final String NODE_CREATE = "CALL olab.index.fulltext.createNodeIndex(\"%s\", %s, %s )";
 
     private GraphDatabaseAPI db;
     private GraphDatabaseBuilder builder;
@@ -128,7 +128,7 @@ public class CustomizeFullTextSearcherTest {
         }
 
         try (Transaction tx = db.beginTx()) {
-            assertQueryFindsIds( db, true, "nodes", "foo", nodeId );
+            assertQueryFindsIds(db, true, "nodes", "foo", nodeId);
             Result result = db.execute(format(QUERY_NODES, "nodes", "bar"));
             while (result.hasNext()) {
                 Map<String, Object> map = result.next();
@@ -174,7 +174,7 @@ public class CustomizeFullTextSearcherTest {
         }
 
         try (Transaction tx = db.beginTx()) {
-            assertQueryFindsIds( db, true, "nodes", "foo", nodeId );
+            assertQueryFindsIds(db, true, "nodes", "foo", nodeId);
             Result result = db.execute(format(QUERY_NODES, "nodes", "bar"));
             while (result.hasNext()) {
                 Map<String, Object> map = result.next();
@@ -187,32 +187,26 @@ public class CustomizeFullTextSearcherTest {
         }
     }
 
-    static void assertQueryFindsIds( GraphDatabaseService db, boolean queryNodes, String index, String query, long... ids )
-    {
-        try ( Transaction tx = db.beginTx() )
-        {
+    static void assertQueryFindsIds(GraphDatabaseService db, boolean queryNodes, String index, String query, long... ids) {
+        try (Transaction tx = db.beginTx()) {
             String queryCall = queryNodes ? QUERY_NODES : null;
-            Result result = db.execute( format( queryCall, index, query ) );
+            Result result = db.execute(format(queryCall, index, query));
             int num = 0;
             Double score = Double.MAX_VALUE;
-            while ( result.hasNext() )
-            {
+            while (result.hasNext()) {
                 Map entry = result.next();
-                Long nextId = ((Entity) entry.get( queryNodes ? NODE : RELATIONSHIP )).getId();
-                Double nextScore = (Double) entry.get( SCORE );
+                Long nextId = ((Entity) entry.get(queryNodes ? NODE : RELATIONSHIP)).getId();
+                Double nextScore = (Double) entry.get(SCORE);
 //                assertThat( nextScore, lessThanOrEqualTo( score ) );
                 score = nextScore;
-                if ( num < ids.length )
-                {
-                    assertEquals( format( "Result returned id %d, expected %d", nextId, ids[num] ), ids[num], nextId.longValue() );
-                }
-                else
-                {
-                    fail( format( "Result returned id %d, which is beyond the number of ids (%d) that were expected.", nextId, ids.length ) );
+                if (num < ids.length) {
+                    assertEquals(format("Result returned id %d, expected %d", nextId, ids[num]), ids[num], nextId.longValue());
+                } else {
+                    fail(format("Result returned id %d, which is beyond the number of ids (%d) that were expected.", nextId, ids.length));
                 }
                 num++;
             }
-            assertEquals( "Number of results differ from expected", ids.length, num );
+            assertEquals("Number of results differ from expected", ids.length, num);
             tx.success();
         }
     }

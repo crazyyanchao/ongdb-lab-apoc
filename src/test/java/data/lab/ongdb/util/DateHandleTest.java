@@ -11,11 +11,10 @@ import java.util.Arrays;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.util
- * @Description: TODO(Describe the role of this JAVA class)
- * @date 2019/3/11 10:32
+ * @PACKAGE_NAME: data.lab.ongdb.util.DateHandleTest
+ * @Description: TODO
+ * @date 2020/5/22 10:52
  */
-
 public class DateHandleTest {
     @Test
     public void test01() {

@@ -25,9 +25,9 @@ import static org.neo4j.helpers.collection.MapUtil.map;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
+ * @PACKAGE_NAME: data.lab.ongdb.index.FulltextIndexTest
  * @Description: TODO(中文分词全文索引测试)
- * @date 2019/4/9 18:02
+ * @date 2020/5/22 10:50
  */
 public class FulltextIndexTest {
 

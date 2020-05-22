@@ -19,9 +19,9 @@ import java.util.Map;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
- * @Description: TODO(Describe the role of this JAVA class)
- * @date 2019/4/23 9:51
+ * @PACKAGE_NAME: data.lab.ongdb.index.FreetextIKTest
+ * @Description: TODO(分词测试)
+ * @date 2020/5/22 10:48
  */
 public class FreetextIKTest {
 
@@ -34,7 +34,7 @@ public class FreetextIKTest {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
 
         Map<String, Object> map = new HashMap<>();
-        String text = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨基甲烷磺酰甲氧基苯胺是一种药嘛？";
+        String text = "复联终章快上映了好激动，据说知识图谱与人工智能技术应用到了那部电影！吖啶基氨酸基本基甲烷磺酰甲氧基苯胺是一种药嘛？";
         map.put("text", text);
         map.put("useSmart", true);
 

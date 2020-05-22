@@ -18,9 +18,9 @@ import static org.junit.Assert.*;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.procedures
- * @Description: TODO(Describe the role of this JAVA class)
- * @date 2018/8/3 13:30
+ * @PACKAGE_NAME: data.lab.ongdb.procedures.CustomerProceduresTest
+ * @Description: TODO
+ * @date 2020/5/22 10:50
  */
 public class CustomerProceduresTest {
 
@@ -45,7 +45,7 @@ public class CustomerProceduresTest {
         }
 
         try (Transaction tx = db.beginTx()) {
-            Result res = db.execute("CALL training.recommendOnly(\"Test\")");
+            Result res = db.execute("CALL training.recommendOnly('Test')");
 
             System.out.println(res.resultAsString());
         }

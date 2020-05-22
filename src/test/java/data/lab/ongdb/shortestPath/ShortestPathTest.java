@@ -19,9 +19,9 @@ import java.util.Map;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.shortestPath
- * @Description: TODO(Describe the role of this JAVA class)
- * @date 2019/4/8 18:52
+ * @PACKAGE_NAME: data.lab.ongdb.shortestPath.ShortestPathTest
+ * @Description: TODO
+ * @date 2020/5/22 10:52
  */
 public class ShortestPathTest {
     @Rule

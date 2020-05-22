@@ -20,11 +20,11 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.procedures
+ * @PACKAGE_NAME: data.lab.ongdb.procedures.ProceduresTest
  * @Description: TODO(自定义函数测试)
- * @date 2018/8/8 17:23
+ * @date 2020/5/22 10:51
  */
-public class ZdrProceduresTest {
+public class ProceduresTest {
 
     @Rule
     public Neo4jRule neo4j = new Neo4jRule().withFunction(Procedures.class);
@@ -39,7 +39,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("name", name);
 
-            Result result = db.execute("RETURN olab.hello({name}) as greeting", params);
+            Result result = db.execute("RETURN olab.hello({name}) AS greeting", params);
 
             String greeting = (String) result.next().get("greeting");
 
@@ -64,7 +64,7 @@ public class ZdrProceduresTest {
             list.add(2);
             list.add(3);
             params.put("list", list);
-            Result result = db.execute("RETURN olab.sortDESC({list}) as descList", params);
+            Result result = db.execute("RETURN olab.sortDESC({list}) AS descList", params);
             List<Integer> descList = (List<Integer>) result.next().get("descList");
             System.out.println(descList);
         }
@@ -77,7 +77,7 @@ public class ZdrProceduresTest {
             String eventIds = "123213,234324,4354353,1231231,2132131";
             Map<String, Object> params = new HashMap<>();
             params.put("eventIds", eventIds);
-            Result result = db.execute("RETURN olab.getEventIdsSize({eventIds}) as value", params);
+            Result result = db.execute("RETURN olab.getEventIdsSize({eventIds}) AS value", params);
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
 
@@ -94,7 +94,7 @@ public class ZdrProceduresTest {
             String startTime = "2006-05-01 00:00:00";
             Map<String, Object> params = new HashMap<>();
             params.put("startTime", startTime);
-            Result result = db.execute("RETURN olab.initAnnualTime({startTime}) as value", params);
+            Result result = db.execute("RETURN olab.initAnnualTime({startTime}) AS value", params);
             long initStartTime = (long) result.next().get("value");
             System.out.println(initStartTime);
         }
@@ -107,7 +107,7 @@ public class ZdrProceduresTest {
             String present = "Present";
             Map<String, Object> params = new HashMap<>();
             params.put("present", present);
-            Result result = db.execute("RETURN olab.presentStringToDate({present}) as value", params);
+            Result result = db.execute("RETURN olab.presentStringToDate({present}) AS value", params);
             String initStartTime = (String) result.next().get("value");
             System.out.println(initStartTime);
         }
@@ -137,7 +137,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN olab.matchTimeZone({paras}) as value", params);
+            Result result = db.execute("RETURN olab.matchTimeZone({paras}) AS value", params);
 
             int eventIdsSize = (int) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -161,7 +161,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN olab.matchTimeListString({paras}) as value", params);
+            Result result = db.execute("RETURN olab.matchTimeListString({paras}) AS value", params);
 
             String eventIdsSize = (String) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -183,7 +183,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN olab.scorePercentage({paras}) as value", params);
+            Result result = db.execute("RETURN olab.scorePercentage({paras}) AS value", params);
 
             double eventIdsSize = (double) result.next().get("value");
             System.out.println(eventIdsSize);
@@ -212,7 +212,7 @@ public class ZdrProceduresTest {
             Map<String, Object> params = new HashMap<>();
             params.put("paras", map);
 
-            Result result = db.execute("RETURN olab.moveDecimalPoint({paras}) as value", params);
+            Result result = db.execute("RETURN olab.moveDecimalPoint({paras}) AS value", params);
 
             Object eventIdsSize = result.next().get("value");
             System.out.println(eventIdsSize);

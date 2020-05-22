@@ -22,9 +22,9 @@ import static org.junit.Assert.*;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.neo4j.friendAnalysis
+ * @PACKAGE_NAME: data.lab.ongdb.friendAnalysis.FriendAnalysisProceduresTest
  * @Description: TODO(Public friend analysis)
- * @date 2019/3/30 17:13
+ * @date 2020/5/22 10:46
  */
 public class FriendAnalysisProceduresTest {
 
