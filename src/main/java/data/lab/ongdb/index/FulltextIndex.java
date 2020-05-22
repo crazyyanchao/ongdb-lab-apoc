@@ -1,26 +1,8 @@
 package data.lab.ongdb.index;
-/**
- * 　　　　　　　 ┏┓       ┏┓+ +
- * 　　　　　　　┏┛┻━━━━━━━┛┻┓ + +
- * 　　　　　　　┃　　　　　　 ┃
- * 　　　　　　　┃　　　━　　　┃ ++ + + +
- * 　　　　　　 █████━█████  ┃+
- * 　　　　　　　┃　　　　　　 ┃ +
- * 　　　　　　　┃　　　┻　　　┃
- * 　　　　　　　┃　　　　　　 ┃ + +
- * 　　　　　　　┗━━┓　　　 ┏━┛
- * ┃　　  ┃
- * 　　　　　　　　　┃　　  ┃ + + + +
- * 　　　　　　　　　┃　　　┃　Code is far away from     bug with the animal protecting
- * 　　　　　　　　　┃　　　┃ +
- * 　　　　　　　　　┃　　　┃
- * 　　　　　　　　　┃　　　┃　　+
- * 　　　　　　　　　┃　 　 ┗━━━┓ + +
- * 　　　　　　　　　┃ 　　　　　┣┓
- * 　　　　　　　　　┃ 　　　　　┏┛
- * 　　　　　　　　　┗┓┓┏━━━┳┓┏┛ + + + +
- * 　　　　　　　　　 ┃┫┫　 ┃┫┫
- * 　　　　　　　　　 ┗┻┛　 ┗┻┛+ + + +
+/*
+ *
+ * Data Lab - graph database organization.
+ *
  */
 
 import data.lab.ongdb.message.NodeIndexMessage;
@@ -45,14 +27,14 @@ import java.util.stream.Stream;
 //import static apoc.util.AsyncStream.async;
 
 /**
- * @author YanchaoMa yanchaoma@foxmail.com
- * @PACKAGE_NAME: casia.isiteam.zdr.neo4j.index
+ * @author Yc-Ma
+ * @PACKAGE_NAME: data.lab.ongdb.neo4j.index
  * @Description: TODO(基于中文分词的NEO4J全文检索)
  * @date 2019/4/9 11:42
  */
 public class FulltextIndex {
 
-    private static final String tokenFilter = "casia.isiteam.zdr.wltea.analyzer.lucene.IKAnalyzer";
+    private static final String tokenFilter = "data.lab.ongdb.wltea.analyzer.lucene.IKAnalyzer";
 
     // 提供支持索引自动更新的类使用
     protected static final Map<String, String> FULL_INDEX_CONFIG = MapUtil
