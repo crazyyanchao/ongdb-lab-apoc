@@ -1,9 +1,9 @@
-# Neo4j自定义函数与过程插件
+# ONgDB自定义函数与过程插件
 >apoc包过程函数命名域：olab.*
 
-> 此插件对应版本：NEO4J-3.5.X
+> 此插件对应版本：ONgDB-3.5.X
 
-> PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到NEO4J安装目录下的PLUGIN目录，将dic文件夹移动到NEO4J安装根目录即可。
+> PLUGIN安装：MAVEN INSTALL之后在target目录下生成的JAR包安装到ONgDB安装目录下的PLUGIN目录，将dic文件夹移动到ONgDB安装根目录即可。
 
 ## 自定义中文全文检索
 
