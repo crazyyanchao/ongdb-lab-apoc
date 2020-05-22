@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>casia.isiteam.zdr</groupId>
-  <artifactId>neo4j-graph-plugin</artifactId>
-  <version>1.0.1</version>
+  <groupId>data.lab.engineering</groupId>
+  <artifactId>ongdb-lab-apoc</artifactId>
+  <version>1.0.0</version>
   <build>
     <plugins>
       <plugin>
@@ -139,7 +139,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
