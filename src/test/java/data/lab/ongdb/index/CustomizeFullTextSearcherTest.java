@@ -44,9 +44,9 @@ public class CustomizeFullTextSearcherTest {
     public Neo4jRule neo4j = new Neo4jRule().withProcedure(CustomizeFullTextSearcher.class);
 
     //    static final String QUERY_NODES = "CALL olab.index.fulltext.queryNodesBySimHash(\"%s\", \"%s\")";
-    static final String QUERY_NODES = "CALL olab.index.fulltext.queryNodes(\"%s\", \"%s\")";
+    static final String QUERY_NODES = "CALL db.index.fulltext.queryNodes(\"%s\", \"%s\")";
 
-    static final String NODE_CREATE = "CALL olab.index.fulltext.createNodeIndex(\"%s\", %s, %s )";
+    static final String NODE_CREATE = "CALL db.index.fulltext.createNodeIndex(\"%s\", %s, %s )";
 
     private GraphDatabaseAPI db;
     private GraphDatabaseBuilder builder;
