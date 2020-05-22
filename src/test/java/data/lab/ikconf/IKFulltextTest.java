@@ -1,4 +1,4 @@
-package data.lab.zdr.ikconf;
+package data.lab.ikconf;
 /**
  * 　　　　　　　 ┏┓       ┏┓+ +
  * 　　　　　　　┏┛┻━━━━━━━┛┻┓ + +
