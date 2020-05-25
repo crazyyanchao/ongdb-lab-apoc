@@ -34,8 +34,8 @@ public class SimHash {
      * @return
      * @Description: TODO(检查两个新闻是否相似)
      */
-    public static boolean isSimilar(NewsFingerPrint newsFingerPrintOne, NewsFingerPrint newsFingerPrintTwo) {
-        return isSimilar(newsFingerPrintOne, newsFingerPrintTwo, 3);
+    public static boolean isSimilar(TextFingerPrint textFingerPrintOne, TextFingerPrint textFingerPrintTwo) {
+        return isSimilar(textFingerPrintOne, textFingerPrintTwo, 3);
     }
 
     /**
@@ -43,15 +43,15 @@ public class SimHash {
      * @return
      * @Description: TODO(检查两个新闻是否相似)
      */
-    public static boolean isSimilar(NewsFingerPrint newsFingerPrintOne, NewsFingerPrint newsFingerPrintTwo, int hammingDistance) {
+    public static boolean isSimilar(TextFingerPrint textFingerPrintOne, TextFingerPrint textFingerPrintTwo, int hammingDistance) {
 
         // 标题指纹
-        String titleSimHashOne = newsFingerPrintOne.getTitleSimHash();
-        String titleSimHashTwo = newsFingerPrintTwo.getTitleSimHash();
+        String titleSimHashOne = textFingerPrintOne.getTitleSimHash();
+        String titleSimHashTwo = textFingerPrintTwo.getTitleSimHash();
 
         // 内容指纹
-        String contentSimHashOne = newsFingerPrintOne.getContentSimHash();
-        String contentSimHashTwo = newsFingerPrintTwo.getContentSimHash();
+        String contentSimHashOne = textFingerPrintOne.getContentSimHash();
+        String contentSimHashTwo = textFingerPrintTwo.getContentSimHash();
 
         return (
                 (titleSimHashOne != null && !"".equals(titleSimHashOne) &&

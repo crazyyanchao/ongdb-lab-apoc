@@ -8,7 +8,7 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.Neo4jRule;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /*
  *
@@ -73,5 +73,5 @@ public class CustomerProceduresTest {
 
         }
     }
-
 }
+

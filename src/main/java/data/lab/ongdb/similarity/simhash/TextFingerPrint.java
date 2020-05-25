@@ -10,23 +10,27 @@ import java.util.Objects;
 /**
  * @author Yc-Ma
  * @PACKAGE_NAME: data.lab.ongdb.similarity.simhash.NewsFingerPrint
- * @Description: TODO(新闻指纹)
+ * @Description: TODO(文本指纹对象)
  * @date 2020/5/22 15:12
  */
-public class NewsFingerPrint {
+public class TextFingerPrint {
 
-    // TITLE SIM-HASH-VALUE
+    /**
+     * TITLE SIM-HASH-VALUE
+     * **/
     private String titleSimHash;
 
-    // CONTENT SIM-HASH-VALUE
+    /**
+     * CONTENT SIM-HASH-VALUE
+     * **/
     private String contentSimHash;
 
-    public NewsFingerPrint(String titleSimHash, String contentSimHash) {
+    public TextFingerPrint(String titleSimHash, String contentSimHash) {
         this.titleSimHash = titleSimHash;
         this.contentSimHash = contentSimHash;
     }
 
-    public NewsFingerPrint(String titleOrContentSimHash) {
+    public TextFingerPrint(String titleOrContentSimHash) {
         this.contentSimHash = titleOrContentSimHash;
     }
 
@@ -54,7 +58,7 @@ public class NewsFingerPrint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        NewsFingerPrint that = (NewsFingerPrint) o;
+        TextFingerPrint that = (TextFingerPrint) o;
         return Objects.equals(titleSimHash, that.titleSimHash) &&
                 Objects.equals(contentSimHash, that.contentSimHash);
     }

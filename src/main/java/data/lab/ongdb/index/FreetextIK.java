@@ -1,4 +1,5 @@
-package data.lab.ongdb.index;/*
+package data.lab.ongdb.index;
+/*
  *
  * Data Lab - graph database organization.
  *

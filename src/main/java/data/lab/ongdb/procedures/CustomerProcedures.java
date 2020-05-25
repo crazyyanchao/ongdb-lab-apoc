@@ -1,11 +1,5 @@
 package data.lab.ongdb.procedures;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import data.lab.ongdb.result.NodeResult;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -14,11 +8,13 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.index.lucene.QueryContext;
 import org.neo4j.kernel.api.exceptions.InvalidArgumentsException;
 import org.neo4j.logging.Log;
-import org.neo4j.procedure.Context;
-import org.neo4j.procedure.Description;
-import org.neo4j.procedure.Mode;
-import org.neo4j.procedure.Name;
-import org.neo4j.procedure.Procedure;
+import org.neo4j.procedure.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.neo4j.helpers.collection.MapUtil.map;
 
@@ -107,7 +103,5 @@ public class CustomerProcedures {
             this.node = node;
         }
     }
-
-
 }
 
