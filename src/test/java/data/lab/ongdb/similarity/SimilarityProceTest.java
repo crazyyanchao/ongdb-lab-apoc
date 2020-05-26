@@ -28,15 +28,23 @@ public class SimilarityProceTest {
     @Test
     public void simHashSimilarity() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
-        db.execute("CREATE (n {simhash:'1010111110110100111001000100110010000110100110101110101110000110'}) SET n:组织机构:中文名称 " +
-                "CREATE (m {simhash:'1010111110110100111001000100110010000110100110101110101110000110'}) SET m:组织机构:中文名称");
-        Result resultPath = db.execute("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) \n" +
+        String createNode = "CREATE (n {simhash:'1010111110110100111001000100110010000110100110101110101110000110'}) SET n:组织机构:中文名称 " +
+                "CREATE (m {simhash:'1010111110110100111001000100110010000110100110101110101110000110'}) SET m:组织机构:中文名称";
+        db.execute(createNode);
+
+        String buildSimHashRel="MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) \n" +
                 "WHERE n<>m AND NOT ((n)-[:相似简介]-(m))\n" +
-                "CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD relId RETURN relId");
+                "CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD pathJ RETURN pathJ";
+        Result resultPath = db.execute(buildSimHashRel);
         while (resultPath.hasNext()) {
             Map<String, Object> map = resultPath.next();
-            System.out.println(map.size());
+            Object object =map.get("pathJ");
+            System.out.println(object);
+
         }
+        System.out.println(createNode);
+        System.out.println(buildSimHashRel);
     }
+
 }
 

@@ -138,4 +138,24 @@ RETURN olab.simhash('公司系经长春经济体制改革委员会长体改(1993
 ```
 
 ### 14、计算两个节点simhash相似度
+- 创建三个两两之间简介相似的组织机构节点
+```cql
+MERGE (n:组织机构:中文名称 {name:'阿里'}) SET n.brief='阿里巴巴(中国)网络技术有限公司成立于1999年09月09日，注册地位于浙江省杭州市滨江区网商路699号，法定代表人为戴珊。经营范围包括开发、销售计算机网络应用软件；设计、制作、加工计算机网络产品并提供相关技术服务和咨询服务；',n.simhash=olab.simhash(n.brief)
+MERGE (m:组织机构:中文名称 {name:'阿里巴巴'}) SET m.brief='阿里巴巴(中国)网络技术有限公司成立于1999年09月09日，注册地位于浙江省杭州市滨江区网商路699号，法定代表人为戴珊。成年人的非证书劳动职业技能培训（涉及许可证的除外）。（依法须经批准的项目，经相关部门批准后方可开展经营活动）阿里巴巴(中国)网络技术有限公司对外投资86家公司，具有37处分支机构。',m.simhash=olab.simhash(n.brief)
+MERGE (f:组织机构:中文名称 {name:'Alibaba'}) SET f.brief='经营范围包括开发、销售计算机网络应用软件；设计、制作、加工计算机网络产品并提供相关技术服务和咨询服务；服务：自有物业租赁，翻译，成年人的非证书劳动职业技能培训（涉及许可证的除外）。（依法须经批准的项目，经相关部门批准后方可开展经营活动）阿里巴巴(中国)网络技术有限公司对外投资86家公司，具有37处分支机构。',f.simhash=olab.simhash(n.brief)
+RETURN n,m,f
+```
+- 创建三个两两之间简介不相似的组织机构节点【短文本的阈值设置hammingDistance】
+```
+MERGE (n:组织机构:中文名称 {name:'天猫'}) SET n.brief='37处分支机构。',n.simhash=olab.simhash(n.brief)
+MERGE (m:组织机构:中文名称 {name:'阿猫'}) SET m.brief='1999年09月09日',m.simhash=olab.simhash(m.brief)
+MERGE (f:组织机构:中文名称 {name:'猫猫'}) SET f.brief='自有物业租赁',f.simhash=olab.simhash(f.brief)
+RETURN n,m,f
+```
+- 生成组织机构之间的‘相似简介‘的关系
+```cql
+MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) 
+WHERE n<>m AND NOT ((n)-[:相似简介]-(m))
+CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD pathJ RETURN pathJ
+```
 
