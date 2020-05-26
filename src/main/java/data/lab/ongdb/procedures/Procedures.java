@@ -6,7 +6,7 @@ package data.lab.ongdb.procedures;
  */
 
 import data.lab.ongdb.result.NodeResult;
-import data.lab.ongdb.util.ChineseVerify;
+import data.lab.ongdb.util.StringVerify;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
 import org.apache.commons.lang3.StringUtils;
@@ -377,7 +377,7 @@ public class Procedures {
         char[] nodeValueChar = nodeValueBuilder.toString().toCharArray();
 
         int chineseCharCount = 0;
-        ChineseVerify chineseVerify = new ChineseVerify();
+        StringVerify chineseVerify = new StringVerify();
         for (int i = 0; i < nodeValueChar.length; i++) {
             char c = nodeValueChar[i];
             if (chineseVerify.isContainChinese(String.valueOf(c))) {

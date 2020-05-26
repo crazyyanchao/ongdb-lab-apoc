@@ -138,6 +138,7 @@ RETURN olab.simhash('公司系经长春经济体制改革委员会长体改(1993
 ```
 
 ### 14、计算两个节点simhash相似度
+>返回值只返回本次新建的关系，每次操作都有返回值，无新建则返回空
 - 创建三个两两之间简介相似的组织机构节点
 ```cql
 MERGE (n:组织机构:中文名称 {name:'阿里'}) SET n.brief='阿里巴巴(中国)网络技术有限公司成立于1999年09月09日，注册地位于浙江省杭州市滨江区网商路699号，法定代表人为戴珊。经营范围包括开发、销售计算机网络应用软件；设计、制作、加工计算机网络产品并提供相关技术服务和咨询服务；',n.simhash=olab.simhash(n.brief)
@@ -160,6 +161,44 @@ CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD path
 ```
 - 批量并发迭代计算’相似简介‘关系
 ```cql
-CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似简介]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
+CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似简介]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3,false) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
 ```
+### 15、计算两个节点编辑距离相似度
+>返回值只返回本次新建的关系，每次操作都有返回值，无新建则返回空
+>阈值参考：英文0.9，中文0.8
+- 【英文计算结果较好】计算两个节点的编辑距离相似度，相似则建立’相似名称‘关系
+```
+MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) 
+WHERE n<>m AND NOT ((n)-[:相似名称]-(m))
+CALL olab.editDistance.build.rel(n,m,'editDis','editDis','相似名称',0.9,true) YIELD pathJ RETURN pathJ
+```
+- 批量并发迭代计算’相似名称‘关系
+```cql
+CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似名称]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.editDistance.build.rel(n,m,'editDis','editDis','相似名称',0.9,true) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
+```
+- 拿取节点关联的别名，两两交叉计算编辑距离相似度，相似度最高值如果满足阈值则新建关系
+```
+CREATE (n {editDis:'Google M Inc.'}) SET n:组织机构:中文名称 
+CREATE (m {editDis:'Google T Inc.'}) SET m:组织机构:中文名称 
+CREATE (n1 {name:'谷歌'}) SET n1:组织机构:中文简称 
+CREATE (n2 {name:'Google'}) SET n2:组织机构:英文简称 
+CREATE (m1 {name:'谷歌M'}) SET m1:组织机构:中文简称 CREATE (m2 {name:'谷歌M'}) SET m2:组织机构:英文简称 
+CREATE (n)-[:关联别名]->(n1) 
+CREATE (n)-[:关联别名]->(n2) 
+CREATE (m)-[:关联别名]->(m1) 
+CREATE (m)-[:关联别名]->(m2) 
+```
+- 英文中文使用相同权重
+```
+MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) 
+WHERE n<>m AND NOT ((n)-[:相似名称]-(m))
+CALL olab.editDistance.build.rel.cross(n,m,'关联别名','name','editDis','editDis','相似名称',0.9,true) YIELD pathJ RETURN pathJ
+```
+- 自动区分英文和中文，使用不同阈值进行计算
+```
+MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) 
+WHERE n<>m AND NOT ((n)-[:相似名称]-(m))
+CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','editDis','editDis','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ
+```
+
 

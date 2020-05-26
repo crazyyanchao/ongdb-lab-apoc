@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @Description: TODO(中文文本校验)
  * @date 2020/5/22 10:32
  */
-public class ChineseVerify {
+public class StringVerify {
 
     /**
      * 校验一个字符是否是汉字
@@ -66,4 +66,24 @@ public class ChineseVerify {
         return false;
     }
 
+    /**
+     * @param string:输入字符串
+     * @return
+     * @Description: TODO（是否英文）
+     */
+    public static boolean isEnglish(String string) {
+        return string.matches("^[a-zA-Z]*");
+    }
+
+    /**
+     * @param string:输入字符串
+     * @return
+     * @Description: TODO（是否中文）
+     */
+    public static boolean isChinese(String string) {
+        String regEx = "[\\u4e00-\\u9fa5]+";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(string);
+        return m.find();
+    }
 }
