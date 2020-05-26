@@ -38,10 +38,10 @@ public class SimilarityProce {
     @Procedure(name = "olab.simhash.build.rel", mode = Mode.WRITE)
     @Description("CALL olab.simhash.build.rel({node1},{node2},{simhashFieldName},{relName}),{hammingDistance} YIELD pathJ")
     public Stream<PathResult> simHashSimilarityPathBuild(@Name("nodeN") Node nodeN, @Name("nodeM") Node nodeM,
-                                       @Name("nodeNsimhashFieldName") String nodeNsimhashFieldName,
-                                       @Name("nodeMsimhashFieldName") String nodeMsimhashFieldName,
-                                       @Name("relName") String relName,
-                                       @Name("hammingDistance") Number hammingDistance) {
+                                                         @Name("nodeNsimhashFieldName") String nodeNsimhashFieldName,
+                                                         @Name("nodeMsimhashFieldName") String nodeMsimhashFieldName,
+                                                         @Name("relName") String relName,
+                                                         @Name("hammingDistance") Number hammingDistance) {
         if (nodeN.hasProperty(nodeNsimhashFieldName) && nodeM.hasProperty(nodeMsimhashFieldName)) {
             String fingerPrintN = String.valueOf(nodeN.getProperty(nodeNsimhashFieldName));
             String fingerPrintM = String.valueOf(nodeM.getProperty(nodeMsimhashFieldName));
@@ -51,17 +51,25 @@ public class SimilarityProce {
                 if (bool) {
                     long idN = nodeN.getId();
                     long idM = nodeM.getId();
-                    String mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) RETURN p";
-                    Result resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM));
-                    if (resultPath.hasNext()) {
-                        Map<String, Object> map = resultPath.next();
-                        Object object = map.get("p");
-                        return  Stream.of(new PathResult(object));
+                    if (!isMatchCurrentRel(idN, idM, relName)) {
+                        String mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) RETURN p";
+                        Result resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM));
+                        if (resultPath.hasNext()) {
+                            Map<String, Object> map = resultPath.next();
+                            Object object = map.get("p");
+                            return Stream.of(new PathResult(object));
+                        }
                     }
                 }
             }
         }
-        return Stream.of(new PathResult(null));
+        return Stream.of(new PathResult());
+    }
+
+    private boolean isMatchCurrentRel(long idN, long idM, String relName) {
+        String matchCypher = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MATCH p=(n)-[r:" + relName + "]-(m) RETURN p";
+        Result resultPath = db.execute(matchCypher, map("idN", idN, "idM", idM));
+        return resultPath.hasNext();
     }
 
 }

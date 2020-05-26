@@ -37,16 +37,5 @@ public class SimilarityTest {
         System.out.println(greeting);
     }
 
-    @Test
-    public void shouldGreetWorldThreshold() {
-        GraphDatabaseService db = neo4j.getGraphDatabaseService();
-        String name = "公司系经长春经济体制改革委员会长体改(1993)165号文批准，由长春第一光学仪器厂、长春长顺体育综合开发公司、天津利源总公司三家共同发起成立的股份有限公司。公司股票于1996年7月15日上市。";
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        Result result = db.execute("RETURN olab.simhash.threshold({name},60) AS simHash", params);
-        String greeting = (String) result.next().get("simHash");
-        System.out.println(greeting);
-    }
-
 }
 

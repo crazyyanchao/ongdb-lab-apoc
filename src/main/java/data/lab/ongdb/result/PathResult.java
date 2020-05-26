@@ -19,6 +19,9 @@ public class PathResult {
 
     public Object pathJ;
 
+    public PathResult() {
+    }
+
     public PathResult(Path path) {
         this.path = path;
     }
