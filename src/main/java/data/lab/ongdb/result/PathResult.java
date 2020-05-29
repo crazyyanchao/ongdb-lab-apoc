@@ -19,13 +19,20 @@ public class PathResult {
 
     public Object pathJ;
 
+    public Number count;
+
     public PathResult() {
     }
 
     public PathResult(Path path) {
         this.path = path;
     }
+
     public PathResult(Object path) {
         this.pathJ = path;
+    }
+
+    public PathResult(int count) {
+        this.count = count;
     }
 }

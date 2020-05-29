@@ -6,7 +6,6 @@ import data.lab.ongdb.similarity.simhash.TextFingerPrint;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Result;
-import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
 import java.util.ArrayList;
@@ -23,9 +22,6 @@ public class SimilarityProce {
      */
     @Context
     public GraphDatabaseService db;
-
-    @Context
-    public Log log;
 
     /**
      * @param nodeN:节点N
@@ -70,6 +66,61 @@ public class SimilarityProce {
                             Map<String, Object> map = resultPath.next();
                             Object object = map.get("p");
                             return Stream.of(new PathResult(object));
+                        }
+                    }
+                }
+            }
+        }
+        return Stream.of(new PathResult());
+    }
+
+    /**
+     * @param nodeN:节点N
+     * @param nodeM:节点M
+     * @param nodeNsimhashFieldNameList:存储simhash值的字段列表
+     * @param nodeMsimhashFieldNameList:存储simhash值的字段列表
+     * @param relName:生成的关系类型名
+     * @param hammingDistanceThreshold:汉明距离阈值
+     * @param recordHimmingDistance:是否将汉明距离计算值存储在关系上
+     * @return
+     * @Description: TODO(计算两个节点的文本属性相似度并生成相似关系)
+     */
+    @Procedure(name = "olab.simhash.build.rel.cross", mode = Mode.WRITE)
+    @Description("CALL olab.simhash.build.rel.cross({nodeN},{nodeM},{['filed1','field2'...]},{['filed1','field2'...]},{relName}),{hammingDistanceThreshold},{recordHimmingDistance}) YIELD pathJ")
+    public Stream<PathResult> simHashSimilarityPathBuild(@Name("nodeN") Node nodeN, @Name("nodeM") Node nodeM,
+                                                         @Name("nodeNsimhashFieldName") List<String> nodeNsimhashFieldNameList,
+                                                         @Name("nodeMsimhashFieldName") List<String> nodeMsimhashFieldNameList,
+                                                         @Name("relName") String relName,
+                                                         @Name("hammingDistanceThreshold") Number hammingDistanceThreshold,
+                                                         @Name("recordHimDistance") boolean recordHimmingDistance) {
+        for (String nodeNsimhashFieldName : nodeNsimhashFieldNameList) {
+            for (String nodeMsimhashFieldName : nodeMsimhashFieldNameList) {
+                if (nodeN.hasProperty(nodeNsimhashFieldName) && nodeM.hasProperty(nodeMsimhashFieldName)) {
+                    String fingerPrintN = String.valueOf(nodeN.getProperty(nodeNsimhashFieldName));
+                    String fingerPrintM = String.valueOf(nodeM.getProperty(nodeMsimhashFieldName));
+                    if (fingerPrintN != null && fingerPrintM != null
+                            && !"".equals(fingerPrintN) && !"".equals(fingerPrintM)) {
+                        boolean bool = SimHash.isSimilar(new TextFingerPrint(fingerPrintN), new TextFingerPrint(fingerPrintM), hammingDistanceThreshold.intValue());
+                        if (bool) {
+                            long idN = nodeN.getId();
+                            long idM = nodeM.getId();
+                            if (!isMatchCurrentRel(idN, idM, relName)) {
+                                Result resultPath;
+                                String mergeQuery;
+                                if (recordHimmingDistance) {
+                                    int himDis = SimHash.hamming(fingerPrintN, fingerPrintM);
+                                    mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) SET r.recordHimmingDistance=$himDis RETURN p";
+                                    resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM, "himDis", himDis));
+                                } else {
+                                    mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) RETURN p";
+                                    resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM));
+                                }
+                                if (resultPath.hasNext()) {
+                                    Map<String, Object> map = resultPath.next();
+                                    Object object = map.get("p");
+                                    return Stream.of(new PathResult(object));
+                                }
+                            }
                         }
                     }
                 }
@@ -201,11 +252,12 @@ public class SimilarityProce {
             return similarityValue1.compareTo(similarityValue2);
         }).get();
     }
-    private Map<String, Object> isSimilarity(List<String> nodeNCrossNameList, List<String> nodeMCrossNameList, double editDistanceThresholdEn,double editDistanceThresholdCn) {
+
+    private Map<String, Object> isSimilarity(List<String> nodeNCrossNameList, List<String> nodeMCrossNameList, double editDistanceThresholdEn, double editDistanceThresholdCn) {
         List<Map<String, Object>> mapList = new ArrayList<>();
         for (String textN : nodeNCrossNameList) {
             for (String textM : nodeMCrossNameList) {
-                Map<String, Object> map = EditDistance.isSimilarityThresholdMap(textN, textM, editDistanceThresholdEn,editDistanceThresholdCn);
+                Map<String, Object> map = EditDistance.isSimilarityThresholdMap(textN, textM, editDistanceThresholdEn, editDistanceThresholdCn);
                 mapList.add(map);
             }
         }
@@ -281,6 +333,47 @@ public class SimilarityProce {
             }
         }
         return Stream.of(new PathResult());
+    }
+
+    /**
+     * @param startNode
+     * @param endNode
+     * @param relPathList:关系列表
+     * @param weightinessMap:权重map
+     * @return
+     * @Description: TODO(根据关系权重计算两个节点的相似度 - 默认支持两层关系)
+     */
+    @Procedure(name = "olab.similarity.collision", mode = Mode.READ)
+    @Description("CALL olab.similarity.collision({startNode},{endNode},{relPathList},{weightinessMap}) YIELD similarity,startNode,endNode")
+    public Stream<SimilarityNodeResult> similarityNodeResultStream(@Name("startNode") Node startNode, @Name("endNode") Node endNode,
+                                                                   @Name("relPathList") List<List<String>> relPathList,
+                                                                   @Name("weightinessMap") Map<String, Number> weightinessMap) {
+        int similarity = 0;
+        for (List<String> pathRelList : relPathList) {
+            String relName = pathRelList.get(0);
+            if (pathRelList.size() == 1) {
+                if (weightinessMap.containsKey(relName)) {
+                    similarity += weightinessMap.get(relName).intValue();
+                }
+            } else if (pathRelList.size() == 2 && pathRelList.get(0).equals(pathRelList.get(1))) {
+                if (weightinessMap.containsKey(relName)) {
+                    similarity += weightinessMap.get(relName).intValue();
+                }
+            }
+        }
+        return Stream.of(new SimilarityNodeResult(startNode, endNode, similarity));
+    }
+
+    public static class SimilarityNodeResult {
+        public final Node startNode;
+        public final Node endNode;
+        public final Number similarity;
+
+        public SimilarityNodeResult(Node startNode, Node endNode, Number similarity) {
+            this.startNode = startNode;
+            this.endNode = endNode;
+            this.similarity = similarity;
+        }
     }
 }
 

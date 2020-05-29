@@ -159,6 +159,14 @@ MATCH (n:组织机构:中文名称),(m:组织机构:中文名称)
 WHERE n<>m AND NOT ((n)-[:相似简介]-(m))
 CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3) YIELD pathJ RETURN pathJ
 ```
+- 生成组织机构之间的‘相似简介‘的关系 - 两组属性列表中任意一组SimHash属性相似即判定为相似
+```cql
+MERGE (n:组织机构:中文名称 {name:'Alibaba天猫'}) SET n.brief_intro_cn=olab.simhash('37处分支机构'),n.brief_intro_en=olab.simhash('37处分支机构')
+MERGE (m:组织机构:中文名称 {name:'Alibaba阿猫'}) SET n.brief_intro_cn=olab.simhash('1999年09月09日'),n.brief_intro_en=olab.simhash('1999年09月09日'),n.business_intro_cn=olab.simhash('37处分支机构')
+MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) 
+WHERE n<>m AND NOT ((n)-[:相似简介]-(m))
+CALL olab.simhash.build.rel.cross(n,m,['brief_intro_cn','brief_intro_en'],['brief_intro_cn','business_intro_cn','brief_intro_en','business_intro_en'],'相似简介',3) YIELD pathJ RETURN pathJ
+```
 - 批量并发迭代计算’相似简介‘关系
 ```cql
 CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似简介]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.simhash.build.rel(n,m,'simhash','simhash','相似简介',3,false) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
@@ -203,6 +211,15 @@ CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','editDis',
 ```
 CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似名称]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','name','name','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
 ```
-
+## 16、根据关系模式计算两个节点相似度
+```
+MATCH (n:`组织机构`:`中文名称`) WITH n SKIP 0 LIMIT 100
+MATCH (m:`组织机构`:`中文名称`) WHERE n<>m WITH n,m
+MATCH p=(n)-[*..2]-(m) WHERE n<>m 
+WITH extract(r IN relationships(p) | TYPE(r)) AS relList,n,m
+WITH collect(relList) AS collectList,n,m
+CALL olab.similarity.collision(n,m,collectList,{关联人:3,关联网址:3,关联城市:1}) YIELD similarity,startNode,endNode 
+RETURN similarity,startNode,endNode ORDER BY similarity DESC LIMIT 100
+```
 
 
