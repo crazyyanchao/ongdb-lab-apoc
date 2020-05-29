@@ -158,7 +158,8 @@ public class ClusterTest {
     @Test
     public void cluster() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
-        String cluster = "CALL olab.cluster.collision('组织机构:中文名称',{关联人:3,关联网址:3,关联城市:1},2,'cluster_master') YIELD count RETURN count";
+        String cluster = "" +
+                "CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联网址:3,关联城市:1},'PREClusterHeart公司',2,'cluster_id') YIELD clusterNum RETURN clusterNum";
         Result result = db.execute(cluster);
         while (result.hasNext()) {
             int count = (int) result.next().get("count");

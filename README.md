@@ -216,10 +216,14 @@ CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:
 MATCH (n:`组织机构`:`中文名称`) WITH n SKIP 0 LIMIT 100
 MATCH (m:`组织机构`:`中文名称`) WHERE n<>m WITH n,m
 MATCH p=(n)-[*..2]-(m) WHERE n<>m 
-WITH extract(r IN relationships(p) | TYPE(r)) AS relList,n,m
+WITH [r IN relationships(p) | TYPE(r)] AS relList,n,m
 WITH collect(relList) AS collectList,n,m
 CALL olab.similarity.collision(n,m,collectList,{关联人:3,关联网址:3,关联城市:1}) YIELD similarity,startNode,endNode 
-RETURN similarity,startNode,endNode ORDER BY similarity DESC LIMIT 100
+RETURN startNode.name,endNode.name,similarity ORDER BY similarity DESC LIMIT 100
 ```
 
+## 17、根据关系模式相似度聚类节点
+```
+CREATE INDEX ON :PersonTest(id);
+```
 
