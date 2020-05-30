@@ -242,6 +242,7 @@ MATCH (m:`组织机构`:`中文名称`) WHERE m.cluster_id=clusterId
 RETURN clusterId AS master,COUNT(m) AS slaveCount,COLLECT(id(m)+'-'+m.name) AS slaves
 ```
 - 后台任务的方式运行聚类算法
+>权重为-1表示不计算相似直接划分到同一个簇
 ```
 CALL apoc.periodic.submit('writeOrgClusterTask','CALL olab.cluster.collision([\'组织机构\',\'中文名称\'],{关联人:3,关联网址:3,关联城市:1},\'PREClusterHeart公司\',2,\'cluster_id\')')
 CALL apoc.periodic.list()
