@@ -223,7 +223,27 @@ RETURN startNode.name,endNode.name,similarity ORDER BY similarity DESC LIMIT 100
 ```
 
 ## 17、根据关系模式相似度聚类节点
+- 建索引
 ```
-CREATE INDEX ON :PersonTest(id);
+CREATE INDEX ON :PREClusterHeart公司(cluster_id);
+```
+- 运行聚类算法
+```
+CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联网址:3,关联城市:1},'PREClusterHeart公司',2,'cluster_id') YIELD clusterNum RETURN clusterNum
+```
+- 获取‘5301’这个簇的所有节点
+```
+MATCH (n:`组织机构`:`中文名称`) WHERE n.cluster_id=5301 RETURN n LIMIT 25
+```
+- 查看所有聚簇
+```
+MATCH (n:PREClusterHeart公司) WITH n.cluster_id AS clusterId
+MATCH (m:`组织机构`:`中文名称`) WHERE m.cluster_id=clusterId 
+RETURN clusterId AS master,COUNT(m) AS slaveCount,COLLECT(id(m)+'-'+m.name) AS slaves
+```
+- 后台任务的方式运行聚类算法
+```
+CALL apoc.periodic.submit('writeOrgClusterTask','CALL olab.cluster.collision([\'组织机构\',\'中文名称\'],{关联人:3,关联网址:3,关联城市:1},\'PREClusterHeart公司\',2,\'cluster_id\')')
+CALL apoc.periodic.list()
 ```
 
