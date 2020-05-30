@@ -162,7 +162,7 @@ public class ClusterTest {
                 "CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联网址:3,关联城市:1},'PREClusterHeart公司',2,'cluster_id') YIELD clusterNum RETURN clusterNum";
         Result result = db.execute(cluster);
         while (result.hasNext()) {
-            int count = (int) result.next().get("count");
+            long count = (long) result.next().get("clusterNum");
             System.out.println(count);
         }
     }

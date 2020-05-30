@@ -61,66 +61,52 @@ public class Cluster {
             count = (long) resultCount.next().get("count");
         }
         for (int i = 0; i < count; i++) {
-//            readCypher = "MATCH (n:" + masterNodeLabel + ") WITH n SKIP " + i + " LIMIT 1\n" +
-//                    "MATCH (m:" + masterNodeLabel + ") WHERE n<>m WITH n,m\n" +
-//                    "MATCH p=(n)-[*..2]-(m) WHERE n<>m \n" +
-//                    "WITH [r IN relationships(p) | type(r)] AS relList,n,m\n" +
-//                    "WITH collect(relList) AS collectList,n,m\n" +
-//                    "CALL olab.similarity.collision(n,m,collectList," + JSONTool.removeJSONObjKeyDoubleQuotationMark(JSONObject.parseObject(JSON.toJSONString(relWeightMap))) + ") YIELD similarity,startNode,endNode \n" +
-//                    "WHERE toint(similarity)>" + threshold + " " +
-//                    "RETURN startNode.name,endNode.name,similarity ORDER BY similarity DESC";
-//            Result result = db.execute(readCypher);
 
             readCypher = "MATCH (n:" + masterNodeLabel + ") WITH n SKIP " + i + " LIMIT 1\n" +
                     "MATCH (m:" + masterNodeLabel + ") WHERE n<>m WITH n,m\n" +
                     "MATCH p=(n)-[*..2]-(m) WHERE n<>m \n" +
                     "WITH [r IN relationships(p) | type(r)] AS relList,n,m\n" +
-                    "RETURN collect(relList) AS collectList,n,m";
+                    "RETURN collect(relList) AS collectList,id(n) AS idN,id(m) AS idM";
             Result result = db.execute(readCypher);
 
-            /////
+            // 加载PATH关系集合LIST并加总相似度权重
             List<Long[]> rawLongList = new ArrayList<>();
             while (result.hasNext()) {
-                long idN = (long) result.next().get("idN");
-                long idM = (long) result.next().get("idM");
-                List<List<String>> collectList = (List<List<String>>) result.next().get("collectList");
+                Map<String, Object> map = result.next();
+                long idN = (long) map.get("idN");
+                long idM = (long) map.get("idM");
+                List<List<String>> collectList = (List<List<String>>) map.get("collectList");
                 long similarity = getWeightinessSimilarity(relWeightMap, collectList);
                 rawLongList.add(new Long[]{idN, idM, similarity});
             }
 
-            // 通过阈值过滤
-            List<Long[]> filterLongList = rawLongList.stream().filter(v -> v[2] > threshold.longValue())
-                    .sorted(Comparator.comparing(v -> v[2])).collect(Collectors.toList());
-            /////
+            if (!rawLongList.isEmpty()) {
+                // 通过阈值过滤
+                List<Long[]> filterLongList = rawLongList.stream().filter(v -> v[2] > threshold.longValue())
+                        .sorted(Comparator.comparing(v -> v[2])).collect(Collectors.toList());
 
-            // 相似节点列表
-//            List<Long> longList = new ArrayList<>();
-//            while (result.hasNext()) {
-//                Node startNode = (Node) result.next().get("startNode");
-//                Node endNode = (Node) result.next().get("endNode");
-//                long startNodeId = startNode.getId();
-//                long endNodeId = endNode.getId();
-//                longList.add(endNodeId);
-//                if (!longList.contains(startNodeId)) {
-//                    longList.add(startNodeId);
-//                }
-//            }
-            List<Long> longList = filterLongList
+                if (!filterLongList.isEmpty()) {
+                    // 相似节点列表-一个聚簇中的所有节点列表
+                    List<Long> longList = filterLongList.stream()
+                            .map(v -> v[1]).collect(Collectors.toList());
+                    longList.add(filterLongList.get(0)[0]);
 
-            if (!longList.isEmpty()) {
-                JSONArray longListArray = JSONArray.parseArray(JSON.toJSONString(longList));
-                // 找到信息量最大的点做为聚类中心并设置标签
-                writeClusterFocusCypher = "MATCH (n) WHERE id(n) IN " + longListArray.toJSONString() + " REMOVE n:" + clusterFocusNodeLabel + " WITH n,size((n)-[]-()) AS size ORDER BY size DESC LIMIT 1 \n" +
-                        "SET n:" + clusterFocusNodeLabel + " RETURN id(n) AS id";
-                Result focusResult = db.execute(writeClusterFocusCypher);
-                long clusterId = -1;
-                if (focusResult.hasNext()) {
-                    clusterId = (long) focusResult.next().get("id");
+                    if (!longList.isEmpty()) {
+                        JSONArray longListArray = JSONArray.parseArray(JSON.toJSONString(longList));
+                        // 找到信息量最大的点做为聚类中心并设置标签
+                        writeClusterFocusCypher = "MATCH (n) WHERE id(n) IN " + longListArray.toJSONString() + " REMOVE n:" + clusterFocusNodeLabel + " WITH n,size((n)-[]-()) AS size ORDER BY size DESC LIMIT 1 \n" +
+                                "SET n:" + clusterFocusNodeLabel + " RETURN id(n) AS id";
+                        Result focusResult = db.execute(writeClusterFocusCypher);
+                        long clusterId = -1;
+                        if (focusResult.hasNext()) {
+                            clusterId = (long) focusResult.next().get("id");
+                        }
+
+                        // 为所有点设置聚簇ID
+                        writeClusterIdCypher = "MATCH (n) WHERE id(n) IN " + longListArray.toJSONString() + " SET n." + slavesMarkField + "=" + clusterId;
+                        db.execute(writeClusterIdCypher);
+                    }
                 }
-
-                // 为所有点设置聚簇ID
-                writeClusterIdCypher = "MATCH (n) WHERE id(n) IN " + longListArray.toJSONString() + " SET n." + slavesMarkField + "=" + clusterId;
-                db.execute(writeClusterIdCypher);
             }
         }
         Result result = db.execute("MATCH (n:" + clusterFocusNodeLabel + ") RETURN COUNT(*) AS count");
