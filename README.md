@@ -211,6 +211,10 @@ CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','editDis',
 ```
 CALL apoc.periodic.iterate("MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) WHERE n<>m AND NOT ((n)-[:相似名称]-(m)) RETURN n,m", "WITH {n} AS n,{m} AS m CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','name','name','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ", {parallel:true,batchSize:10000}) YIELD  batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations RETURN batches,total,timeTaken,committedOperations,failedOperations,failedBatches,retries,errorMessages,batch,operations
 ```
+- 多个关联名称关系
+```
+CALL olab.editDistance.build.rel.cross.encn.multirel(n,m,['关联别名','英文名称'],'name','editDis','editDis','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ
+```
 ## 16、根据关系模式计算两个节点相似度
 ```
 MATCH (n:`组织机构`:`中文名称`) WITH n SKIP 0 LIMIT 100

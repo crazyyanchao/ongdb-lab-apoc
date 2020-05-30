@@ -282,6 +282,25 @@ public class SimilarityProce {
         return list;
     }
 
+    private List<String> getNodeCrossNameListMultiRel(Node node, List<String> crossRelList, String crossNodeFiledName, String nodeEditDistanceFieldName) {
+        StringBuilder builder = new StringBuilder();
+        for (String rel : crossRelList) {
+            builder.append(":").append(rel).append("|");
+        }
+        String crossRels = builder.substring(0, builder.length() - 1);
+        long id = node.getId();
+        String text = String.valueOf(node.getProperty(nodeEditDistanceFieldName));
+        List<String> list = new ArrayList<>();
+        list.add(text);
+        String cypher = "MATCH (n) WHERE id(n)=$id MATCH p=(n)-[" + crossRels + "]-(m) RETURN m." + crossNodeFiledName + " AS name";
+        Result result = db.execute(cypher, map("id", id));
+        while (result.hasNext()) {
+            String textCro = String.valueOf(result.next().get("name"));
+            list.add(textCro);
+        }
+        return list;
+    }
+
     /**
      * @param nodeN:节点N
      * @param nodeM:节点M
@@ -309,6 +328,59 @@ public class SimilarityProce {
                                                            @Name("recordEditDistance") boolean recordEditDistance) {
         List<String> nodeNCrossNameList = getNodeCrossNameList(nodeN, crossRel, crossNodeFiledName, nodeNeditDistanceFieldName);
         List<String> nodeMCrossNameList = getNodeCrossNameList(nodeM, crossRel, crossNodeFiledName, nodeMeditDistanceFieldName);
+        Map<String, Object> mapEditDis = isSimilarity(nodeNCrossNameList, nodeMCrossNameList, editDistanceThresholdEn, editDistanceThresholdCn);
+        boolean bool = (boolean) mapEditDis.get("isSimilarity");
+        if (bool) {
+            long idN = nodeN.getId();
+            long idM = nodeM.getId();
+            if (!isMatchCurrentRel(idN, idM, relName)) {
+                Result resultPath;
+                String mergeQuery;
+                if (recordEditDistance) {
+                    double editDisSimilarity = (double) mapEditDis.get("similarityValue");
+                    mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) SET r.recordEditDistance=$editDis RETURN p";
+                    resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM, "editDis", editDisSimilarity));
+                } else {
+                    mergeQuery = "MATCH (n),(m) WHERE id(n)=$idN AND id(m)=$idM MERGE p=(n)-[r:" + relName + "]->(m) RETURN p";
+                    resultPath = db.execute(mergeQuery, map("idN", idN, "idM", idM));
+                }
+                if (resultPath.hasNext()) {
+                    Map<String, Object> map = resultPath.next();
+                    Object object = map.get("p");
+                    return Stream.of(new PathResult(object));
+                }
+            }
+        }
+        return Stream.of(new PathResult());
+    }
+
+    /**
+     * @param nodeN:节点N
+     * @param nodeM:节点M
+     * @param crossRels:需要拿取的关联属性-一般是同类属性【关联别名的多个关系】
+     * @param crossNodeFiledName:关联节点中需要拿取属性字段
+     * @param nodeNeditDistanceFieldName:N节点的存储被计算文本的字段
+     * @param nodeMeditDistanceFieldName:M节点的存储被计算文本的字段
+     * @param relName:创建的关系名称
+     * @param editDistanceThresholdEn:编辑距离的英文阈值
+     * @param editDistanceThresholdCn:编辑距离的中文阈值
+     * @param recordEditDistance:是否记录编辑距离相似度数值
+     * @return
+     * @Description: TODO(编辑距离计算相似度)
+     */
+    @Procedure(name = "olab.editDistance.build.rel.cross.encn.multirel", mode = Mode.WRITE)
+    @Description("CALL olab.editDistance.build.rel.cross.encn.multirel({nodeN},{nodeM},{crossRels},{crossNodeFiledName},{nodeNeditDistanceFieldName},{nodeMeditDistanceFieldName},{relName}),{editDistanceThresholdEn},{editDistanceThresholdCn},{recordEditDistance}) YIELD pathJ")
+    public Stream<PathResult> editSimilarityPathBuildCross(@Name("nodeN") Node nodeN, @Name("nodeM") Node nodeM,
+                                                           @Name("crossRels") List<String> crossRels,
+                                                           @Name("crossNodeFiledName") String crossNodeFiledName,
+                                                           @Name("nodeNeditDistanceFieldName") String nodeNeditDistanceFieldName,
+                                                           @Name("nodeMeditDistanceFieldName") String nodeMeditDistanceFieldName,
+                                                           @Name("relName") String relName,
+                                                           @Name("editDistanceThresholdEn") double editDistanceThresholdEn,
+                                                           @Name("editDistanceThresholdCn") double editDistanceThresholdCn,
+                                                           @Name("recordEditDistance") boolean recordEditDistance) {
+        List<String> nodeNCrossNameList = getNodeCrossNameListMultiRel(nodeN, crossRels, crossNodeFiledName, nodeNeditDistanceFieldName);
+        List<String> nodeMCrossNameList = getNodeCrossNameListMultiRel(nodeM, crossRels, crossNodeFiledName, nodeMeditDistanceFieldName);
         Map<String, Object> mapEditDis = isSimilarity(nodeNCrossNameList, nodeMCrossNameList, editDistanceThresholdEn, editDistanceThresholdCn);
         boolean bool = (boolean) mapEditDis.get("isSimilarity");
         if (bool) {

@@ -190,9 +190,12 @@ public class SimilarityProceTest {
                 "CREATE (m)-[:关联别名]->(m2) ";
         db.execute(creteCrossRel);
 
+//        String buildRel = "MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) \n" +
+//                "WHERE n<>m AND NOT ((n)-[:相似名称]-(m))\n" +
+//                "CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','editDis','editDis','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ";
         String buildRel = "MATCH (n:组织机构:中文名称),(m:组织机构:中文名称) \n" +
                 "WHERE n<>m AND NOT ((n)-[:相似名称]-(m))\n" +
-                "CALL olab.editDistance.build.rel.cross.encn(n,m,'关联别名','name','editDis','editDis','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ";
+                "CALL olab.editDistance.build.rel.cross.encn.multirel(n,m,['关联别名','英文名称'],'name','editDis','editDis','相似名称',0.9,0.8,true) YIELD pathJ RETURN pathJ";
         Result resultPath = db.execute(buildRel);
         while (resultPath.hasNext()) {
             Map<String, Object> map = resultPath.next();

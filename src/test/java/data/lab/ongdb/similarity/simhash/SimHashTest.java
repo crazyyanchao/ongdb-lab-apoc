@@ -2,8 +2,6 @@ package data.lab.ongdb.similarity.simhash;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /*
  *
  * Data Lab - graph database organization.
