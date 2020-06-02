@@ -1,5 +1,6 @@
 package data.lab.ongdb.clustering;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -160,7 +161,7 @@ public class ClusterTest {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         // 权重为-1表示不计算相似度直接判定为相似
         String cluster = "" +
-                "CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联网址:3,关联城市:1,关联邮编:-1},'PREClusterHeart公司',0,'cluster_id') YIELD clusterNum RETURN clusterNum";
+                "CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联网址:3,关联城市:1,关联邮编:-1},'PREClusterHeart公司',5,'cluster_id',['关联人','关联网址','关联城市','关联邮编']) YIELD clusterNum RETURN clusterNum";
         Result result = db.execute(cluster);
         while (result.hasNext()) {
             long count = (long) result.next().get("clusterNum");
