@@ -59,25 +59,36 @@ public class Cluster {
         }
         for (int i = 0; i < count; i++) {
 
-            readCypher = "MATCH (n:" + masterNodeLabel + ") WITH n SKIP " + i + " LIMIT 1\n" +
-                    "MATCH (m:" + masterNodeLabel + ") WHERE n<>m WITH n,m\n" +
-                    "MATCH p=(n)-[*..2]-(m) WHERE n<>m \n" +
-                    "WITH [r IN relationships(p) | type(r)] AS relList,n,m\n" +
-                    "RETURN collect(relList) AS collectList,id(n) AS idN,id(m) AS idM";
-            Result result = db.execute(readCypher);
-
-            // 加载PATH关系集合LIST并加总相似度权重
             List<Long[]> rawLongList = new ArrayList<>();
-            while (result.hasNext()) {
-                Map<String, Object> map = result.next();
-                long idN = (long) map.get("idN");
-                long idM = (long) map.get("idM");
-                List<List<String>> collectList = (List<List<String>>) map.get("collectList");
-                Map<String, Long> mapSimilarity = getWeightinessSimilarity(relWeightMap, collectList);
-                long similarity = mapSimilarity.get("similarity");
-                // '-1'-false   '1'-true
-                long isDirectlySim = mapSimilarity.get("isDirectlySim");
-                rawLongList.add(new Long[]{idN, idM, similarity, isDirectlySim});
+            int num = 0;
+            int batch=200;
+            for (; ; ) {
+                readCypher = "MATCH (n:" + masterNodeLabel + ") WITH n SKIP " + i + " LIMIT 1\n" +
+                        "MATCH (m:" + masterNodeLabel + ") WHERE n<>m WITH n,m\n" +
+                        "MATCH p=(n)-[*..2]-(m) WHERE n<>m \n" +
+                        "WITH [r IN relationships(p) | type(r)] AS relList,n,m\n" +
+                        "RETURN collect(relList) AS collectList,id(n) AS idN,id(m) AS idM SKIP "+num+" LIMIT "+batch;
+                Result result = db.execute(readCypher);
+
+                // 加载PATH关系集合LIST并加总相似度权重
+                List<Long[]> rawLongListTemp = new ArrayList<>();
+                while (result.hasNext()) {
+                    Map<String, Object> map = result.next();
+                    long idN = (long) map.get("idN");
+                    long idM = (long) map.get("idM");
+                    List<List<String>> collectList = (List<List<String>>) map.get("collectList");
+                    Map<String, Long> mapSimilarity = getWeightinessSimilarity(relWeightMap, collectList);
+                    long similarity = mapSimilarity.get("similarity");
+                    // '-1'-false   '1'-true
+                    long isDirectlySim = mapSimilarity.get("isDirectlySim");
+                    rawLongListTemp.add(new Long[]{idN, idM, similarity, isDirectlySim});
+                }
+                if (!rawLongListTemp.isEmpty()){
+                    rawLongList.addAll(rawLongListTemp);
+                    num+=batch;
+                }else {
+                    break;
+                }
             }
 
             if (!rawLongList.isEmpty()) {
