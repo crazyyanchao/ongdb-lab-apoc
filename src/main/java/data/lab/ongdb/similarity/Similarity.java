@@ -26,5 +26,6 @@ public class Similarity {
     public String produceSimHash(@Name("text") String text) {
         return SimHash.hash().setText(text).getSimHash();
     }
+
 }
 

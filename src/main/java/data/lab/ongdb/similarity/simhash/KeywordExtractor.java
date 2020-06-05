@@ -15,19 +15,20 @@ import java.util.Map.Entry;
  */
 public class KeywordExtractor {
     private static Logger logger = Logger.getLogger(KeywordExtractor.class);
-    private Map<String, Double> idfMap = new HashMap<String, Double>();
-    private Set<String> stopWords = new HashSet<String>();
+    private Map<String, Double> idfMap = new HashMap<>();
+    private Set<String> stopWords = new HashSet<>();
     private double idfAverage;
-    private static KeywordExtractor instance = new KeywordExtractor();
 
-    public static KeywordExtractor getInstance() {
-        return instance;
-    }
+//    private static KeywordExtractor instance = new KeywordExtractor();
+//
+//    public static KeywordExtractor getInstance() {
+//        return instance;
+//    }
 
     /**
      * 构造函数
      */
-    private KeywordExtractor() {
+    public KeywordExtractor() {
         logger.info("load dict...");
         String stopwordPath = "dic/stop_words.utf8";
         String idfPath = "dic/idf.utf8";

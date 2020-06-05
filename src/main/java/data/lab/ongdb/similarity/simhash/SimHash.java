@@ -23,7 +23,8 @@ public class SimHash {
 
     private String hash;
     private BigInteger signature;
-    private KeywordExtractor wordExtractor = KeywordExtractor.getInstance();
+    //    private KeywordExtractor wordExtractor = KeywordExtractor.getInstance();
+    private KeywordExtractor wordExtractor = new KeywordExtractor();
 
     public static SimHash hash() {
         return new SimHash();
