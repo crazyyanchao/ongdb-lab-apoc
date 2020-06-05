@@ -19,11 +19,11 @@ public class KeywordExtractor {
     private Set<String> stopWords = new HashSet<>();
     private double idfAverage;
 
-//    private static KeywordExtractor instance = new KeywordExtractor();
-//
-//    public static KeywordExtractor getInstance() {
-//        return instance;
-//    }
+    private static KeywordExtractor instance = new KeywordExtractor();
+
+    public static KeywordExtractor getInstance() {
+        return instance;
+    }
 
     /**
      * 构造函数
