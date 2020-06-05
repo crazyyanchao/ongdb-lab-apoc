@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author louxuezheng@hotmail.com
  */
-public final class WordsSegment {
+public class WordsSegment {
     /**
      * 分词
      *

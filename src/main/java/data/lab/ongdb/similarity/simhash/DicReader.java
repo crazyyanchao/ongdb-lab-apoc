@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
  * @Description: TODO(文档读入工具)
  * @date 2020/5/22 15:15
  */
-public final class DicReader {
+public class DicReader {
 
     private static Logger logger = Logger.getLogger(DicReader.class);
 

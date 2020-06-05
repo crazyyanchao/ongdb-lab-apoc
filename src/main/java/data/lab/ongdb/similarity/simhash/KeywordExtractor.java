@@ -13,7 +13,7 @@ import java.util.Map.Entry;
  * @Description: TODO(关键词抽取类 : 消除停用词 ， 并对词语进行tfidf权重计算)
  * @date 2020/5/22 15:11
  */
-public final class KeywordExtractor {
+public class KeywordExtractor {
     private static Logger logger = Logger.getLogger(KeywordExtractor.class);
     private Map<String, Double> idfMap = new HashMap<String, Double>();
     private Set<String> stopWords = new HashSet<String>();

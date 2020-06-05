@@ -8,7 +8,7 @@ import java.math.BigInteger;
  * @Description: TODO(FNVhash)
  * @date 2020/5/22 15:13
  */
-public final class FNVHash {
+public class FNVHash {
 
     public static final int HASH_BITS = 64;
     public static final BigInteger FNV_64_INIT = new BigInteger("14695981039346656037");
