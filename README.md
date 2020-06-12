@@ -237,7 +237,7 @@ CALL olab.cluster.collision(['组织机构','中文名称'],{关联人:3,关联�
 ```
 - 获取‘5301’这个簇的所有节点
 ```
-MATCH (n:`组织机构`:`中文名称`) WHERE n.cluster_id=5301 RETURN n LIMIT 25
+MATCH (n:`组织机构`:`中文名称`)  WHERE n.cluster_id=5301 RETURN n LIMIT 25
 ```
 - 查看所有聚簇
 ```
