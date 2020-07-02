@@ -6,7 +6,7 @@
 
     <groupId>data.lab.engineering</groupId>
     <artifactId>ongdb-lab-apoc</artifactId>
-    <version>1.0.0</version>
+    <version>3.5.17</version>
 
     <properties>
         <neo4j.version>3.5.17</neo4j.version>
@@ -56,6 +56,11 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.68</version>
+        </dependency>
+        <dependency>
+            <groupId>data.lab.engineering</groupId>
+            <artifactId>ongdb-lab-http</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     <build>

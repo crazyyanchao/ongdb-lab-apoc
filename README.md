@@ -251,4 +251,12 @@ RETURN clusterId AS master,COUNT(m) AS slaveCount,COLLECT(id(m)+'-'+m.name) AS s
 CALL apoc.periodic.submit('writeOrgClusterTask','CALL olab.cluster.collision([\'组织机构\',\'中文名称\'],{关联人:3,关联网址:3,关联城市:1},\'PREClusterHeart公司\',2,\'cluster_id\')')
 CALL apoc.periodic.list()
 ```
+## 18、增加HTTP调用函数-支持API绝对地址
+```
+RETURN olab.http.post('api-address','input')
+RETURN olab.http.get('api-address')
+RETURN olab.http.put('api-address','input')
+RETURN olab.http.delete('api-address','input')
+
+```
 
