@@ -13,7 +13,7 @@ import org.neo4j.procedure.UserFunction;
 /**
  * @author Yc-Ma
  * @PACKAGE_NAME: data.lab.ongdb.http
- * @Description: TODO(执行HTTP请求的过程)
+ * @Description: TODO(执行HTTP请求)
  * @date 2020/7/2 16:05
  */
 public class Http {
