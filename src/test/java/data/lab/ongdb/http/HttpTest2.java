@@ -25,7 +25,7 @@ public class HttpTest2 {
 
     @Test
     public void get() {
-        String result = httpRequest.httpGet("https://vpc-knowledgegraph-4zarhbj33zcjjkqfo3afso45la.cn-north-1.es.amazonaws.com.cn/pre_org_cn_node//_search?q=name:吉林白山航空发展股份有限公司+hcode:HORGdcb7f837be6b845725f67a598ebea1b6");
+        String result = httpRequest.httpGet("https://localhost:7424/pre_org_cn_node//_search?q=name:吉林白山航空发展股份有限公司+hcode:HORGdcb7f837be6b845725f67a598ebea1b6");
         System.out.println(result);
     }
 

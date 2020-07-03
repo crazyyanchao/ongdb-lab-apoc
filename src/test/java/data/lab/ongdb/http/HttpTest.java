@@ -30,7 +30,7 @@ public class HttpTest {
     public void post() {
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         Map<String, Object> params = new HashMap<>();
-        params.put("api", "http://10.20.0.157:7424/ongdb/read/d/transaction/commit");
+        params.put("api", "http://localhost:7424/ongdb/read/d/transaction/commit");
         params.put("input", "{\"statements\": [{\"statement\": \"match (n) return n limit 10;\"}],\"user\": \"ongdb\",\"password\": \"ongdb%dev\"}");
         Result result = db.execute("RETURN olab.http.post({api},{input}) AS resultPost", params);
         String resultPost = (String) result.next().get("resultPost");
