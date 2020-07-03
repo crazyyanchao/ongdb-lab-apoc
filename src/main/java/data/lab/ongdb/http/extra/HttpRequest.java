@@ -82,7 +82,9 @@ public class HttpRequest implements HttpInter {
         HttpGet httpGet = new HttpGet(url);
         try {
             httpGet.setHeader("User-Agent", HttpHeader.User_Agent_Firefox);
-            httpGet.setHeader("Authorization", authBase64);
+            if (authBase64 != null) {
+                httpGet.setHeader("Authorization", authBase64);
+            }
             HttpResponse httpResponse = httpClient.execute(httpGet);
             int requestStatus = httpResponse.getStatusLine().getStatusCode();
 
@@ -118,14 +120,16 @@ public class HttpRequest implements HttpInter {
      * @Description: TODO(POST)
      */
     @Override
-    public synchronized String httpPost(String url, String query) {
+    public String httpPost(String url, String query) {
         HttpPost httpPost = new HttpPost(url);
         try {
 
             StringEntity input = new StringEntity(query, HttpHeader.Encoding_UTF_8);
             input.setContentType("application/json");
             httpPost.setEntity(input);
-            httpPost.setHeader("Authorization", authBase64);
+            if (authBase64 != null) {
+                httpPost.setHeader("Authorization", authBase64);
+            }
 
             HttpResponse httpResponse = httpClient.execute(httpPost);
             int requestStatus = httpResponse.getStatusLine().getStatusCode();
@@ -169,7 +173,9 @@ public class HttpRequest implements HttpInter {
                 StringEntity input = new StringEntity(query, HttpHeader.Encoding_UTF_8);
                 input.setContentType("application/json");
                 httpPut.setEntity(input);
-                httpPut.setHeader("Authorization", authBase64);
+                if (authBase64 != null) {
+                    httpPut.setHeader("Authorization", authBase64);
+                }
             }
 
             HttpResponse httpResponse = httpClient.execute(httpPut);
@@ -214,7 +220,9 @@ public class HttpRequest implements HttpInter {
                 StringEntity input = new StringEntity(query, HttpHeader.Encoding_UTF_8);
                 input.setContentType("application/json");
                 httpDeleteWithBody.setEntity(input);
-                httpDeleteWithBody.setHeader("Authorization", authBase64);
+                if (authBase64 != null) {
+                    httpDeleteWithBody.setHeader("Authorization", authBase64);
+                }
             }
             HttpResponse httpResponse = httpClient.execute(httpDeleteWithBody);
             int requestStatus = httpResponse.getStatusLine().getStatusCode();
