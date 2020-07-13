@@ -475,5 +475,16 @@ public class ProceduresTest {
         }
     }
 
+    @Test
+    public void regexp() {
+        String FILTER_SPECIAL_CHARACTER="[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。 ，、？\"-]";
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("string", "\"TMC Rus\" Limited Liability Company");
+        hashMap.put("regexp", FILTER_SPECIAL_CHARACTER);
+        Result result = db.execute("RETURN olab.replace.regexp({string},{regexp}) AS value", hashMap);
+        String string = (String) result.next().get("value");
+        System.out.println(string);
+    }
 }
 

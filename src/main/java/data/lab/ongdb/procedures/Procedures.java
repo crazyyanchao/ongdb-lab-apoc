@@ -6,9 +6,9 @@ package data.lab.ongdb.procedures;
  */
 
 import data.lab.ongdb.result.NodeResult;
-import data.lab.ongdb.util.StringVerify;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
+import data.lab.ongdb.util.StringVerify;
 import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.Node;
 import org.neo4j.procedure.Description;
@@ -18,6 +18,8 @@ import org.neo4j.procedure.UserFunction;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -489,6 +491,19 @@ public class Procedures {
     /**
      * @param
      * @return
+     * @Description: TODO(用正则串过滤字段值 ， 并返回过滤之后的VALUE ； 保留空格)
+     */
+    @UserFunction(name = "olab.replace.regexp")
+    @Description("Replace string by regexp")
+    public String replaceRegexp(@Name("string") String string, @Name("regexp") String regexp) {
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher m = pattern.matcher(string);
+        return m.replaceAll(" ").trim();
+    }
+
+    /**
+     * @param
+     * @return
      * @Description: TODO(节点ID集合移除某些节点)
      */
     @UserFunction(name = "olab.removeIdsFromRawList")
@@ -500,7 +515,6 @@ public class Procedures {
         }
         return rawIDs;
     }
-
 }
 
 

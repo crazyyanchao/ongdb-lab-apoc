@@ -27,6 +27,83 @@ public class PathFilter {
     public GraphDatabaseService db;
 
     /**
+     * @param pathList:COLLECT(p) AS pathList
+     * @return
+     * @Description: TODO(分析输入节点PATH按照关系层级分类节点 【 输入一个完整的计算逻辑图 】 【 输出层级执行顺序LIST 】)
+     */
+    @UserFunction(name = "olab.operator.sort")
+    @Description("RETURN olab.operator.sort(pathList) AS operatorSortList")
+    public List<List<Long>> operatorSortList(@Name("inputNodeList") List<Long> inputNodeList, @Name("pathList") List<Path> pathList) {
+        List<List<Long>> operatorSortList = new ArrayList<>();
+        /**
+         * key为END-NODE，value为对应到key的START-NODE
+         * **/
+        Map<Node, List<Node>> map = new HashMap<>();
+        for (Path path : pathList) {
+            Node startNode = path.startNode();
+            Node endNode = path.endNode();
+            if (map.containsKey(endNode)) {
+                List<Node> startNodeList = map.get(endNode);
+                startNodeList.add(startNode);
+                map.put(endNode, startNodeList);
+            } else {
+                List<Node> startNodeList = new ArrayList<>();
+                startNodeList.add(startNode);
+                map.put(endNode, startNodeList);
+            }
+        }
+        /**
+         * 算子执行逻辑图的层数
+         * **/
+        int maxPathDepth = map.size() + 1;
+
+        /**
+         * 放入初始入参节点
+         * **/
+        operatorSortList.add(inputNodeList);
+
+        for (int i = 0; i < maxPathDepth; i++) {
+            /**
+             * 找到当前这层节点的下一层节点
+             * **/
+            List<Long> inputNodeListLast = findLastNodes(operatorSortList.get(i), pathList);
+            if (inputNodeListLast.isEmpty()) {
+                operatorSortList.add(inputNodeListLast);
+            }
+        }
+        return operatorSortList;
+    }
+
+    /**
+     * @param longs:当前这层节点的IDS
+     * @param pathList:当前计算图的路径
+     * @return
+     * @Description: TODO
+     */
+    private List<Long> findLastNodes(List<Long> longs, List<Path> pathList) {
+        List<Long> lastNodeList = new ArrayList<>();
+
+        // 当前这层直连的节点
+        for (int i = 0; i < pathList.size(); i++) {
+            Path path = pathList.get(i);
+            long startNodeId = path.startNode().getId();
+            if (longs.contains(startNodeId)) {
+                lastNodeList.add(path.endNode().getId());
+            }
+        }
+        // 当前这层节点两层关联的节点start节点
+        for (int i = 0; i < pathList.size(); i++) {
+            Path path = pathList.get(i);
+            long startNodeId = path.startNode().getId();
+            if (longs.contains(startNodeId)) {
+                lastNodeList.add(path.endNode().getId());
+            }
+        }
+
+        return lastNodeList;
+    }
+
+    /**
      * @param node:目标节点列表
      * @param filterLabels:目标节点必须满足的标签（任意满足一个即可）
      * @return 路径中必须要有这些标签filterLabels类型的节点

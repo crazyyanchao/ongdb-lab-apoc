@@ -1,6 +1,5 @@
 package data.lab.ongdb.clustering;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +23,6 @@ public class ClusterTest {
 
     @Rule
     public Neo4jRule neo4j = new Neo4jRule().withProcedure(Cluster.class);
-
 
     /**
      * @param
