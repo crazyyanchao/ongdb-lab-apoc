@@ -261,7 +261,7 @@ RETURN olab.http.delete('api-address','input')
 ```
 ## 19、用正则串过滤字段值 ， 并返回过滤之后的VALUE ； 保留空格
 ```
-RETURN olab.replace.regexp('','')
+RETURN REPLACE(olab.replace.regexp('"TMC Rus" Limited Liability Company','[`~!@#$%^&*()+=|{}\':;\',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。 ，、？"-]')," ","")
 ```
 
 ## 20、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
