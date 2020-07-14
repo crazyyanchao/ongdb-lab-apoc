@@ -1,5 +1,6 @@
 package data.lab.ongdb.procedures;
 
+import com.alibaba.fastjson.JSONArray;
 import org.junit.Rule;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -477,12 +478,24 @@ public class ProceduresTest {
 
     @Test
     public void regexp() {
-        String FILTER_SPECIAL_CHARACTER="[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。 ，、？\"-]";
+        String FILTER_SPECIAL_CHARACTER = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。 ，、？\"-]";
         GraphDatabaseService db = neo4j.getGraphDatabaseService();
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("string", "\"TMC Rus\" Limited Liability Company");
         hashMap.put("regexp", FILTER_SPECIAL_CHARACTER);
         Result result = db.execute("RETURN olab.replace.regexp({string},{regexp}) AS value", hashMap);
+        String string = (String) result.next().get("value");
+        System.out.println(string);
+    }
+
+    @Test
+    public void removeDuplicate() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        String rawJson = "[{\"investType\":\"-1\",\"amount\":-1,\"updateDate\":20011019121208,\"votingRights\":100.0,\"investDate\":-1,\"releaseDate\":19950425000000,\"src\":\"db\",\"holdAmount\":-1,\"currency\":\"CNY\",\"dataSource\":\"Table1\",\"holderType\":\"-1\",\"ratio\":-1.0},{\"investType\":\"-1\",\"amount\":-1,\"updateDate\":20041014104446,\"votingRights\":100.0,\"investDate\":-1,\"releaseDate\":19960420000000,\"src\":\"db\",\"holdAmount\":-1,\"currency\":\"CNY\",\"dataSource\":\"Table2\",\"holderType\":\"-1\",\"ratio\":-1.0},{\"investType\":\"-1\",\"amount\":-1,\"updateDate\":20011019170043,\"votingRights\":100.0,\"investDate\":-1,\"releaseDate\":19970430000000,\"src\":\"db\",\"holdAmount\":-1,\"currency\":\"CNY\",\"dataSource\":\"Table4\",\"holderType\":\"-1\",\"ratio\":-1.0},{\"investType\":\"-1\",\"amount\":-1,\"updateDate\":20011019151250,\"votingRights\":100.0,\"investDate\":-1,\"releaseDate\":19970430000000,\"src\":\"db\",\"holdAmount\":-1,\"currency\":\"CNY\",\"dataSource\":\"Table4\",\"holderType\":\"-1\",\"ratio\":-1.0}]";
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("jsonString", rawJson);
+        hashMap.put("keyFields", JSONArray.parseArray("['dataSource','releaseDate']"));
+        Result result = db.execute("RETURN olab.remove.duplicate({jsonString},{keyFields}) AS value", hashMap);
         String string = (String) result.next().get("value");
         System.out.println(string);
     }

@@ -5,6 +5,8 @@ package data.lab.ongdb.procedures;
  *
  */
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import data.lab.ongdb.result.NodeResult;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
@@ -18,6 +20,9 @@ import org.neo4j.procedure.UserFunction;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -515,7 +520,37 @@ public class Procedures {
         }
         return rawIDs;
     }
-}
 
+    /**
+     * @param
+     * @return
+     * @Description: TODO(对存列表的属性字段进行排重 【 字段存储JSON列表对象 】 【 返回排重后的数据 】)
+     */
+    @UserFunction(name = "olab.remove.duplicate")
+    @Description("RETURN olab.remove.duplicate(rawJson)")
+    public String removeDuplicate(@Name("jsonString") String jsonString, @Name("keyFields") List<String> keyFields) {
+        JSONArray objects = JSONArray.parseArray(jsonString)
+                .stream()
+                .filter(distinctByKey(v -> {
+                    JSONObject object = (JSONObject) v;
+                    return packObject(object, keyFields);
+                }))
+                .collect(Collectors.toCollection(JSONArray::new));
+        return objects.toJSONString();
+    }
+
+    private Object packObject(JSONObject object, List<String> keyFields) {
+        JSONObject jsonObject = new JSONObject();
+        for (String key : keyFields) {
+            jsonObject.put(key, object.get(key));
+        }
+        return jsonObject;
+    }
+
+    static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+}
 
 
