@@ -266,8 +266,10 @@ RETURN olab.replace.regexp('2020年07月23号','[A-Za-z_\u4e00-\u9fa5]+')
 ```
 ## 20、对存列表的属性字段进行排重【字段存储JSON列表对象】【返回排重后的数据】
 ```
-// rawJson = [{"investType":"-1","amount":-1,"updateDate":20011019121208,"votingRights":100.0,"investDate":-1,"releaseDate":19950425000000,"src":"db","holdAmount":-1,"currency":"CNY","dataSource":"Table{1BFC2DE3-C47F-11D5-8E99-0050BABCCA74}","holderType":"-1","ratio":-1.0},{"investType":"-1","amount":-1,"updateDate":20041014104446,"votingRights":100.0,"investDate":-1,"releaseDate":19960420000000,"src":"db","holdAmount":-1,"currency":"CNY","dataSource":"Table{1BFC2E15-C47F-11D5-8E99-0050BABCCA74}","holderType":"-1","ratio":-1.0},{"investType":"-1","amount":-1,"updateDate":20011019170043,"votingRights":100.0,"investDate":-1,"releaseDate":19970430000000,"src":"db","holdAmount":-1,"currency":"CNY","dataSource":"Table{ED138539-F575-4CBD-A04B-D37A75DEB318}","holderType":"-1","ratio":-1.0},{"investType":"-1","amount":-1,"updateDate":20011019151250,"votingRights":100.0,"investDate":-1,"releaseDate":19940326000000,"src":"db","holdAmount":-1,"currency":"CNY","dataSource":"Table{91429386-C468-11D5-8E99-0050BABCCA74}","holderType":"-1","ratio":-1.0}]
-RETURN olab.remove.duplicate({jsonString},['amount','src','currency']) AS value
+WITH '[{"investType":"-1","amount":102,"updateDate":20011019121208,},{"investType":"-1","amount":-1,"updateDate":20041014104446,},{"investType":"-1","amount":-1,"updateDate":20011019170043,}]' AS jsonString
+WITH ['investType','amount'] AS keyFields,jsonString
+WITH olab.remove.duplicate(jsonString,keyFields) AS value 
+RETURN apoc.convert.fromJsonList(value) AS jsonValue
 ```
 ## 21、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
 ```
