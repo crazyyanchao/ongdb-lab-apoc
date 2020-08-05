@@ -499,5 +499,69 @@ public class ProceduresTest {
         String string = (String) result.next().get("value");
         System.out.println(string);
     }
+
+    @Test
+    public void sortDetailJsonArray() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+
+        String jsonString = "[\n" +
+                "  {\n" +
+                "    \"amount\": 17500000,\n" +
+                "    \"updateDate\": 20180730163342,\n" +
+                "    \"guarantyType\": \"-1\",\n" +
+                "    \"endDate\": -1,\n" +
+                "    \"releaseDate\": 20180730000000,\n" +
+                "    \"src\": \"wind\",\n" +
+                "    \"guarantyStyle\": \"-1\",\n" +
+                "    \"currency\": \"CNY\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"CbondGuaranteeDetail{BDAA7D08-93CE-11E8-9CAA-448A5B4D64D9}\",\n" +
+                "    \"startDate\": 20180331000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20200509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506544\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20190509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506588\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  }\n" +
+                "]";
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("jsonString", jsonString);
+        // 超过范围默认返回全部
+        hashMap.put("returnSize", 10);
+        hashMap.put("sortField", "releaseDate");
+        // ASC DESC
+        hashMap.put("sort", "DESC");
+
+        Result result = db.execute("RETURN olab.sort.jsonArray({jsonString},{sortField},{sort},{returnSize}) AS value", hashMap);
+        String string = (String) result.next().get("value");
+        System.out.println(string);
+    }
 }
 

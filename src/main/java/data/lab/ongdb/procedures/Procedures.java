@@ -5,6 +5,7 @@ package data.lab.ongdb.procedures;
  *
  */
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import data.lab.ongdb.result.NodeResult;
@@ -550,6 +551,46 @@ public class Procedures {
     static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+    /**
+     * @param jsonString:JSON STRING
+     * @param sortField:排序字段
+     * @param returnSize:返回的Object数量
+     * @return
+     * @Description: TODO(解析JSONArray ， 通过传入字段排序array ， 并返回前N个结果)
+     */
+    @UserFunction(name = "olab.sort.jsonArray")
+    @Description("RETURN olab.sort.jsonArray(rawJson)")
+    public String sortJsonArray(@Name("jsonString") String jsonString, @Name("sortField") String sortField,@Name("sort") String sort, @Name("returnSize") Number returnSize) {
+        JSONArray array = JSONArray.parseArray(jsonString)
+                .stream()
+                .sorted((v1, v2) -> {
+                    JSONObject object1 = (JSONObject) v1;
+                    JSONObject object2 = (JSONObject) v2;
+                    Long l1 = object1.getLongValue(sortField);
+                    Long l2 = object2.getLongValue(sortField);
+                    if (Sort.ASC.name().equals(sort)) {
+                        return l1.compareTo(l2);
+                    }else {
+                        return l2.compareTo(l1);
+                    }
+                })
+                .collect(Collectors.toCollection(JSONArray::new));
+        List<Object> returnList = array.subList(0, Math.min(returnSize.intValue(), array.size()));
+        JSONArray returnArray = JSONArray.parseArray(JSON.toJSONString(returnList));
+        return returnArray.toJSONString();
+    }
+
+    enum Sort {
+        /**
+         * 升序排序
+         **/
+        ASC,
+        /**
+         * 降序排序
+         **/
+        DESC
     }
 }
 

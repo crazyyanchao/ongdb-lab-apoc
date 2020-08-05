@@ -273,6 +273,10 @@ RETURN apoc.convert.fromJsonList(value) AS jsonValue
 ```
 ## 21、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
 ```
+RETURN olab.parse.path(path,)
+```
+## 22、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
+```
 RETURN olab.operator.sort()
 ```
 
