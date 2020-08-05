@@ -8,6 +8,9 @@ package data.lab.ongdb.procedures;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import data.lab.ongdb.common.SamplingType;
+import data.lab.ongdb.common.Sort;
 import data.lab.ongdb.result.NodeResult;
 import data.lab.ongdb.util.DateHandle;
 import data.lab.ongdb.util.NodeHandle;
@@ -554,7 +557,7 @@ public class Procedures {
     }
 
     /**
-     * @param jsonString:JSON STRING
+     * @param jsonString:JSON        STRING
      * @param sortField:排序字段
      * @param returnSize:返回的Object数量
      * @return
@@ -562,7 +565,7 @@ public class Procedures {
      */
     @UserFunction(name = "olab.sort.jsonArray")
     @Description("RETURN olab.sort.jsonArray(rawJson)")
-    public String sortJsonArray(@Name("jsonString") String jsonString, @Name("sortField") String sortField,@Name("sort") String sort, @Name("returnSize") Number returnSize) {
+    public String sortJsonArray(@Name("jsonString") String jsonString, @Name("sortField") String sortField, @Name("sort") String sort, @Name("returnSize") Number returnSize) {
         JSONArray array = JSONArray.parseArray(jsonString)
                 .stream()
                 .sorted((v1, v2) -> {
@@ -572,7 +575,7 @@ public class Procedures {
                     Long l2 = object2.getLongValue(sortField);
                     if (Sort.ASC.name().equals(sort)) {
                         return l1.compareTo(l2);
-                    }else {
+                    } else {
                         return l2.compareTo(l1);
                     }
                 })
@@ -582,15 +585,86 @@ public class Procedures {
         return returnArray.toJSONString();
     }
 
-    enum Sort {
-        /**
-         * 升序排序
-         **/
-        ASC,
-        /**
-         * 降序排序
-         **/
-        DESC
+    /**
+     * @param jsonString:JSON                   STRING
+     * @param samplingType:采样类型:YRE-有放回，NRE-无放回
+     * @param samplingSize:采样尺寸
+     * @return
+     * @Description: TODO(解析JSONArray, 进行采样)
+     */
+    @UserFunction(name = "olab.sampling.jsonArray")
+    @Description("RETURN olab.sampling.jsonArray(rawJson)")
+    public String samplingJsonArray(@Name("jsonString") String jsonString, @Name("samplingType") String samplingType, @Name("samplingSize") Number samplingSize) {
+        JSONArray rawJsonArray = JSONArray.parseArray(jsonString);
+        // 有放回
+        if (SamplingType.YRE.name().equals(samplingType)) {
+            return samplingJsonArrayYRE(rawJsonArray, samplingSize.intValue()).toJSONString();
+            // 无放回
+        } else {
+            return samplingJsonArrayNRE(rawJsonArray, samplingSize.intValue()).toJSONString();
+        }
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(有放回采样)
+     */
+    private JSONArray samplingJsonArrayYRE(JSONArray rawJsonArray, int samplingSize) {
+        JSONArray samplingArray = new JSONArray();
+        Random random = new Random();
+        // < 【不包含max】
+        int max = rawJsonArray.size();
+        // >=
+        int min = 0;
+
+        int size = samplingArray.size();
+        while (size < samplingSize) {
+            int index = random.nextInt(max - min) + min;
+            Object object = rawJsonArray.get(index);
+
+            if (object instanceof JSONObject) {
+                /**
+                 * 关闭循环引用检测
+                 * **/
+                String str =  JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
+                JSONObject jsonObject = JSON.parseObject(str);
+                samplingArray.add(jsonObject);
+            }else {
+                samplingArray.add(object);
+            }
+            size++;
+        }
+        return samplingArray;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(无放回采样)
+     */
+    private JSONArray samplingJsonArrayNRE(JSONArray rawJsonArray, int samplingSize) {
+        JSONArray samplingArray = new JSONArray();
+        List<Integer> indexList = new ArrayList<>();
+        Random random = new Random();
+        // < 【不包含max】
+        int max = rawJsonArray.size();
+        // >=
+        int min = 0;
+
+        int size = samplingArray.size();
+        while (size < samplingSize) {
+            int index = random.nextInt(max - min) + min;
+            if (!indexList.contains(index)) {
+                indexList.add(index);
+                samplingArray.add(rawJsonArray.get(index));
+                size++;
+            }
+            if (max == samplingArray.size()) {
+                break;
+            }
+        }
+        return samplingArray;
     }
 }
 
