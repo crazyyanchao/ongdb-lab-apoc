@@ -674,12 +674,13 @@ public class Procedures {
      * @param dateValue:20201020235959
      * @param dateField:日期字段
      * @return
-     * @Description: TODO(解析JSONArray， 从列表中选举距离当前时间最近的对象)
+     * @Description: TODO(解析JSONArray ， 从列表中选举距离当前时间最近的对象)
      */
     @UserFunction(name = "olab.samplingByDate.jsonArray")
     @Description("RETURN olab.samplingByDate.jsonArray(rawJson)")
-    public String samplingByDateJsonArray(@Name("jsonString") String jsonString,  @Name("dateField") String dateField,@Name("dateValue") Long dateValue) {
-        return JSONArray.parseArray(jsonString)
+    public String samplingByDateJsonArray(@Name("jsonString") String jsonString, @Name("dateField") String dateField, @Name("dateValue") Long dateValue) {
+       JSONArray rawJson =  JSONArray.parseArray(jsonString);
+        JSONArray array = rawJson
                 .stream()
                 // 过滤出包含dateField的OBJECT
                 .filter(v -> {
@@ -699,7 +700,32 @@ public class Procedures {
                     Long l1 = object1.getLong(dateField);
                     Long l2 = object2.getLong(dateField);
                     return l2.compareTo(l1);
-                }).collect(Collectors.toCollection(JSONArray::new)).getJSONObject(0).toJSONString();
+                }).collect(Collectors.toCollection(JSONArray::new));
+        if (!array.isEmpty()) {
+            return array.getJSONObject(0).toJSONString();
+        } else {
+            return randomMap(rawJson).toJSONString();
+        }
+    }
+
+    private JSONObject randomMap(JSONArray rawJson) {
+        JSONObject object = new JSONObject();
+        for (Object obj : rawJson) {
+            object.putAll((Map<? extends String, ? extends Object>) obj);
+            break;
+        }
+        /**
+         * 置为无效值
+         * **/
+        for (String key : object.keySet()) {
+            Object value = object.get(key);
+            if (value instanceof String) {
+                object.put(key, "");
+            } else {
+                object.put(key, 0);
+            }
+        }
+        return object;
     }
 }
 

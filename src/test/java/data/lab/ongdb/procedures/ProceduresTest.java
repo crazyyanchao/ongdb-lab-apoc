@@ -1,9 +1,14 @@
 package data.lab.ongdb.procedures;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Result;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.harness.junit.Neo4jRule;
 
 import java.util.*;
@@ -705,6 +710,79 @@ public class ProceduresTest {
         Result result = db.execute("RETURN olab.samplingByDate.jsonArray({jsonString},{dateField},{dateValue}) AS value", hashMap);
         String string = (String) result.next().get("value");
         System.out.println(string);
+    }
+
+    @Test
+    public void randomMapTest() {
+        String jsonString = "[\n" +
+                "  {\n" +
+                "    \"amount\": 17500000,\n" +
+                "    \"updateDate\": 20180730163342,\n" +
+                "    \"guarantyType\": \"-1\",\n" +
+                "    \"endDate\": -1,\n" +
+                "    \"releaseDate\": 20180730000000,\n" +
+                "    \"src\": \"wind\",\n" +
+                "    \"guarantyStyle\": \"-1\",\n" +
+                "    \"currency\": \"CNY\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"CbondGuaranteeDetail{BDAA7D08-93CE-11E8-9CAA-448A5B4D64D9}\",\n" +
+                "    \"startDate\": 20180331000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20200509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506544\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20230509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506588\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  }\n" +
+                "]";
+        // 把LIST中所有KEY合并到同一个MAP中，值置为无效
+        System.out.println(randomMap(JSON.parseArray(jsonString)));
+    }
+
+    private JSONObject randomMap(JSONArray rawJson) {
+        JSONObject object = new JSONObject();
+        for (Object obj : rawJson) {
+            object.putAll((Map<? extends String, ? extends Object>) obj);
+            break;
+        }
+        /**
+         * 置为无效值
+         * **/
+        for (String key : object.keySet()) {
+            Object value = object.get(key);
+            if (value instanceof String) {
+                object.put(key, "");
+            } else {
+                object.put(key, 0);
+            }
+        }
+        return object;
     }
 }
 
