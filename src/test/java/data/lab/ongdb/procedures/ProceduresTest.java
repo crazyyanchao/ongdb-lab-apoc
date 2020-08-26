@@ -640,5 +640,71 @@ public class ProceduresTest {
             System.out.println(num);
         }
     }
+
+    @Test
+    public void dateSamplingJsonArray() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+
+        String jsonString = "[\n" +
+                "  {\n" +
+                "    \"amount\": 17500000,\n" +
+                "    \"updateDate\": 20180730163342,\n" +
+                "    \"guarantyType\": \"-1\",\n" +
+                "    \"endDate\": -1,\n" +
+                "    \"releaseDate\": 20180730000000,\n" +
+                "    \"src\": \"wind\",\n" +
+                "    \"guarantyStyle\": \"-1\",\n" +
+                "    \"currency\": \"CNY\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"CbondGuaranteeDetail{BDAA7D08-93CE-11E8-9CAA-448A5B4D64D9}\",\n" +
+                "    \"startDate\": 20180331000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20200509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506544\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"amount\": 189000000,\n" +
+                "    \"updateDate\": 20200725165544,\n" +
+                "    \"guarantyType\": \"null\",\n" +
+                "    \"endDate\": 20230615000000,\n" +
+                "    \"releaseDate\": 20230509141552,\n" +
+                "    \"src\": \"caihui2\",\n" +
+                "    \"guarantyStyle\": \"null\",\n" +
+                "    \"currency\": \"人民币\",\n" +
+                "    \"multiGuarantyOrgs\": \"-1\",\n" +
+                "    \"dataSource\": \"TCR0009506588\",\n" +
+                "    \"startDate\": 20180713000000,\n" +
+                "    \"multiGuaranty\": false,\n" +
+                "    \"ratio\": -1.0\n" +
+                "  }\n" +
+                "]";
+        Map<String, Object> hashMap = new HashMap<>();
+        // 需要被采样的array
+        hashMap.put("jsonString", jsonString);
+        // 时间值
+        hashMap.put("dateValue", 20240730000000L);
+
+        // 时间字段
+        hashMap.put("dateField", "releaseDate");
+
+        // RETURN apoc.convert.fromJsonMap()
+        Result result = db.execute("RETURN olab.samplingByDate.jsonArray({jsonString},{dateField},{dateValue}) AS value", hashMap);
+        String string = (String) result.next().get("value");
+        System.out.println(string);
+    }
 }
 

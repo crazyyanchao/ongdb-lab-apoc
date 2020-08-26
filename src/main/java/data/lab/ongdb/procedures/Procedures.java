@@ -498,7 +498,8 @@ public class Procedures {
     }
 
     /**
-     * @param
+     * @param string:原始字符串
+     * @param regexp:正则串
      * @return
      * @Description: TODO(用正则串过滤字段值 ， 并返回过滤之后的VALUE ； 保留空格)
      */
@@ -526,12 +527,13 @@ public class Procedures {
     }
 
     /**
-     * @param
+     * @param jsonString:JSON-STRING
+     * @param keyFields:排重字段
      * @return
      * @Description: TODO(对存列表的属性字段进行排重 【 字段存储JSON列表对象 】 【 返回排重后的数据 】)
      */
     @UserFunction(name = "olab.remove.duplicate")
-    @Description("RETURN olab.remove.duplicate(rawJson)")
+    @Description("RETURN olab.remove.duplicate({jsonString},{keyFields})")
     public String removeDuplicate(@Name("jsonString") String jsonString, @Name("keyFields") List<String> keyFields) {
         JSONArray objects = JSONArray.parseArray(jsonString)
                 .stream()
@@ -627,10 +629,10 @@ public class Procedures {
                 /**
                  * 关闭循环引用检测
                  * **/
-                String str =  JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
+                String str = JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
                 JSONObject jsonObject = JSON.parseObject(str);
                 samplingArray.add(jsonObject);
-            }else {
+            } else {
                 samplingArray.add(object);
             }
             size++;
@@ -665,6 +667,39 @@ public class Procedures {
             }
         }
         return samplingArray;
+    }
+
+    /**
+     * @param jsonString:JSON-STRING
+     * @param dateValue:20201020235959
+     * @param dateField:日期字段
+     * @return
+     * @Description: TODO(解析JSONArray， 从列表中选举距离当前时间最近的对象)
+     */
+    @UserFunction(name = "olab.samplingByDate.jsonArray")
+    @Description("RETURN olab.samplingByDate.jsonArray(rawJson)")
+    public String samplingByDateJsonArray(@Name("jsonString") String jsonString,  @Name("dateField") String dateField,@Name("dateValue") Long dateValue) {
+        return JSONArray.parseArray(jsonString)
+                .stream()
+                // 过滤出包含dateField的OBJECT
+                .filter(v -> {
+                    JSONObject object = (JSONObject) v;
+                    return object.containsKey(dateField);
+                })
+                // 过滤出时间小于等于dateValue的OBJECT
+                .filter(v -> {
+                    JSONObject object = (JSONObject) v;
+                    Long dateFieldValue = object.getLong(dateField);
+                    return dateFieldValue <= dateValue;
+                })
+                // 降序排序拿第一条
+                .sorted((v1, v2) -> {
+                    JSONObject object1 = (JSONObject) v1;
+                    JSONObject object2 = (JSONObject) v2;
+                    Long l1 = object1.getLong(dateField);
+                    Long l2 = object2.getLong(dateField);
+                    return l2.compareTo(l1);
+                }).collect(Collectors.toCollection(JSONArray::new)).getJSONObject(0).toJSONString();
     }
 }
 

@@ -257,7 +257,6 @@ RETURN olab.http.post('api-address','input')
 RETURN olab.http.get('api-address')
 RETURN olab.http.put('api-address','input')
 RETURN olab.http.delete('api-address','input')
-
 ```
 ## 19、用正则串过滤字段值 ， 并返回过滤之后的VALUE ； 保留空格
 ```
@@ -273,11 +272,24 @@ RETURN apoc.convert.fromJsonList(value) AS jsonValue
 ```
 ## 21、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
 ```
-RETURN olab.parse.path(path,)
+# RETURN olab.parse.path(path,)
 ```
 ## 22、分析输入节点PATH按照关系层级分类节点【输入一个完整的计算逻辑图】【输出层级执行顺序LIST】
 ```
-RETURN olab.operator.sort()
+# RETURN olab.operator.sort()
+```
+## 23、解析JSONArray ， 通过传入字段排序array ， 并返回前N个结果
+```
+RETURN olab.sort.jsonArray({jsonString},{sortField},{sort},{returnSize}) AS value
+```
+## 24、解析JSONArray, 进行采样
+```
+RETURN olab.sampling.jsonArray({jsonString},{samplingType},{samplingSize}) AS value
+```
+## 25、解析JSONArray, 进行采样 ： 从列表中选举距离当前时间最近的对象
+```
+apoc.convert.fromJsonMap()
+RETURN olab.samplingByDate.jsonArray({jsonString},{dateValue},{dateField}) AS value
 ```
 
 
