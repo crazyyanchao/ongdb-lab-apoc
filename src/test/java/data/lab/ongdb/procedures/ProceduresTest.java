@@ -709,15 +709,22 @@ public class ProceduresTest {
         // 过滤条件
         Map<String, Object> filterMap = new HashMap<>();
         Map<String, Object> filterMapDic = new HashMap<>();
-//        filterMapDic.put("value", -1);
-//        filterMapDic.put("condition", ">");
-//        filterMap.put("ratio", filterMapDic);
-//        hashMap.put("filterMap", filterMap);
+        filterMapDic.put("value", -1);
+        filterMapDic.put("condition", ">");
 
-        filterMapDic.put("value", "人民币A");
-        filterMapDic.put("condition", "STR");
-        filterMap.put("currency", filterMapDic);
+        // 暂时不支持范围过滤
+//        Map<String, Object> range = new HashMap<>();
+//        range.put(">=",0);
+//        range.put("<=",1);
+//        filterMapDic.put("range", range);
+
+        filterMap.put("ratio", filterMapDic);
         hashMap.put("filterMap", filterMap);
+
+//        filterMapDic.put("value", "人民币A");
+//        filterMapDic.put("condition", "STR");
+//        filterMap.put("currency", filterMapDic);
+//        hashMap.put("filterMap", filterMap);
 
         // RETURN apoc.convert.fromJsonMap()
 //        Result result = db.execute("RETURN olab.samplingByDate.jsonArray({jsonString},{dateField},{dateValue}) AS value", hashMap);
