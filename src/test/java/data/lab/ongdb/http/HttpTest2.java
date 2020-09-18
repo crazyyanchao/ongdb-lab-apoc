@@ -1,7 +1,11 @@
 package data.lab.ongdb.http;
 
+import data.lab.ongdb.common.RangeOccurs;
 import data.lab.ongdb.http.extra.HttpRequest;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  *
@@ -37,5 +41,26 @@ public class HttpTest2 {
     public void delete() {
     }
 
+    private static final Map<String, String[]> CONDITION_MAP = new HashMap<>();
+
+    static {
+        RangeOccurs[] rangeOccurs = RangeOccurs.values();
+        for (RangeOccurs occur : rangeOccurs) {
+            String name = occur.name();
+            String symbol = occur.getSymbol();
+            String condition = occur.getCondition();
+            String[] strings = new String[]{name,symbol,condition};
+            CONDITION_MAP.put(name,strings);
+            CONDITION_MAP.put(symbol,strings);
+            CONDITION_MAP.put(condition,strings);
+        }
+    }
+    @Test
+    public void test01() {
+        for (String key: CONDITION_MAP.keySet()) {
+            System.out.println(key);
+            System.out.println(CONDITION_MAP.get(key));
+        }
+    }
 }
 

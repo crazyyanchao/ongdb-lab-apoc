@@ -689,7 +689,7 @@ public class ProceduresTest {
                 "    \"releaseDate\": 20230509141552,\n" +
                 "    \"src\": \"caihui2\",\n" +
                 "    \"guarantyStyle\": \"null\",\n" +
-                "    \"currency\": \"人民币\",\n" +
+                "    \"currency\": \"人民币A\",\n" +
                 "    \"multiGuarantyOrgs\": \"-1\",\n" +
                 "    \"dataSource\": \"TCR0009506588\",\n" +
                 "    \"startDate\": 20180713000000,\n" +
@@ -706,8 +706,22 @@ public class ProceduresTest {
         // 时间字段
         hashMap.put("dateField", "releaseDate");
 
+        // 过滤条件
+        Map<String, Object> filterMap = new HashMap<>();
+        Map<String, Object> filterMapDic = new HashMap<>();
+//        filterMapDic.put("value", -1);
+//        filterMapDic.put("condition", ">");
+//        filterMap.put("ratio", filterMapDic);
+//        hashMap.put("filterMap", filterMap);
+
+        filterMapDic.put("value", "人民币A");
+        filterMapDic.put("condition", "STR");
+        filterMap.put("currency", filterMapDic);
+        hashMap.put("filterMap", filterMap);
+
         // RETURN apoc.convert.fromJsonMap()
-        Result result = db.execute("RETURN olab.samplingByDate.jsonArray({jsonString},{dateField},{dateValue}) AS value", hashMap);
+//        Result result = db.execute("RETURN olab.samplingByDate.jsonArray({jsonString},{dateField},{dateValue}) AS value", hashMap);
+        Result result = db.execute("RETURN olab.samplingByDate.filter.jsonArray({jsonString},{dateField},{dateValue},{filterMap}) AS value", hashMap);
         String string = (String) result.next().get("value");
         System.out.println(string);
     }

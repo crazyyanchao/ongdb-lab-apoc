@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import data.lab.ongdb.common.RangeOccurs;
 import data.lab.ongdb.common.SamplingType;
 import data.lab.ongdb.common.Sort;
 import data.lab.ongdb.result.NodeResult;
@@ -38,6 +39,21 @@ import java.util.stream.Collectors;
  * @date 2020/5/22 10:28
  */
 public class Procedures {
+
+    private static final Map<String, String[]> CONDITION_MAP = new HashMap<>();
+
+    static {
+        RangeOccurs[] rangeOccurs = RangeOccurs.values();
+        for (RangeOccurs occur : rangeOccurs) {
+            String name = occur.name();
+            String symbol = occur.getSymbol();
+            String condition = occur.getCondition();
+            String[] strings = new String[]{name, symbol, condition};
+            CONDITION_MAP.put(name, strings);
+            CONDITION_MAP.put(symbol, strings);
+            CONDITION_MAP.put(condition, strings);
+        }
+    }
 
     /**
      * @param world:函数参数
@@ -679,33 +695,144 @@ public class Procedures {
     @UserFunction(name = "olab.samplingByDate.jsonArray")
     @Description("RETURN olab.samplingByDate.jsonArray(rawJson)")
     public String samplingByDateJsonArray(@Name("jsonString") String jsonString, @Name("dateField") String dateField, @Name("dateValue") Long dateValue) {
-       JSONArray rawJson =  JSONArray.parseArray(jsonString);
-        JSONArray array = rawJson
-                .stream()
-                // 过滤出包含dateField的OBJECT
-                .filter(v -> {
-                    JSONObject object = (JSONObject) v;
-                    return object.containsKey(dateField);
-                })
-                // 过滤出时间小于等于dateValue的OBJECT
-                .filter(v -> {
-                    JSONObject object = (JSONObject) v;
-                    Long dateFieldValue = object.getLong(dateField);
-                    return dateFieldValue <= dateValue;
-                })
-                // 降序排序拿第一条
-                .sorted((v1, v2) -> {
-                    JSONObject object1 = (JSONObject) v1;
-                    JSONObject object2 = (JSONObject) v2;
-                    Long l1 = object1.getLong(dateField);
-                    Long l2 = object2.getLong(dateField);
-                    return l2.compareTo(l1);
-                }).collect(Collectors.toCollection(JSONArray::new));
-        if (!array.isEmpty()) {
-            return array.getJSONObject(0).toJSONString();
-        } else {
-            return randomMap(rawJson).toJSONString();
+        if (jsonString != null && !"".equals(jsonString)) {
+            JSONArray rawJson = JSONArray.parseArray(jsonString);
+            JSONArray array = rawJson
+                    .stream()
+                    // 过滤出包含dateField的OBJECT
+                    .filter(v -> {
+                        JSONObject object = (JSONObject) v;
+                        return object.containsKey(dateField);
+                    })
+                    // 过滤出时间小于等于dateValue的OBJECT
+                    .filter(v -> {
+                        JSONObject object = (JSONObject) v;
+                        Long dateFieldValue = object.getLong(dateField);
+                        return dateFieldValue <= dateValue;
+                    })
+                    // 降序排序拿第一条
+                    .sorted((v1, v2) -> {
+                        JSONObject object1 = (JSONObject) v1;
+                        JSONObject object2 = (JSONObject) v2;
+                        Long l1 = object1.getLong(dateField);
+                        Long l2 = object2.getLong(dateField);
+                        return l2.compareTo(l1);
+                    }).collect(Collectors.toCollection(JSONArray::new));
+            if (!array.isEmpty()) {
+                return array.getJSONObject(0).toJSONString();
+            } else {
+                return randomMap(rawJson).toJSONString();
+            }
         }
+        JSONObject object = new JSONObject();
+        return object.toJSONString();
+    }
+
+    /**
+     * @param jsonString:JSON-STRING
+     * @param dateValue:20201020235959
+     * @param dateField:日期字段
+     * @param filterMap:过滤条件
+     * @return
+     * @Description: TODO(解析JSONArray ， 从列表中选举距离当前时间最近的对象)
+     */
+    @UserFunction(name = "olab.samplingByDate.filter.jsonArray")
+    @Description("RETURN olab.samplingByDate.filter.jsonArray(rawJson)")
+    public String samplingByDateJsonArray(@Name("jsonString") String jsonString, @Name("dateField") String dateField, @Name("dateValue") Long dateValue, @Name("filterMap") Map<String, Object> filterMap) {
+        if (jsonString != null && !"".equals(jsonString)) {
+            JSONArray rawJson = JSONArray.parseArray(jsonString);
+            /**
+             * 增加过滤规则
+             * **/
+            JSONArray filterArray = rawJson.stream()
+                    .filter(v -> {
+                        if (v instanceof JSONObject) {
+                            return isFilterMap((JSONObject) v, filterMap);
+                        } else {
+                            return true;
+                        }
+                    })
+                    .collect(Collectors.toCollection(JSONArray::new));
+            if (filterArray.isEmpty()) {
+                filterArray.add(randomMap(rawJson));
+            }
+            return samplingByDateJsonArray(filterArray.toJSONString(), dateField, dateValue);
+        }
+        JSONObject object = new JSONObject();
+        return object.toJSONString();
+    }
+
+    /**
+     * @param
+     * @return 【任意一个条件不满足就返回false】【默认返回true】
+     * @Description: TODO(过滤值 - 判断object中的字段和是否满足filterMap中的要求)
+     */
+    private boolean isFilterMap(JSONObject object, Map<String, Object> filterMap) {
+        List<String> condList = Arrays.asList(">", ">=", "<", "<=");
+        for (String key : filterMap.keySet()) {
+            // 获取原始值
+            Object rawObjValue = object.get(key);
+            Object value = filterMap.get(key);
+            if (value instanceof Map) {
+                Map<String, Object> map = (Map<String, Object>) value;
+                Object valueF = map.get("value");
+                String conditionF = String.valueOf(map.get("condition"));
+                if (CONDITION_MAP.containsKey(conditionF) && (valueF instanceof Long || valueF instanceof Integer || valueF instanceof Double)) {
+                    String[] conds = CONDITION_MAP.get(conditionF);
+                    for (String cond : conds) {
+                        if (condList.contains(cond)) {
+                            if (">".equals(cond)) {
+                                // 满足条件返回true，不满条件返回false
+                                if (!gt(rawObjValue, valueF)) {
+                                    return false;
+                                }
+                            } else if (">=".equals(cond)) {
+                                if (!gte(rawObjValue, valueF)) {
+                                    return false;
+                                }
+                            } else if ("<".equals(cond)) {
+                                if (!lt(rawObjValue, valueF)) {
+                                    return false;
+                                }
+                            } else if ("<=".equals(cond)) {
+                                if (!lte(rawObjValue, valueF)) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                } else if (valueF instanceof String) {
+                    if (!String.valueOf(valueF).equals(String.valueOf(rawObjValue))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean gt(Object rawObjValue, Object valueF) {
+        double rawObjValueDou = Double.parseDouble(String.valueOf(rawObjValue));
+        double valueFDou = Double.parseDouble(String.valueOf(valueF));
+        return rawObjValueDou > valueFDou;
+    }
+
+    private boolean gte(Object rawObjValue, Object valueF) {
+        double rawObjValueDou = Double.parseDouble(String.valueOf(rawObjValue));
+        double valueFDou = Double.parseDouble(String.valueOf(valueF));
+        return rawObjValueDou >= valueFDou;
+    }
+
+    private boolean lt(Object rawObjValue, Object valueF) {
+        double rawObjValueDou = Double.parseDouble(String.valueOf(rawObjValue));
+        double valueFDou = Double.parseDouble(String.valueOf(valueF));
+        return rawObjValueDou < valueFDou;
+    }
+
+    private boolean lte(Object rawObjValue, Object valueF) {
+        double rawObjValueDou = Double.parseDouble(String.valueOf(rawObjValue));
+        double valueFDou = Double.parseDouble(String.valueOf(valueF));
+        return rawObjValueDou <= valueFDou;
     }
 
     private JSONObject randomMap(JSONArray rawJson) {
