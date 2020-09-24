@@ -849,7 +849,11 @@ public class Procedures {
             if (value instanceof String) {
                 object.put(key, "");
             } else {
-                object.put(key, 0);
+                /**
+                 * 无效 -1
+                 * 有效变无效 0
+                 * **/
+                object.put(key, -1);
             }
         }
         return object;
