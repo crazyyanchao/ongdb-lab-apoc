@@ -9,11 +9,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import data.lab.ongdb.common.RangeOccurs;
 import data.lab.ongdb.common.SamplingType;
 import data.lab.ongdb.common.Sort;
 import data.lab.ongdb.result.NodeResult;
 import data.lab.ongdb.util.DateHandle;
+import data.lab.ongdb.util.FileUtil;
 import data.lab.ongdb.util.NodeHandle;
 import data.lab.ongdb.util.StringVerify;
 import org.apache.commons.lang3.StringUtils;
@@ -110,6 +112,87 @@ public class Procedures {
             }
         }
         return 0;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(提取英文中文)
+     */
+    @UserFunction(name = "olab.string.matchCnEn")
+    @Description("【提取英文中文】")
+    public String stringForMatchCnEn(@Name("string") String string) {
+        return FileUtil.matchCnEn(string);
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(大写转为小写)
+     */
+    @UserFunction(name = "olab.string.toLowerCase")
+    @Description("【大写转为小写】")
+    public String stringForToLowerCase(@Name("string") String string) {
+        if (string != null && !"".equals(string)) {
+            return string.toLowerCase();
+        }
+        return string;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(繁体转为简体)
+     */
+    @UserFunction(name = "olab.string.toSimple")
+    @Description("【繁体转为简体】")
+    public String stringForToSimple(@Name("string") String string) {
+        if (string != null && !"".equals(string)) {
+            /**
+             * 繁体转为简体
+             * **/
+            return ZhConverterUtil.toSimple(string);
+        }
+        return string;
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(提取英文中文 - 大写转为小写 、 繁体转为简体)
+     */
+    @UserFunction(name = "olab.string.matchCnEnRinse")
+    @Description("【提取英文中文】【大写转为小写】【繁体转为简体】")
+    public String stringForMatchCnEnRinse(@Name("string") String string) {
+        return FileUtil.matchCnEnRinse(string);
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(对字符进行编码 - 【 直接编码 】 默认编码为中文)
+     * 1、提取英文中文
+     * 2、大写转为小写 、 繁体转为简体
+     * 3、编码字母
+     */
+    @UserFunction(name = "olab.string.encode")
+    @Description("【直接编码】默认编码为中文")
+    public String stringForEncode(@Name("string") String string) {
+        return FileUtil.encode(string);
+    }
+
+    /**
+     * @param
+     * @return
+     * @Description: TODO(对字符进行编码 - 【 先提取中文英文 】 默认编码为中文)
+     * 1、提取英文中文
+     * 2、大写转为小写 、 繁体转为简体
+     * 3、编码字母
+     */
+    @UserFunction(name = "olab.string.encodeEncCnc")
+    @Description("【先提取中文英文】默认编码为中文")
+    public String stringForEncodeEncCnc(@Name("string") String string) {
+        return FileUtil.encodeEncCnc(string);
     }
 
     /**

@@ -734,6 +734,21 @@ public class ProceduresTest {
     }
 
     @Test
+    public void olabString() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("string","國際生打撒3.$#%@#$GuangDong Rongjun Co");
+//        Result result = db.execute("RETURN olab.string.matchCnEn({string}) AS value", hashMap);
+//        Result result = db.execute("RETURN olab.string.toLowerCase({string}) AS value", hashMap);
+//        Result result = db.execute("RETURN olab.string.toSimple({string}) AS value", hashMap);
+//        Result result = db.execute("RETURN olab.string.matchCnEnRinse({string}) AS value", hashMap);
+//        Result result = db.execute("RETURN olab.string.encode({string}) AS value", hashMap);
+        Result result = db.execute("RETURN olab.string.encodeEncCnc({string}) AS value", hashMap);
+        String string = (String) result.next().get("value");
+        System.out.println(string);
+    }
+
+    @Test
     public void randomMapTest() {
         String jsonString = "[\n" +
                 "  {\n" +

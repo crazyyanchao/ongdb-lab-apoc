@@ -74,6 +74,12 @@
             <artifactId>commons-jexl3</artifactId>
             <version>3.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.houbb/opencc4j -->
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>opencc4j</artifactId>
+            <version>1.6.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
