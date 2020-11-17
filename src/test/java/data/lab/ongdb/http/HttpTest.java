@@ -38,6 +38,17 @@ public class HttpTest {
     }
 
     @Test
+    public void post01() {
+        GraphDatabaseService db = neo4j.getGraphDatabaseService();
+        Map<String, Object> params = new HashMap<>();
+        params.put("api", "http://api.data.cn");
+        params.put("input", "{\"api_name\":\"wind_news\",\"params\":{\"article_id\":\"113008559\"},\"token\":\"1117be10554c6f4a70336aa737b0b470134c74497af5bf3ab265fec9\"}");
+        Result result = db.execute("RETURN olab.http.post({api},{input}) AS resultPost", params);
+        String resultPost = (String) result.next().get("resultPost");
+        System.out.println(resultPost);
+    }
+
+    @Test
     public void get() {
     }
 
