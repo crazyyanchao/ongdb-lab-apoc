@@ -26,7 +26,7 @@ public class FunctionPartition {
     /**
      * @param
      * @return
-     * @Description: TODO(大写转为小写)
+     * @Description: TODO(CSV格式转为mapList)
      */
     @UserFunction(name = "olab.structure.mergeToListMap")
     @Description("【CSV格式转为mapList】【数据封装格式转换】@olab.structure.mergeToListMap(['area_code','author'],[['001','HORG001'],['002','HORG002']])")
