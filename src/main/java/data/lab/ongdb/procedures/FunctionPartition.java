@@ -24,7 +24,8 @@ import java.util.Map;
  */
 public class FunctionPartition {
     /**
-     * @param
+     * @param fields:字段列表
+     * @param items:数据集合列表
      * @return
      * @Description: TODO(CSV格式转为mapList)
      */

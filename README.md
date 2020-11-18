@@ -291,5 +291,23 @@ RETURN olab.sampling.jsonArray({jsonString},{samplingType},{samplingSize}) AS va
 apoc.convert.fromJsonMap()
 RETURN olab.samplingByDate.jsonArray({jsonString},{dateValue},{dateField}) AS value
 ```
-
+## 26、字符串处理
+```
+#提取英文中文
+RETURN olab.string.matchCnEn('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+#大写转为小写
+RETURN olab.string.toLowerCase('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+#繁体转为简体
+RETURN olab.string.toSimple('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+#【提取英文中文】【大写转为小写】【繁体转为简体】
+RETURN olab.string.matchCnEnRinse('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+#【直接编码】默认编码为中文
+RETURN olab.string.encode('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+#【先提取中文英文】默认编码为中文
+RETURN olab.string.encodeEncCnc('國際生打撒3.$#%@#$GuangDong Rongjun Co') AS value;
+```
+## 27、集合转换
+```
+RETURN olab.structure.mergeToListMap(['area_code','author'],[['001','HORG001'],['002','HORG002']])
+```
 
