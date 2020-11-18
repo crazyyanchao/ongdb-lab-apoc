@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Yc-Ma
- * @PACKAGE_NAME: data.lab.ongdb.procedures.ZdrProcedures
+ * @PACKAGE_NAME: data.lab.ongdb.procedures.*
  * @Description: TODO(执行查询的存储过程 / 函数)
  * @date 2020/5/22 10:28
  */
