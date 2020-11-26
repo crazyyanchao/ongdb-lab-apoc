@@ -14,7 +14,7 @@ import data.lab.ongdb.common.RangeOccurs;
 import data.lab.ongdb.common.SamplingType;
 import data.lab.ongdb.common.Sort;
 import data.lab.ongdb.result.NodeResult;
-import data.lab.ongdb.util.DateHandle;
+import data.lab.ongdb.util.DateUtil;
 import data.lab.ongdb.util.FileUtil;
 import data.lab.ongdb.util.NodeHandle;
 import data.lab.ongdb.util.StringVerify;
@@ -206,7 +206,7 @@ public class Procedures {
         String startTime = mapPara.get("startTime");
         String stopTime = mapPara.get("stopTime");
 
-        DateHandle dateHandle = new DateHandle();
+        DateUtil dateHandle = new DateUtil();
         long startTimeLong = dateHandle.dateToMillisecond(startTime);
         long stopTimeLong = dateHandle.dateToMillisecond(stopTime);
 
@@ -235,7 +235,7 @@ public class Procedures {
         String startTime = mapPara.get("startTime");
         String stopTime = mapPara.get("stopTime");
 
-        DateHandle dateHandle = new DateHandle();
+        DateUtil dateHandle = new DateUtil();
         long startTimeLong = dateHandle.dateToMillisecond(startTime);
         long stopTimeLong = dateHandle.dateToMillisecond(stopTime);
 
@@ -336,8 +336,7 @@ public class Procedures {
     @Description("Present-Convert date to relevant format")
     public String presentStringToDate(@Name("present") String present) {
         if ("Present".equals(present)) {
-            DateHandle dateHandle = new DateHandle();
-            return dateHandle.millisecondToDate(System.currentTimeMillis());
+            return DateUtil.millisecondToDate(System.currentTimeMillis());
         }
         return present;
     }
@@ -351,7 +350,7 @@ public class Procedures {
     @Description("Time zone cross or not")
     public boolean timeCrossOrNot(@Name("mapPara") Map<String, Object> mapPara) {
 
-        DateHandle dateHandle = new DateHandle();
+        DateUtil dateHandle = new DateUtil();
         String r1Start = (String) mapPara.get("r1Start");
         String r1Stop = (String) mapPara.get("r1Stop");
         String r2Start = (String) mapPara.get("r2Start");

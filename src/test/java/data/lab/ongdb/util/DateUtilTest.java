@@ -15,7 +15,7 @@ import java.util.Arrays;
  * @Description: TODO
  * @date 2020/5/22 10:52
  */
-public class DateHandleTest {
+public class DateUtilTest {
     @Test
     public void test01() {
         String input = "origina||english";
@@ -30,5 +30,12 @@ public class DateHandleTest {
         Arrays.stream(input.split("&&")).parallel().forEach(c -> {
             System.out.println(c);
         });
+    }
+
+    @Test
+    public void test03() {
+//        System.out.println(DateUtil.standardizeDate("asdsa",false));
+//        System.out.println(DateUtil.standardizeDate("2020",false));
+//        System.out.println(DateUtil.standardizeDate("2020",false));
     }
 }
