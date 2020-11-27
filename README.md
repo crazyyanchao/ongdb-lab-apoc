@@ -310,5 +310,3 @@ RETURN olab.string.encodeEncCnc('國際生打撒3.$#%@#$GuangDong Rongjun Co') A
 ```
 RETURN olab.structure.mergeToListMap(['area_code','author'],[['001','HORG001'],['002','HORG002']])
 ```
-
-s
