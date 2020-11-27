@@ -34,8 +34,22 @@ public class DateUtilTest {
 
     @Test
     public void test03() {
-//        System.out.println(DateUtil.standardizeDate("asdsa",false));
-//        System.out.println(DateUtil.standardizeDate("2020",false));
-//        System.out.println(DateUtil.standardizeDate("2020",false));
+        System.out.println(DateUtil.standardizeDate("asdsa",false));
+        System.out.println(DateUtil.standardizeDate("2020",false));
+        System.out.println(DateUtil.standardizeDate("202012",false));
+        System.out.println(DateUtil.standardizeDate("20201206",false));
+        System.out.println(DateUtil.standardizeDate("2020120612",false));
+        System.out.println(DateUtil.standardizeDate("202012061201",false));
+        System.out.println(DateUtil.standardizeDate("asdsa",true));
+        System.out.println(DateUtil.standardizeDate("2020",true));
+        System.out.println(DateUtil.standardizeDate("202012",true));
+        System.out.println(DateUtil.standardizeDate("20201206",true));
+        System.out.println(DateUtil.standardizeDate("2020120612",true));
+        System.out.println(DateUtil.standardizeDate("202012061201",true));
+        System.out.println(DateUtil.standardizeDate("202012061201",true));
+        System.out.println(DateUtil.standardizeDate("2020-11-26 08:47:38.0",true));
+        System.out.println(DateUtil.standardizeDate( "2020-11-26T08:47:38",true));
     }
 }
+
+

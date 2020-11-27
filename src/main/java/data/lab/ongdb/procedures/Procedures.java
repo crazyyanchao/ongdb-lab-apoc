@@ -206,9 +206,8 @@ public class Procedures {
         String startTime = mapPara.get("startTime");
         String stopTime = mapPara.get("stopTime");
 
-        DateUtil dateHandle = new DateUtil();
-        long startTimeLong = dateHandle.dateToMillisecond(startTime);
-        long stopTimeLong = dateHandle.dateToMillisecond(stopTime);
+        long startTimeLong = DateUtil.dateToMillisecond(startTime);
+        long stopTimeLong = DateUtil.dateToMillisecond(stopTime);
 
         String timeListString = mapPara.get("timeList");
         String[] timeArray = timeListString.split(",");
@@ -217,7 +216,7 @@ public class Procedures {
         int size = timeArray.length;
         for (int i = 0; i < size; i++) {
             time = timeArray[i];
-            timeLong = dateHandle.dateToMillisecond(time);
+            timeLong = DateUtil.dateToMillisecond(time);
             if (startTimeLong <= timeLong && timeLong <= stopTimeLong) {
                 return 1;   // 符合时间区间返回1
             }
@@ -235,9 +234,8 @@ public class Procedures {
         String startTime = mapPara.get("startTime");
         String stopTime = mapPara.get("stopTime");
 
-        DateUtil dateHandle = new DateUtil();
-        long startTimeLong = dateHandle.dateToMillisecond(startTime);
-        long stopTimeLong = dateHandle.dateToMillisecond(stopTime);
+        long startTimeLong = DateUtil.dateToMillisecond(startTime);
+        long stopTimeLong = DateUtil.dateToMillisecond(stopTime);
 
         String timeListString = mapPara.get("timeList");
         String[] timeArray = timeListString.split(",");
@@ -247,7 +245,7 @@ public class Procedures {
         int size = timeArray.length;
         for (int i = 0; i < size; i++) {
             time = timeArray[i];
-            timeLong = dateHandle.dateToMillisecond(time);
+            timeLong = DateUtil.dateToMillisecond(time);
             if (startTimeLong <= timeLong && timeLong <= stopTimeLong) {
                 builder.append(time + ",");
             }
@@ -350,19 +348,18 @@ public class Procedures {
     @Description("Time zone cross or not")
     public boolean timeCrossOrNot(@Name("mapPara") Map<String, Object> mapPara) {
 
-        DateUtil dateHandle = new DateUtil();
         String r1Start = (String) mapPara.get("r1Start");
         String r1Stop = (String) mapPara.get("r1Stop");
         String r2Start = (String) mapPara.get("r2Start");
         String r2Stop = (String) mapPara.get("r2Stop");
 
-        if ((dateHandle.objectToDate(r1Start) || dateHandle.objectToDate(r1Stop)) && (dateHandle.objectToDate(r2Start)
-                || dateHandle.objectToDate(r2Stop))) {
+        if ((DateUtil.objectToDate(r1Start) || DateUtil.objectToDate(r1Stop)) && (DateUtil.objectToDate(r2Start)
+                || DateUtil.objectToDate(r2Stop))) {
 
-            long r1StartMill = dateHandle.dateToMillisecond(r1Start);
-            long r1StopMill = dateHandle.dateToMillisecond(r1Stop);
-            long r2StartMill = dateHandle.dateToMillisecond(r2Start);
-            long r2StopMill = dateHandle.dateToMillisecond(r2Stop);
+            long r1StartMill = DateUtil.dateToMillisecond(r1Start);
+            long r1StopMill = DateUtil.dateToMillisecond(r1Stop);
+            long r2StartMill = DateUtil.dateToMillisecond(r2Start);
+            long r2StopMill = DateUtil.dateToMillisecond(r2Stop);
 
             // 不可能交叉的情况：
             // 1、区间一的结束时间小于区间二的开始时间
