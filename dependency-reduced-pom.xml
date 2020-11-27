@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>casia.isiteam.zdr</groupId>
-  <artifactId>neo4j-graph-plugin</artifactId>
-  <version>1.0.1</version>
+  <groupId>data.lab.engineering</groupId>
+  <artifactId>ongdb-lab-apoc</artifactId>
+  <version>1.0.0</version>
   <build>
     <plugins>
       <plugin>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j</artifactId>
-      <version>3.5.7</version>
+      <version>3.5.17</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -107,7 +107,7 @@
     <dependency>
       <groupId>org.neo4j.test</groupId>
       <artifactId>neo4j-harness</artifactId>
-      <version>3.5.7</version>
+      <version>3.5.17</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -139,7 +139,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -150,7 +150,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <neo4j.version>3.5.7</neo4j.version>
+    <neo4j.version>3.5.17</neo4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>
