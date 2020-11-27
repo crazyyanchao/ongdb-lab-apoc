@@ -196,6 +196,18 @@ public class Procedures {
     }
 
     /**
+     * @param object:时间相关的对象
+     * @param isStdDate:无效OBJECT是否默认补充系统时间
+     * @return
+     * @Description: TODO(【标准化时间字段：对无效时间对象是否去噪】)
+     */
+    @UserFunction(name = "olab.standardize.date")
+    @Description("【标准化时间字段：对无效时间对象是否去噪】")
+    public Long standardizeDate(@Name("object") Object object, @Name("isStdDate")Boolean isStdDate) {
+        return DateUtil.standardizeDate(object, isStdDate);
+    }
+
+    /**
      * @param
      * @return 1、符合时间区间 0、不符合时间区间
      * @Description: TODO(判断通联时间段是否匹配)

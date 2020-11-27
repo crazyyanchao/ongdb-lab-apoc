@@ -262,7 +262,7 @@ public class DateUtil {
      * @param object:时间相关的对象
      * @param isStdDate:无效OBJECT是否默认补充系统时间
      * @return
-     * @Description: TODO
+     * @Description: TODO(标准化时间字段)
      */
     public static long standardizeDate(Object object, boolean isStdDate) {
         long aLong = new Long(-1);
