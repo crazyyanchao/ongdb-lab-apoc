@@ -26,33 +26,35 @@ public class DateUtil {
 
     private static final Pattern PATTERN_MATCH_NUMBER = Pattern.compile("[0-9]");
 
-    private static final Map<String,Integer> GET_DAY_BY_MONTH_MAP = new HashMap<>();
+    private static final Map<String, Integer> GET_DAY_BY_MONTH_MAP = new HashMap<>();
+
     static {
-        GET_DAY_BY_MONTH_MAP.put("true1",31);
-        GET_DAY_BY_MONTH_MAP.put("true2",29);
-        GET_DAY_BY_MONTH_MAP.put("true3",31);
-        GET_DAY_BY_MONTH_MAP.put("true4",30);
-        GET_DAY_BY_MONTH_MAP.put("true5",31);
-        GET_DAY_BY_MONTH_MAP.put("true6",30);
-        GET_DAY_BY_MONTH_MAP.put("true7",31);
-        GET_DAY_BY_MONTH_MAP.put("true8",31);
-        GET_DAY_BY_MONTH_MAP.put("true9",30);
-        GET_DAY_BY_MONTH_MAP.put("true10",31);
-        GET_DAY_BY_MONTH_MAP.put("true11",30);
-        GET_DAY_BY_MONTH_MAP.put("true12",31);
-        GET_DAY_BY_MONTH_MAP.put("false1",31);
-        GET_DAY_BY_MONTH_MAP.put("false2",28);
-        GET_DAY_BY_MONTH_MAP.put("false3",31);
-        GET_DAY_BY_MONTH_MAP.put("false4",30);
-        GET_DAY_BY_MONTH_MAP.put("false5",31);
-        GET_DAY_BY_MONTH_MAP.put("false6",30);
-        GET_DAY_BY_MONTH_MAP.put("false7",31);
-        GET_DAY_BY_MONTH_MAP.put("false8",31);
-        GET_DAY_BY_MONTH_MAP.put("false9",30);
-        GET_DAY_BY_MONTH_MAP.put("false10",31);
-        GET_DAY_BY_MONTH_MAP.put("false11",30);
-        GET_DAY_BY_MONTH_MAP.put("false12",31);
+        GET_DAY_BY_MONTH_MAP.put("true1", 31);
+        GET_DAY_BY_MONTH_MAP.put("true2", 29);
+        GET_DAY_BY_MONTH_MAP.put("true3", 31);
+        GET_DAY_BY_MONTH_MAP.put("true4", 30);
+        GET_DAY_BY_MONTH_MAP.put("true5", 31);
+        GET_DAY_BY_MONTH_MAP.put("true6", 30);
+        GET_DAY_BY_MONTH_MAP.put("true7", 31);
+        GET_DAY_BY_MONTH_MAP.put("true8", 31);
+        GET_DAY_BY_MONTH_MAP.put("true9", 30);
+        GET_DAY_BY_MONTH_MAP.put("true10", 31);
+        GET_DAY_BY_MONTH_MAP.put("true11", 30);
+        GET_DAY_BY_MONTH_MAP.put("true12", 31);
+        GET_DAY_BY_MONTH_MAP.put("false1", 31);
+        GET_DAY_BY_MONTH_MAP.put("false2", 28);
+        GET_DAY_BY_MONTH_MAP.put("false3", 31);
+        GET_DAY_BY_MONTH_MAP.put("false4", 30);
+        GET_DAY_BY_MONTH_MAP.put("false5", 31);
+        GET_DAY_BY_MONTH_MAP.put("false6", 30);
+        GET_DAY_BY_MONTH_MAP.put("false7", 31);
+        GET_DAY_BY_MONTH_MAP.put("false8", 31);
+        GET_DAY_BY_MONTH_MAP.put("false9", 30);
+        GET_DAY_BY_MONTH_MAP.put("false10", 31);
+        GET_DAY_BY_MONTH_MAP.put("false11", 30);
+        GET_DAY_BY_MONTH_MAP.put("false12", 31);
     }
+
     /**
      * @param timeMillis:毫秒时间
      * @return
@@ -256,40 +258,46 @@ public class DateUtil {
         return format;
     }
 
-    public static long standardizeDate(Object string,boolean isStdDate){
+    /**
+     * @param object:时间相关的对象
+     * @param isStdDate:无效OBJECT是否默认补充系统时间
+     * @return
+     * @Description: TODO
+     */
+    public static long standardizeDate(Object object, boolean isStdDate) {
         long aLong = new Long(-1);
-        if (string instanceof String) {
-            Matcher m = PATTERN_MATCH_NUMBER.matcher((String) string);
+        if (object instanceof String) {
+            Matcher m = PATTERN_MATCH_NUMBER.matcher((String) object);
             StringBuilder result = new StringBuilder();
             while (m.find()) {
                 String r = m.group(0);
                 result.append(r);
             }
-            if (!"".equals(result)){
+            if (!"".equals(result.toString())) {
                 aLong = Long.valueOf(result.toString());
             }
-        }else if (string instanceof Long) {
-            aLong = ((Long) string).longValue();
-        }else if (string instanceof Integer) {
-            aLong = ((Integer) string).intValue();
-        }else if (string instanceof Date) {
-            aLong = Long.valueOf(new SimpleDateFormat("YYYYMMddHHmmss").format((Date) string));
+        } else if (object instanceof Long) {
+            aLong = ((Long) object).longValue();
+        } else if (object instanceof Integer) {
+            aLong = ((Integer) object).intValue();
+        } else if (object instanceof Date) {
+            aLong = Long.valueOf(new SimpleDateFormat("YYYYMMddHHmmss").format((Date) object));
         }
-        if (aLong > 0){
+        if (aLong > 0) {
             return processingInvalidTime(aLong);
         }
         return isStdDate(isStdDate);
     }
 
     private static long isStdDate(boolean isStdDate) {
-        if (isStdDate){
+        if (isStdDate) {
             return getCurrentDate();
         }
         return -1;
     }
 
     public static void main(String[] args) {
-        long l = standardizeDate("2020-11-26T08:47:38",false);
+        long l = standardizeDate("2020-11-26T08:47:38", false);
         System.out.println(l);
     }
 
@@ -307,17 +315,17 @@ public class DateUtil {
         //时间转字符
         String invalidTimeStr = String.valueOf(invalidTime);
         //相差长度  例：负数为需截取长度   正数为需拼接长度
-        int differenceLength = 14-invalidTimeStr.length();
+        int differenceLength = 14 - invalidTimeStr.length();
         //截取
-        if(differenceLength < 0){
+        if (differenceLength < 0) {
             invalidTimeStr = invalidTimeStr.substring(0, 14);
-        }else if (differenceLength > 0){
+        } else if (differenceLength > 0) {
             //拼接
             StringBuffer stringBuffer = new StringBuffer("");
             for (int i = 0; i < differenceLength; i++) {
                 stringBuffer.append("0");
             }
-            invalidTimeStr = invalidTimeStr+stringBuffer.toString();
+            invalidTimeStr = invalidTimeStr + stringBuffer.toString();
         }
         //位数补齐后依次判断年月日时分秒是否有效
         //补全年
@@ -325,17 +333,17 @@ public class DateUtil {
         long year = Long.valueOf(yearStr);
         String currentYearStr = currentDateStr.substring(0, 4);
         long currentYear = Long.valueOf(currentYearStr);
-        if(year >=1990 && year <= currentYear){
+        if (year >= 1990 && year <= currentYear) {
             standardTime.append(yearStr);
-        }else {
+        } else {
             standardTime.append(currentYearStr);
         }
         //补全月
         String monthStr = invalidTimeStr.substring(4, 6);
         long month = Long.valueOf(monthStr);
-        if(month >= 1 && month <= 12){
+        if (month >= 1 && month <= 12) {
             standardTime.append(monthStr);
-        }else {
+        } else {
             standardTime.append("12");
         }
         //补全日
@@ -350,33 +358,33 @@ public class DateUtil {
         boolean isLeapYear = standardYear % 4 == 0 && standardYear % 100 != 0;
         //当前已补全的年月所对应的日范围
         Integer maxDay = GET_DAY_BY_MONTH_MAP.get(isLeapYear + standardMonthStr);
-        if(day >= 1 && day <= maxDay){
+        if (day >= 1 && day <= maxDay) {
             standardTime.append(dayStr);
-        }else {
+        } else {
             standardTime.append(maxDay);
         }
         //补全时
         String timeStr = invalidTimeStr.substring(8, 10);
         long time = Long.valueOf(timeStr);
-        if(time >= 0 && time <= 23){
+        if (time >= 0 && time <= 23) {
             standardTime.append(timeStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         //补全分
         String minuteStr = invalidTimeStr.substring(10, 12);
         long minute = Long.valueOf(minuteStr);
-        if(minute >= 0 && minute <= 59){
+        if (minute >= 0 && minute <= 59) {
             standardTime.append(minuteStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         //补全秒
         String secondStr = invalidTimeStr.substring(12);
         long second = Long.valueOf(secondStr);
-        if(second >= 0 && second <= 59){
+        if (second >= 0 && second <= 59) {
             standardTime.append(secondStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         return Long.valueOf(standardTime.toString());
@@ -400,31 +408,31 @@ public class DateUtil {
     //时间变量中部分有效的就保留，无效的做处理
     //暂定1900-当前年份算有效时间
     //对时间进行补全处理
-    private static void processingInvalidTime(long invalidTime, long currentDate,List<Long> dateList) {
+    private static void processingInvalidTime(long invalidTime, long currentDate, List<Long> dateList) {
         //标准时间
         StringBuffer standardTime = new StringBuffer("");
         //当前时间
         String currentDateStr = String.valueOf(currentDate);
 
         //-1和未来时间不处理
-        if (invalidTime < 0){
+        if (invalidTime < 0) {
             return;
         }
         //标准时间位数为14位，不足则补齐，多则截取
         //时间转字符
         String invalidTimeStr = String.valueOf(invalidTime);
         //相差长度  例：负数为需截取长度   正数为需拼接长度
-        int differenceLength = 14-invalidTimeStr.length();
+        int differenceLength = 14 - invalidTimeStr.length();
         //截取
-        if(differenceLength < 0){
+        if (differenceLength < 0) {
             invalidTimeStr = invalidTimeStr.substring(0, 14);
-        }else if (differenceLength > 0){
+        } else if (differenceLength > 0) {
             //拼接
             StringBuffer stringBuffer = new StringBuffer("");
             for (int i = 0; i < differenceLength; i++) {
                 stringBuffer.append("0");
             }
-            invalidTimeStr = invalidTimeStr+stringBuffer.toString();
+            invalidTimeStr = invalidTimeStr + stringBuffer.toString();
         }
         //位数补齐后依次判断年月日时分秒是否有效
         //补全年
@@ -432,17 +440,17 @@ public class DateUtil {
         long year = Long.valueOf(yearStr);
         String currentYearStr = currentDateStr.substring(0, 4);
         long currentYear = Long.valueOf(currentYearStr);
-        if(year >=1990 && year <= currentYear){
+        if (year >= 1990 && year <= currentYear) {
             standardTime.append(year);
-        }else {
+        } else {
             standardTime.append(currentYearStr);
         }
         //补全月
         String monthStr = invalidTimeStr.substring(4, 6);
         long month = Long.valueOf(monthStr);
-        if(month >= 1 && month <= 12){
+        if (month >= 1 && month <= 12) {
             standardTime.append(month);
-        }else {
+        } else {
             standardTime.append("12");
         }
         //补全日
@@ -457,33 +465,33 @@ public class DateUtil {
         boolean isLeapYear = standardYear % 4 == 0 && standardYear % 100 != 0;
         //当前已补全的年月所对应的日范围
         Integer maxDay = GET_DAY_BY_MONTH_MAP.get(isLeapYear + standardMonthStr);
-        if(day >= 1 && day <= maxDay){
+        if (day >= 1 && day <= maxDay) {
             standardTime.append(day);
-        }else {
+        } else {
             standardTime.append(maxDay);
         }
         //补全时
         String timeStr = invalidTimeStr.substring(8, 10);
         long time = Long.valueOf(timeStr);
-        if(time >= 0 && time <= 23){
+        if (time >= 0 && time <= 23) {
             standardTime.append(timeStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         //补全分
         String minuteStr = invalidTimeStr.substring(10, 12);
         long minute = Long.valueOf(minuteStr);
-        if(minute >= 0 && minute <= 59){
+        if (minute >= 0 && minute <= 59) {
             standardTime.append(minuteStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         //补全秒
         String secondStr = invalidTimeStr.substring(12);
         long second = Long.valueOf(secondStr);
-        if(second >= 0 && second <= 59){
+        if (second >= 0 && second <= 59) {
             standardTime.append(secondStr);
-        }else {
+        } else {
             standardTime.append("00");
         }
         dateList.add(Long.valueOf(standardTime.toString()));
@@ -492,4 +500,18 @@ public class DateUtil {
     public static long getCurrentDate() {
         return Long.valueOf(new SimpleDateFormat("YYYYMMddHHmmss").format(new Date()));
     }
+
+    /*public static void main(String[] args) {
+     *//*String str = "202001011230121";
+        String substring = str.substring(4, 6);
+        Long aLong = Long.valueOf(substring);
+        System.out.println(aLong);*//*
+        Long a = Long.valueOf("1200023112121");
+        Long b = getCurrentDate();
+        List<Long> aa = new ArrayList<>();
+        processingInvalidTime(a,b,aa);
+        for (Long time:aa) {
+            System.out.println(time);
+        }
+    }*/
 }

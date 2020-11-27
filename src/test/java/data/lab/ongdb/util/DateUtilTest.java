@@ -49,6 +49,8 @@ public class DateUtilTest {
         System.out.println(DateUtil.standardizeDate("202012061201",true));
         System.out.println(DateUtil.standardizeDate("2020-11-26 08:47:38.0",true));
         System.out.println(DateUtil.standardizeDate( "2020-11-26T08:47:38",true));
+        System.out.println(DateUtil.standardizeDate("2020-11-26 08:47:38",false));
+        System.out.println(DateUtil.standardizeDate("2020-11-26 08:47:38",true));
     }
 }
 
