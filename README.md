@@ -1,3 +1,7 @@
+# LONGER-TERM PROJECT
+- https://github.com/ongdb-contrib
+- https://github.com/graphfoundation
+
 # Neo4j自定义函数与过程插件
 
 > 此插件对应版本：NEO4J-3.5.X
